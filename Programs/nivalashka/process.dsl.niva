@@ -1,0 +1,19 @@
+ProcessBuilder redirectAndStart = 
+  this redirectOutput start waitFor
+
+MutableList::String runProcess = 
+  ProcessBuilder command: this |>
+  redirectAndStart
+
+MutableList::String runProcessInDir: dir::String = 
+  ProcessBuilder command: this dir: dir |>
+  redirectAndStart
+
+String runProcess = 
+  ProcessBuilder command: {this} |>
+  redirectAndStart
+
+String runProcessInDir: dir::String = 
+  ProcessBuilder command: {this} dir: dir |>
+  redirectAndStart
+

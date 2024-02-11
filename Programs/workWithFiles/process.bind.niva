@@ -1,0 +1,17 @@
+Bind package: "java.lang" content: [
+  type ProcessBuilder command: MutableList::String
+  // enum Redirect = INHERIT | PIPE | READ | WRITE
+
+  type Process 
+  ProcessBuilder start -> Process
+  @emit: "$0.redirectOutput(ProcessBuilder.Redirect.INHERIT).redirectError(ProcessBuilder.Redirect.INHERIT)"
+  ProcessBuilder redirectOutput -> ProcessBuilder
+  Process waitFor -> Int
+]
+
+MutableList::String runProcess = [
+  pb = ProcessBuilder command: this
+  pb redirectOutput
+  pb start waitFor
+]
+

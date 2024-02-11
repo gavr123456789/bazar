@@ -1,0 +1,35 @@
+archive_path = "Niva/Niva/build/distributions/niva-SNAPSHOT-1.0.zip"
+// args isEmpty => Error throwWithMessage: "use jvm or bin argument"
+
+firstArg = "jvm"//args at: 0
+
+tempNivaPath = "/home/gavr/Documents/Projects/Fun/Niva/Niva/Niva"
+infroProject = "/home/gavr/Documents/Projects/Fun/Niva/Niva/infroProject"
+
+// "pwd" runProcess
+// "pwd" runProcessInDir: "../.."
+
+// Error throwWithMessage: "sas"
+
+// create dist
+{"./gradlew" "distZip" "-quiet"} runProcessInDir: tempNivaPath
+
+mainFolder = tempNivaPath back back 
+
+// unzip dist
+{"unzip" "-o" "-q" archive_path "-d" "niva_compiler2"} runProcessInDir: mainFolder
+
+firstArg == "jvm" => [
+  "jvm build..."
+  "~/.niva/infroProject" mkdir
+  infroProject copyTo: "~/.niva/infroProject2/"
+]
+
+// "." lsPrint
+// "file" touch
+// "folder" mkdir
+// "---" echo
+// "." lsPrint
+// "---" echo
+// "file" moveTo: "folder/file"
+// "." lsPrint

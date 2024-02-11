@@ -1,0 +1,35 @@
+Project loadPackages: {"com.squareup.okio:okio:3.6.0"}
+
+
+// read from file
+readFromFile = [
+  FileSystem read: "strings.txt" toPath |>
+    split: "\n" |>
+    map: [it split: " "] 
+]
+
+
+
+// write to file
+type Person name: String age: Int
+writeToFile = [
+  alice = Person name: "Alica" age: 30
+  bob = Person name: "Bob" age: 31
+
+  persons = { alice bob }
+
+  newFilePath = "persons.csv" toPath 
+  FileSystem 
+    write: newFilePath
+    content: "Name, Age\n" + (persons 
+                                joinWith: "\n" 
+                                transform: [ it name + ", " + it age ])
+]
+
+
+// runProcess commands: {"ls" "-C" "--color"}
+
+{"ls" "-C" "--color"} runProcess
+
+>? FileSystem
+>? Path

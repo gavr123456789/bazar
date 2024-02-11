@@ -1,0 +1,52 @@
+// type COLOR
+// constructor COLOR RED = "\u001B[31m"
+// constructor COLOR CYAN = "\u001B[36m"
+// constructor COLOR YEL = "\u001B[33m"
+// constructor COLOR RESET = "\u001B[0m"
+// constructor COLOR WHITE = "\u001B[37m"
+// String red = COLOR RED + this + COLOR RESET 
+// String yel = COLOR YEL + this + COLOR RESET 
+// String cyan = COLOR CYAN + this + COLOR RESET 
+
+// "Hello"yel + " World"red + "!"cyan |> echo
+
+
+// type Assert 
+// constructor Assert that::Any equals::Any -> Unit = [
+
+//   that != equals => [
+//     Error throwWithMessage: "Assertion failed: $that != $equals"
+//   ]
+// ]
+
+// Assert that: "sas" equals: "sas"
+
+
+
+
+
+union Node = 
+| Sub left: Node right: Node
+| Add left: Node right: Node
+| Value v: Int
+
+Node walk -> Int = | this
+| Add => left walk + right walk
+| Sub => left walk - right walk
+| Value => v
+
+expr = Add 
+  right: (
+    Add 
+      right: (Value v: 10) 
+      left: (
+        Sub 
+          left: (Value v: 40) 
+          right: (Value v: 20)
+      )
+  )
+  left: (Value v: 40)
+
+expr walk echo
+
+

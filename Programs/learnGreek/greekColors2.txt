@@ -1,0 +1,12 @@
+άσπρο [áspro]: “white”
+μαύρο [mávro]: “black”
+κόκκινο [kócino]: “red”
+πράσινο [prásino]: “green”
+κίτρινο [cítrino]: “yellow”
+μπλε [blé]: “blue”
+καφέ [kafé]: “brown”
+πορτοκαλί [portokalí]: “orange”
+ροζ [róz]: “pink”
+μωβ [móv]: “purple”
+γκρι [grí]: “grey”
+γαλάζιο [γalázjo]: “light blue”

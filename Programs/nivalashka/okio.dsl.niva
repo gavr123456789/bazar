@@ -1,0 +1,40 @@
+
+// "sas" mkdir
+String mkdir = 
+  FileSystem createDirectories: this toPath
+
+// "sas.txt" touch
+String touch = 
+  FileSystem write: this toPath content: ""
+
+String mkFile = this touch
+
+// "sas.txt" touchWithContent: "sas"
+String touchWithContent: c::String = 
+  FileSystem write: this toPath content: c
+
+String mkFileWithContent: c::String = 
+  this touchWithContent: c
+
+// a/b -> a
+Path back -> Path = 
+  this parent unpackOrError
+
+String back -> String = 
+  this toPath back toString
+
+
+// "path/to" ls
+String ls = FileSystem list: this toPath
+String lsR = FileSystem listRecursively: this toPath
+String lsPrint = this ls forEach: [it echo]
+String lsRPrint = this lsR forEach: [it echo]
+
+// "a" copyTo "b"
+String copyTo: d::String = 
+  FileSystem copyFrom: this toPath to: d toPath
+
+
+// "a" moveTo "b"
+String moveTo: d::String = 
+  FileSystem moveFrom: this toPath to: d toPath
