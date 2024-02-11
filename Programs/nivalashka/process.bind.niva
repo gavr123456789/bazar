@@ -10,8 +10,13 @@ Bind package: "java.lang" content: [
   
   @emit: "$0.redirectOutput(ProcessBuilder.Redirect.INHERIT).redirectError(ProcessBuilder.Redirect.INHERIT)"
   ProcessBuilder redirectOutput -> ProcessBuilder
-  
+
   Process waitFor -> Int
+
+  @emit: "$0.getInputStream().readAllBytes().toString(java.nio.charset.Charset.defaultCharset())"
+  Process redirectToString -> String
+
+  
 
   @emit: """System.getProperty("user.dir")"""
   constructor Process currentDir -> String

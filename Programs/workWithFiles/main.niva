@@ -27,9 +27,9 @@ writeToFile = [
 ]
 
 
-// runProcess commands: {"ls" "-C" "--color"}
+// run commands: {"ls" "-C" "--color"}
 
-{"ls" "-C" "--color"} runProcess
+{"ls" "-C" "--color"} run
 
 >? FileSystem
 >? Path

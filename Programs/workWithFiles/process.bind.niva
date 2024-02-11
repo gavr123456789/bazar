@@ -9,7 +9,7 @@ Bind package: "java.lang" content: [
   Process waitFor -> Int
 ]
 
-MutableList::String runProcess = [
+MutableList::String run = [
   pb = ProcessBuilder command: this
   pb redirectOutput
   pb start waitFor

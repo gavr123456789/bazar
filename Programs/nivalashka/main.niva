@@ -1,35 +1,35 @@
-archive_path = "Niva/Niva/build/distributions/niva-SNAPSHOT-1.0.zip"
-// args isEmpty => Error throwWithMessage: "use jvm or bin argument"
+// foreach on files
+// "." ls echo
+// >? String
 
-firstArg = "jvm"//args at: 0
+formats = #("png" "jpg" "jpeg" "webp")
 
-tempNivaPath = "/home/gavr/Documents/Projects/Fun/Niva/Niva/Niva"
-infroProject = "/home/gavr/Documents/Projects/Fun/Niva/Niva/infroProject"
-
-// "pwd" runProcess
-// "pwd" runProcessInDir: "../.."
-
-// Error throwWithMessage: "sas"
-
-// create dist
-{"./gradlew" "distZip" "-quiet"} runProcessInDir: tempNivaPath
-
-mainFolder = tempNivaPath back back 
-
-// unzip dist
-{"unzip" "-o" "-q" archive_path "-d" "niva_compiler2"} runProcessInDir: mainFolder
-
-firstArg == "jvm" => [
-  "jvm build..."
-  "~/.niva/infroProject" mkdir
-  infroProject copyTo: "~/.niva/infroProject2/"
+args count == 0 => [
+  Error throwWithMessage: "path to folder with images required"
 ]
 
-// "." lsPrint
-// "file" touch
-// "folder" mkdir
-// "---" echo
-// "." lsPrint
-// "---" echo
-// "file" moveTo: "folder/file"
-// "." lsPrint
+
+type Size w: Int h: Int
+getPictureSize = [ path::String ->
+  size = {"identify" "-format" "%wx%h" path} runToString
+  q = size split: "x"
+  Size w: (q at: 0 |> toInt) h: (q at: 1 |> toInt)
+]
+
+getPictureSizeInPixels = [ path::String ->
+  size = getPictureSize path: path
+  size w * size h
+]
+
+image_dir = args at: 0
+
+// list all files in image_dir
+image_dir lsRPaths asSequence 
+  filter: [it isFile] |>
+  filter: [formats contains: it name fileFormat] |>
+  filter: [(getPictureSizeInPixels path: it toString) < 4000000 ] |>
+  forEach: [
+    it echo
+  ]
+
+// getPictureSize path: "/home/gavr/Downloads/images/The Girl I Love Was Stolen by a Futa! (copy)/001.png"  |> echo

@@ -1,19 +1,38 @@
-ProcessBuilder redirectAndStart = 
+ProcessBuilder redirectToOutAndStart = 
   this redirectOutput start waitFor
 
-MutableList::String runProcess = 
+ProcessBuilder redirectToStringAndStart -> String = 
+  this start redirectToString
+
+MutableList::String run = 
   ProcessBuilder command: this |>
-  redirectAndStart
+  redirectToOutAndStart
 
-MutableList::String runProcessInDir: dir::String = 
+MutableList::String runToString -> String = 
+  ProcessBuilder command: this |>
+  redirectToStringAndStart
+
+MutableList::String runInDir: dir::String = 
   ProcessBuilder command: this dir: dir |>
-  redirectAndStart
+  redirectToOutAndStart
 
-String runProcess = 
+// run cmd and put the output of it to console
+String run = 
   ProcessBuilder command: {this} |>
-  redirectAndStart
+  redirectToOutAndStart
 
-String runProcessInDir: dir::String = 
+// run cmd and put the output of it to string
+String runToString -> String = 
+  ProcessBuilder command: {this} |>
+  redirectToStringAndStart
+
+String runInDir: dir::String = 
   ProcessBuilder command: {this} dir: dir |>
-  redirectAndStart
+  redirectToOutAndStart
+
+// run cmd and put the output of it to string
+String runInDirToString: dir::String -> String = 
+  ProcessBuilder command: {this} dir: dir |>
+  redirectToStringAndStart
+
 

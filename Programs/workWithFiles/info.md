@@ -324,7 +324,7 @@
 	viewFrom: Int to: Int -> MutableList::String
 	at: Int put: common.T -> Unit
 ### unary
-	runProcess -> Unit
+	run -> Unit
 
 ## type MutableSet
 ### unary

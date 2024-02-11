@@ -25,8 +25,12 @@ String back -> String =
 
 
 // "path/to" ls
-String ls = FileSystem list: this toPath
-String lsR = FileSystem listRecursively: this toPath
+String lsPaths -> List::Path = FileSystem list: this toPath
+String ls -> List::String = this lsPaths map: [it toString]
+
+String lsRPaths = FileSystem listRecursively: this toPath
+String lsR = this lsRPaths map: [it toString]
+
 String lsPrint = this ls forEach: [it echo]
 String lsRPrint = this lsR forEach: [it echo]
 
@@ -38,3 +42,12 @@ String copyTo: d::String =
 // "a" moveTo "b"
 String moveTo: d::String = 
   FileSystem moveFrom: this toPath to: d toPath
+
+
+Path isDirectory -> Boolean = FileSystem metadata: this |> isDirectory
+String isDirectory -> Boolean = this toPath isDirectory
+Path isFile -> Boolean = FileSystem metadata: this |> isRegularFile
+String isFile -> Boolean = this toPath isFile
+
+// sas.png -> "png"
+String fileFormat = this substringAfterLast: "."
