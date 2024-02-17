@@ -1,0 +1,6 @@
+// debug print with var name
+Any echoD = [
+    receiverName = Compiler getName: 0
+    value = this toString
+    "$receiverName is $value" echo
+]
