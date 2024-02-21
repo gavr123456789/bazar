@@ -1,0 +1,18 @@
+Project loadPackages: {"org.eclipse.swt:org.eclipse.swt.gtk.linux.x86_64:4.3"}
+
+Bind package: "org.eclipse.swt.widgets" content: [
+  type Buttton 
+  type Label text: String
+  
+  type Display 
+  type Shell display: Display
+
+  
+  Shell open
+  Shell pack
+
+  @emit: "while (!shell.isDisposed()) { if (!display.readAndDispatch()) display.sleep() }; display.dispose()"
+  Shell wait -> Unit
+
+
+]

@@ -1,0 +1,1 @@
+Button onPressed::[Event -> Unit] = this addListener: SWT.Selection listener: onPressed

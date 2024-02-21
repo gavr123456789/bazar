@@ -1,0 +1,30 @@
+Project loadPackages: {"org.eclipse.swt:org.eclipse.swt.gtk.linux.x86_64:4.3"}
+
+
+display = Display new
+shell = Shell display: display
+shell minW: 250 minH: 250
+shell layout: (RowLayout kind: SWT.HORIZONTAL)
+
+
+// fill layout with widgets
+btn = Button in: shell
+
+btn text: "1"
+btn onPressed: [
+  "hello SWT from niva " + btn text |> echo
+  btn text: btn text toInt inc toString
+]
+
+// MyLayout
+  // computeSize: [ hHint::Int, wHint::Int -> Error throwWithMessage: hHint toString ]
+  // layout: [ Error throwWithMessage: "sas" ]
+
+
+
+shell pack
+shell open
+shell wait
+
+
+

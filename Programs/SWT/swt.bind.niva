@@ -1,0 +1,89 @@
+
+Bind package: "org.eclipse.swt.SWT" content: [
+  enum SWT =
+  // Layouts
+  | VERTICAL | HORIZONTAL
+  // Button styles
+  | PUSH | RADIO | CHECK
+  // Events
+  | Selection | Resize | Dispose
+]
+
+
+Bind package: "org.eclipse.swt.layout" imports: {"org.eclipse.swt.SWT"} content: [
+  union Layout =
+  | RowLayout
+  | FillLayout
+  | GridLayout
+
+
+  constructor RowLayout kind::SWT -> RowLayout
+
+]
+
+
+Bind package: "org.eclipse.swt.widgets" imports: {"org.eclipse.swt.SWT"} content: [
+  type Display
+  union Control =
+  | Composite
+  | Shell display: Display
+
+
+  @rename: "setLayout"
+  Shell layout::RowLayout -> Unit
+
+  @rename: "setSize"
+  Shell w::Int h::Int -> Unit
+
+  @rename: "setMinimumSize"
+  Shell minW::Int minH::Int -> Unit
+
+
+  Shell open -> Unit
+  Shell pack -> Unit
+
+  @emit: "while (!shell.isDisposed()) { if (!display.readAndDispatch()) display.sleep() }; display.dispose()"
+  Shell wait -> Unit
+
+
+  // Event
+  type Event display: Display index: Int x: Int y: Int width: Int height: Int time: Int button: Int keyCode: Int text: String
+
+ // widgets
+  // ERROR return type required, but its constructor already
+  // constructor Button parent::Shell style::SWT -> Button
+
+// Button
+  type Button text: String
+  @emit: "Button($1, SWT.PUSH)"
+  constructor Button in::Control = []
+
+
+  @rename: "addListener"
+  Button addListener::SWT listener::[Event -> Unit] -> Unit
+
+
+// Label
+  type Label parent: Control style: SWT
+  @rename: "setText"
+  Label text::String -> Unit
+
+
+  type MyLayout
+
+// ERROR if not return Unit
+  @emit: """
+    object: Layout() {
+        override fun computeSize(
+            composite: Composite?,
+            wHint: Int,
+            hHint: Int,
+            flushCache: Boolean
+        ): org.eclipse.swt.graphics.Point? $1
+
+        override fun layout(composite: Composite?, flushCache: Boolean) $2
+
+    }
+  """
+  constructor MyLayout computeSize::[Int, Int -> Unit] layout::[ -> ] -> Unit
+]
