@@ -10,21 +10,27 @@ constructor LinkedList empty =
     LinkedList head: null tail: null size: 0
 
 LinkedList isEmpty = size == 0
+LinkedList incSize = size <- size inc
+
 LinkedList str = this isEmpty => "Empty!" |=> head unpackOrError str
+
 LinkedList push: v::Int -> LinkedList = [
     head <- Node v: v next: head
     tail == null => tail <- head
-    size <- size inc
+    this incSize
     ^this
 ]
+
 
 LinkedList add: v::Int -> LinkedList =
   this isEmpty => [
     this push: v
+    this incSize
     this
   ] |=> [
     tail unpack: [
       it next: (Node v: v)
+      this incSize
       tail <- it next
     ]
     this
@@ -43,12 +49,35 @@ LinkedList at: i::Int -> Node? = [
   ^curr
 ]
 
+LinkedList forEach::[Int -> Unit] = [
+  mut i = this size - 1
+  [i > 0] whileTrue: [
+    currItem = this at: i
+    forEach Int: currItem unpackOrError v
+    i <- i dec
+  ]
+]
 
+LinkedList map::[Int -> T] -> MutableList::T = [
+  // newLinkedList = LinkedList empty
+  newLinkedList::MutableList::T = {}
+  mut i = this size - 1
+  [i > 0] whileTrue: [
+    currItem = this at: i
+    newLinkedList add: (map Int: currItem unpackOrError v)
+    i <- i dec
+  ]
+  ^newLinkedList
+]
 
 list = LinkedList empty
 list push: 1 |> push: 2 |> push: 3
 list add: -1 |> add: -2 |> add: -3
-"element 4" echo
-list at: 4 |> unpackOrError v echo
-"full list" echo
-list str echo
+// "element 4" echo
+// list at: 4 |> unpackOrError v echo
+// "full list" echo
+// list str echo
+"forEach" echo
+list forEach: [it echo]
+"map" echo
+list map: [it + 1] |> echo
