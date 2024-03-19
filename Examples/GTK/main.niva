@@ -1,0 +1,92 @@
+app = Application name: "my.app"
+
+app onActivate: [
+  window = [
+    x = ApplicationWindow app: app
+    x title: "GTK from Niva"
+    x x: 300 y: 300
+    x
+  ] do
+
+  display = [
+    x = Entry new
+    x alignment: 1.0
+    x editable: false
+    x placeholderText: "0"
+    x addCssClass: "monospace"
+    x
+  ] do
+
+  // state
+  mut clean = false
+
+  btnWith = [ label::String ->
+    x = Button new
+    x label: label
+    x
+  ]
+
+  getDisplayValue = [
+    text = display text
+    text isEmpty => 0 |=> text toDouble
+  ]
+
+  input = [ label::String ->
+    clean => [
+      accumulator = getDisplayValue do
+    ]
+    // TODO
+  ]
+
+  calcButton = [ label::String ->
+    x = Button new
+    x label: label
+    x vexpand: true
+    x onClicked: [ input label: label ]
+    x
+  ]
+
+  entrtyWithText = [ text::String ->
+    x = Entry new 
+    x text: text
+    x
+  ]
+
+
+  ui = [
+    grid = [
+      x = Grid new 
+      x columnSpacing: 1
+      x rowSpacing: 1
+      x
+    ] do
+
+    buttonClear = [
+      x = btnWith label: "AC"
+      x addCssClass: "destructive-action"
+      x
+    ] do
+
+    // h = org.gnome.adw.HeaderBar new
+    grid
+  ]
+
+
+  btn = btnWith label: "Press me."
+  btn onClicked: [
+    btn label: "Pressed!"
+  ]
+
+  box = Box orientation: Orientation.VERTICAL spacing: 10
+  box append: btn
+  box hexpand: true
+  box append: (btnWith label: "hii")
+  box append: (btnWith label: "helloow")
+
+
+  window child: ui
+  window present
+]
+
+
+app run: args

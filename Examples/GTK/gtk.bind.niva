@@ -1,0 +1,95 @@
+Project loadPackages: {"io.github.jwharm.javagi:gtk:0.9.0" "io.github.jwharm.javagi:adw:0.9.0"}
+
+Bind package: "org.gnome.gtk" content: [
+  type Application
+  @emit: """org.gnome.gtk.Application($1, org.gnome.gio.ApplicationFlags.DEFAULT_FLAGS)"""
+  constructor Application name::String -> Application
+
+  extend Application [
+    on onActivate::[ -> ] -> Unit
+    on run::List::String -> Unit
+  ]
+
+  enum Orientation = HORIZONTAL | VERTICAL
+  enum Align = FILL | START | END | CENTER | BASELINE_FILL | BASELINE_CENTER
+
+  // EVENTS
+  enum ModifierType = ALT_MASK | SHIFT_MASK | CONTROL_MASK | BUTTON1_MASK
+  union EventController = 
+  | EventControllerKey
+
+  EventControllerKey onKeyPressed::[Int, Int, ModifierType? -> Boolean] -> Unit
+
+
+  /// WIDGETS
+  union Widget = 
+  | ApplicationWindow app: Application
+  | Button
+  | Entry 
+  | Label str: String
+  | Box orientation: Orientation spacing: Int
+  | Grid
+
+  // Widget
+  Widget grabFocus -> Boolean
+  Widget addCssClass::String -> Unit
+
+  // ApplicationWindow
+  extend ApplicationWindow [
+    @emit: "$0.setDefaultSize($1, $2)"
+    on x::Int y::Int -> Unit
+    on present -> Unit
+    on addController::EventController -> Unit
+  ]
+
+  // Button
+  constructor Button withLabel::String -> Button
+  Button onClicked::[ -> ] -> Unit
+  
+  // Box
+  Box append::Widget -> Unit
+
+  // Grid
+  @rename: "attach"
+  Grid attach::Widget col::Int row::Int w::Int h::Int -> Unit
+  enum PositionType = LEFT | RIGHT | TOP | BOTTOM
+  @rename: "attachNextTo"
+  Grid attach::Widget nextTo::Widget position::PositionType w::Int h::Int -> Unit
+
+] fields: [
+  Entry 
+    text: String 
+    textLength: Int 
+    placeholderText: String 
+    editable: Boolean
+    alignment: Float
+  
+  Button 
+    label: String
+
+  ApplicationWindow
+    child: Widget
+    title: String
+
+  Widget
+    halign: Align
+    valign: Align
+    vexpand: Boolean
+    hexpand: Boolean
+
+  Grid 
+    columnSpacing: Int
+    columnHomogeneous: Boolean
+    rowSpacing: Int
+    rowHomogeneous: Boolean
+
+] 
+
+
+
+Bind package: "org.gnome.adw" content: [
+  // union
+  type HeaderBar
+  // type Application
+  // type ApplicationWindow
+]
