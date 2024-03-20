@@ -1,0 +1,33 @@
+
+
+type Token
+type Parser
+
+union MessageSend =
+| Unary
+| Binary
+| Keyword t: Token
+
+union Expression =
+| ControlFlow t: Token
+| MessageSend
+| Identifier t: Token
+
+union Statement = 
+| Expression 
+| ReturnStatement t: Token
+
+Parser parse: e::Statement = | e
+// Statement
+| ReturnStatement => "ReturnStatement"
+// Expression
+| ControlFlow => "ControlFlow"
+| Identifier => "Identifier"
+// Messages
+| Unary => "Unary"
+// | Binary => "Binary"
+| Keyword => "Keyword"
+|=> "???"
+
+
+"yay!" echo

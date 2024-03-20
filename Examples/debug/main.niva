@@ -1,0 +1,101 @@
+
+// T d -> T = [
+//   receiver = Compiler getName: 0
+//   "$receiver = $this" echo
+//   ^ this
+// ]
+
+
+
+// {1 2 3} d reversed d reversed d
+
+// //> [2!, 4!, 6!]
+// {1 2 3 4 5 6}
+//   map: [it + 1] |> 
+//   filter: [it % 2 == 0] |>
+//   map: [it toString + "!"]
+
+
+// {1 2 3 4 5 6}
+//     map: [it inc] |>
+//     d |>
+//     filter: [it % 2 == 0] |>
+//     d |>
+//     map: [it toString + "!"] |>
+//     d |>
+//     echo
+
+type Node v: Int next: Node?
+constructor Node v::Int = Node v: v next: null
+Node str -> String =
+  next unpack: [ "$v, " + it str] or: "$v"
+
+
+type LinkedList head: Node? tail: Node? size: Int
+constructor LinkedList empty =
+    LinkedList head: null tail: null size: 0
+
+LinkedList isEmpty = size == 0
+LinkedList str = this isEmpty => "Empty!" |=> head unpackOrError str
+LinkedList push: v::Int -> LinkedList = [
+    head <- Node v: v next: head
+    tail == null => tail <- head
+    size <- size inc
+    ^this
+]
+LinkedList add: v::Int -> LinkedList = 
+  this isEmpty => [
+    this push: v
+    this
+  ] |=> [
+    tail unpack: [
+      it next: (Node v: v)
+      tail <- it next
+    ]
+    this
+  ]
+
+LinkedList at: i::Int -> Node? = [
+  mut curr = head
+  mut currI = 0
+
+  [currI < i] whileTrue: [
+    curr unpack: [
+        curr <- it next
+        currI <- currI inc
+    ]
+  ]
+  ^curr
+]
+
+LinkedList forEach::[Int -> Unit] = [
+  mut i = this size - 1 
+  [i > 0] whileTrue: [
+    currItem = this at: i
+    forEach Int: currItem unpackOrError v
+    i <- i dec
+  ]
+]
+
+LinkedList map::[Int -> T] -> MutableList::T = [
+  // newLinkedList = LinkedList empty
+  newLinkedList::MutableList::T = {}
+  mut i = this size - 1
+  [i > 0] whileTrue: [
+    currItem = this at: i
+    newLinkedList add: (map Int: currItem unpackOrError v)
+    i <- i dec
+  ]
+  ^newLinkedList
+]
+
+list = LinkedList empty
+list push: 1 |> push: 2 |> push: 3
+list add: -1 |> add: -2 |> add: -3
+"element 4" echo
+list at: 4 |> unpackOrError v echo
+"full list" echo
+list str echo
+
+list forEach: [it echo]
+
