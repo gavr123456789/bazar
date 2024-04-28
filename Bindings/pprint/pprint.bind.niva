@@ -1,0 +1,5 @@
+Project loadPackages: {"io.exoquery:pprint-kotlin:2.0.2"}
+Bind package: "io.exoquery" content: [
+  @emit: "pprint($0)"
+  Any pprint -> String
+]

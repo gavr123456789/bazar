@@ -1,0 +1,170 @@
+app = Application name: "my.app"
+
+app onActivate: [
+  window = [
+    x = ApplicationWindow app: app
+    x title: "GTK from Niva"
+    x x: 250 y: 300
+    x
+  ] do
+
+  display2 = [
+    x = Entry new
+    x alignment: 1.0
+    x editable: false
+    x placeholderText: "0"
+    x addCssClass: "monospace"
+    x
+  ] do
+
+  display = (Entry new); 
+    alignment: 1.0;
+    editable: false;
+    placeholderText: "0";
+    addCssClass: "monospace"
+
+  // state
+  mut clean = false
+  mut accumulator = 0.0
+
+  btnWith = [ label::String ->
+    x = Button new
+    x label: label
+    x vexpand: true
+    x
+  ]
+
+  ///
+  mut op = "+"
+
+  eval = [ op::String a::Float, b::Float ->
+    | op
+    | "*" => a * b
+    | "/" => a / b
+    | "+" => a + b
+    | "-" => a - b
+    | "=" => 0.0
+    |=> 0.0
+  ]
+
+  getDisplayValue = [
+    text = display text
+    text isEmpty => 0.0 |=> text toFloat
+  ]
+
+  setFunction = [input::String -> 
+    calculate = [
+      in1 = getDisplayValue do
+      out = eval op: input a: accumulator b: in1
+      display text: (out toString |> replace: ".0" with: "")
+      clean <- true
+    ]
+    calculate do
+  ]
+
+  ///
+  btnResult = btnWith label: "="//; addCssClass: "suggested-action"
+
+
+
+  input = [ label::String ->
+    clean => [
+      accumulator <- getDisplayValue do
+      display text: ""
+      clean <- false
+    ]
+    label == "." => [
+      display text contains: "." |> not => [
+        display text: (display text + label)
+      ]
+    
+    ] |=> label first isDigit => [
+      display text: (display text + label)
+    ]
+
+    btnResult grabFocus 
+  ]
+  btnResult onClicked: [ input label: btnResult label ]
+
+  inputBtn = [ label::String ->
+    x = Button new
+    x label: label
+    x vexpand: true
+    x onClicked: [ input label: label ]
+    x
+  ]
+
+  funcBtn = [ label::String ->
+    x = Button new
+    x label: label
+    x vexpand: true
+    x onClicked: [ input label: label ]
+    x
+  ]
+
+  entrtyWithText = [ text::String ->
+    x = Entry new 
+    x text: text
+    x
+  ]
+
+
+  ui = [
+    grid = [
+      x = Grid new 
+      x columnSpacing: 1
+      x rowSpacing: 1
+      x
+    ] do
+
+    grid attach: display col: 0 row: 1 w: 4 h: 1
+    grid attach: (inputBtn label: "7") col: 0 row: 2 w: 1 h: 1
+    grid attach: (inputBtn label: "8") col: 1 row: 2 w: 1 h: 1
+    grid attach: (inputBtn label: "9") col: 2 row: 2 w: 1 h: 1
+    grid attach: (inputBtn label: "4") col: 0 row: 3 w: 1 h: 1
+    grid attach: (inputBtn label: "5") col: 1 row: 3 w: 1 h: 1
+    grid attach: (inputBtn label: "6") col: 2 row: 3 w: 1 h: 1
+    grid attach: (inputBtn label: "1") col: 0 row: 4 w: 1 h: 1
+    grid attach: (inputBtn label: "2") col: 1 row: 4 w: 1 h: 1
+    grid attach: (inputBtn label: "3") col: 2 row: 4 w: 1 h: 1
+    grid attach: (inputBtn label: "0") col: 0 row: 5 w: 1 h: 1
+    grid attach: (inputBtn label: ".") col: 1 row: 5 w: 1 h: 1
+
+    grid attach: btnResult col: 2 row: 5 w: 1 h: 1
+
+    grid attach: (funcBtn label: "*") col: 3 row: 3 w: 1 h: 1
+    grid attach: (funcBtn label: "/") col: 3 row: 3 w: 1 h: 1
+    grid attach: (funcBtn label: "+") col: 3 row: 4 w: 1 h: 1
+    grid attach: (funcBtn label: "-") col: 3 row: 5 w: 1 h: 1
+
+    
+
+    buttonClear = [
+      x = btnWith label: "AC"
+      x addCssClass: "destructive-action"
+      x
+    ] do
+
+    // h = org.gnome.adw.HeaderBar new
+    grid
+  ] do
+
+
+  btn = btnWith label: "Press me."
+  btn onClicked: [
+    btn label: "Pressed!"
+  ]
+
+  box = Box orientation: Orientation.VERTICAL spacing: 10
+  box append: btn
+  box hexpand: true
+  box append: (btnWith label: "hii")
+  box append: (btnWith label: "helloow")
+
+
+  window child: ui
+  window present
+]
+
+
+app run: args

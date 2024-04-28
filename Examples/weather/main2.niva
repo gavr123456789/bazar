@@ -1,0 +1,34 @@
+2
+// content = FileSystem read: "weather.txt" toPath
+
+// type Day
+//   name: String
+//   temp: Float
+
+// String lines = this split: "\n"
+
+
+// parse = [content::String ->
+//   content lines 
+//     filter: [it isNotEmpty] |> 
+//     map: [
+//       x = it split: ":"
+//       x count != 2 => Error throwWithMessage: "Wrong file format"
+//       Day 
+//         name: x first trim
+//         temp: x last trim toFloat 
+//     ]
+// ]
+// process = [days::List::Day -> 
+//   x = days sortedBy: [it temp] |> 
+//     drop: 1 |> 
+//     dropLast: 1
+//   sum = x 
+//     inject: 0.0  
+//     into: [acc, b -> acc + b temp]
+//   sum / x count toFloat
+// ]
+
+// days = parse content: content
+// result = process days: days
+// result echo

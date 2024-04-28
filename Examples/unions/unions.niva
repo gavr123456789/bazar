@@ -18,16 +18,14 @@ union Statement =
 | ReturnStatement t: Token
 
 Parser parse: e::Statement = | e
-// Statement
+| Expression => "qweqweqwe"
+| MessageSend => "qweqweqwe"
 | ReturnStatement => "ReturnStatement"
-// Expression
 | ControlFlow => "ControlFlow"
 | Identifier => "Identifier"
 // Messages
 | Unary => "Unary"
 // | Binary => "Binary"
-| Keyword => "Keyword"
-|=> "???"
-
-
+// | Keyword => "Keyword"
+// |=> "???"
 "yay!" echo

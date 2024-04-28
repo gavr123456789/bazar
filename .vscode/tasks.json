@@ -1,0 +1,17 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "nivarun",
+      "type": "shell",
+      "command": "niva",
+      "args": [
+        "run"
+      ],
+      "options": {
+        "cwd": "${fileDirname}/"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

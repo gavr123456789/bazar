@@ -1,0 +1,5 @@
+type Lexer
+  source: String
+  line: Int 
+  tokens: MutableList: Token
+
