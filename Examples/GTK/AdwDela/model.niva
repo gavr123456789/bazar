@@ -1,0 +1,52 @@
+
+
+
+type Task 
+  name: String
+  remove: [ -> ]
+  id: Int
+  widget: Widget
+
+type Model 
+  lastId: Int
+  widget: PreferencesGroup
+  tasks: MutableList::Task
+  widgetConstructor: [String -> ExpanderRow]
+
+constructor Model 
+  widgetConstructor: wc::[String -> ExpanderRow] = 
+    Model tasks: {} lastId: 0 widget: PreferencesGroup new widgetConstructor: wc
+
+Model add: name::String = [
+  // create task
+  taskWidget = widgetConstructor String: name
+  id = lastId
+
+  task = Task 
+    name: name 
+    id: id 
+    widget: taskWidget
+    remove: [
+      q = tasks find: [it id == id] |> unpackOrError
+      "removing $q" echo
+      tasks remove: q // remove from model 
+      widget remove: q widget
+    ]
+  // add task to model
+  tasks add: task
+  lastId <- lastId inc
+  // add task to widget
+  widget add: taskWidget 
+]
+
+// group = Model new
+// group add: "Todo 1"
+// group add: "Todo 2"
+
+// group echo
+
+// group tasks first remove do
+// group echo
+// group tasks first remove do
+
+// group echo

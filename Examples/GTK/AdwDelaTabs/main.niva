@@ -1,0 +1,90 @@
+Project use: "org.gnome.adw"
+
+app = Application name: "my.app"
+
+app onActivate: [
+
+  window = (org.gnome.adw.ApplicationWindow app: app);
+    title: "GTK from Niva";
+    x: 280 y: 340
+
+  incButton = [
+    mut n = 1
+    btn = (Button new); 
+      label: "Hello Adw";
+      hexpand: true;
+      vexpand: true;
+      onClicked: [
+        "clicked $n times!" echo
+        n <- n inc
+      ]
+    btn
+  ]
+
+
+  addNewProjectBtn = (Button new); iconName: "tab-new-symbolic"
+  overviewTabsBtn = (Button new); iconName: "overview-symbolic"
+
+  mainBox = [
+    mut pageCounter = 0
+    newPageName = [ 
+      pageCounter <- pageCounter inc
+      "Page $pageCounter" 
+    ]
+
+    header = (org.gnome.adw.HeaderBar new);
+      packStart: addNewProjectBtn;
+      packStart: overviewTabsBtn
+
+    constructMainWidget = [incButton do]
+    
+     
+    tabView = TabView new
+    newPage = tabView append: incButton do
+    newPage title: newPageName do
+
+    tabBar = (TabBar new);
+      view: tabView
+
+    box = (Box orientation: Orientation.VERTICAL spacing: 0);
+      append: header;
+      append: tabBar;
+      append: tabView
+
+
+    overview = (TabOverview new); 
+      enableNewTab: true;
+      view: tabView;
+      child: box
+    
+    // actions
+    addNewProjectBtn onClicked: [
+      page = tabView append: incButton do
+      page title: newPageName do
+    ]
+    overview onCreateTab: [
+      page = tabView append: incButton do
+      page title: newPageName do 
+      page
+    ]
+
+    overviewTabsBtn onClicked: [
+      overview open: true
+    ]
+
+    tabView onClosePage: [page ->
+      pageCounter <- pageCounter dec
+      "pageCounter = $pageCounter" echo
+      tabView closeFinish: page confirm: true
+      true
+    ]
+    overview
+  ]
+
+  
+  window content: mainBox do;
+    present
+]
+
+
+app run: args

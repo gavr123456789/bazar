@@ -3,12 +3,21 @@ Project loadPackages: {"io.github.jwharm.javagi:gtk:0.9.0" "io.github.jwharm.jav
 Bind package: "org.gnome.gtk" content: [
   type Application
 
+  type Bitset // TODO
+  type SelectionModel // TODO
+
+  extend SelectionModel [
+    on onActivate::[ -> ] -> Unit
+    on run::List::String -> Unit
+  ]
+
   enum Orientation = HORIZONTAL | VERTICAL // TODO не находит если поставитьь после
   /// WIDGETS
   union Widget = 
   | ApplicationWindow app: Application
   | Button
   | Entry 
+  // | HeaderBar
   | Label str: String
   | Box orientation: Orientation spacing: Int
   | Grid
@@ -49,6 +58,7 @@ Bind package: "org.gnome.gtk" content: [
 
   // Button
   constructor Button withLabel::String -> Button
+  constructor Button fromIconName::String -> Button
   Button onClicked::[ -> ] -> Unit
   
   // Box
@@ -62,25 +72,34 @@ Bind package: "org.gnome.gtk" content: [
   Grid attach::Widget nextTo::Widget position::PositionType w::Int h::Int -> Unit
 
 ] fields: [
-  Entry 
-    text: String 
-    textLength: Int 
-    placeholderText: String 
-    editable: Boolean
-    alignment: Float
-  
-  Button 
-    label: String
-
-  ApplicationWindow
-    child: Widget
-    title: String
-
   Widget
     halign: Align
     valign: Align
     vexpand: Boolean
     hexpand: Boolean
+
+  SelectionModel 
+    selection: Bitset
+
+  Label 
+    text: String 
+
+  Entry 
+    text: String 
+    textLength: Int 
+    placeholderText: String 
+    editable: Boolean
+    wrap: Boolean
+    alignment: Float
+    maxWidthChars: Int
+  
+  Button 
+    label: String
+    iconName: String
+
+  ApplicationWindow
+    child: Widget
+    title: String
 
   Grid 
     columnSpacing: Int
@@ -101,19 +120,28 @@ Bind package: "org.gnome.adw" content: [
   @emit: """org.gnome.adw.Application($1, org.gnome.gio.ApplicationFlags.DEFAULT_FLAGS)"""
   constructor Application name::String -> Application
 
+  // https://gnome.pages.gitlab.gnome.org/libadwaita/doc/1.5/boxed-lists.html
   union AdwRow = 
-  | ExpanderRow
   | ActionRow
+  | ExpanderRow
+  | EntryRow
+  | PasswordRow // TODO
+  | ComboRow // TODO
+  | SpinRow // TODO
+  | SwitchRow // TODO
 
   union org.gnome.gtk.Widget = 
-  | HeaderBar
   | ApplicationWindow app: Application
-  | ToolbarView
   | AdwRow
+  | HeaderBar
   | PreferencesPage
   | PreferencesGroup
-
-
+  | ToolbarView
+  // Tabs
+  | TabBar
+  | TabView
+  | TabPage
+  | TabOverview
 
   // ApplicationWindow
   extend ApplicationWindow [
@@ -123,35 +151,77 @@ Bind package: "org.gnome.adw" content: [
     on addController::EventController -> Unit
   ]
 
-  // AdwRow
-  extend AdwRow [
-    on addPrefix::Widget
-    on addSuffix::Widget
+  extend HeaderBar [
+    on packEnd::Widget -> Unit
+    on packStart::Widget -> Unit
   ]
 
+  extend AdwRow [
+    on addPrefix::Widget -> Unit
+    on addSuffix::Widget -> Unit
+    on remove::Widget -> Unit
+  ]
+  extend EntryRow [
+    on onApply::[ -> ] -> Unit
+  ]
+  
+
   extend ExpanderRow [
-    on addRow::Widget
+    on addRow::Widget -> Unit
   ]
 
   extend ActionRow [
-    on activate
-    on remove::Widget
+    on activate -> Unit
+    on remove::Widget -> Unit
   ]
 
   extend PreferencesPage [
-    on add::PreferencesGroup
+    on add::PreferencesGroup -> Unit
   ]
 
   // PreferencesGroup
   extend PreferencesGroup [
-    on add::Widget
-    on remove::Widget
+    on add::Widget -> Unit
+    on remove::Widget -> Unit
   ]
 
   // ToolbarView
-  extend PreferencesGroup [
-    on addTopBar::Widget
+  extend ToolbarView [
+    on addTopBar::Widget -> Unit
   ]
+
+  // TabView
+  extend TabView [
+    @rename: "add"
+    on add::Widget onPage::TabPage -> TabPage
+    on append::Widget -> TabPage
+    on prepend::Widget -> TabPage
+    on appendPinned::Widget -> TabPage
+    on closeOtherPages::TabPage -> Unit
+    on closePage::TabPage -> Unit
+
+    @rename: "closePageFinish"
+    on closeFinish::TabPage confirm::Boolean -> Unit
+
+    on getNPages::TabView -> Int
+    on getNPinnedPages::TabView -> Int
+    on getNthPage::Int -> TabPage
+    on getPage::Widget -> TabPage
+
+    // signls
+    on onClosePage::[TabPage -> Boolean] -> Unit
+    on onCreateWindow::[ -> TabView] -> Unit
+
+    on onPageAttached::[ TabPage, Int -> ] -> Unit
+    on onPageDetached::[ TabPage, Int -> ] -> Unit
+    on onPageReordered::[ TabPage, Int -> ] -> Unit
+    on onIndicatorActivated::[ TabPage -> ] -> Unit
+  ]
+  
+  extend TabOverview [
+    on onCreateTab::[ -> TabPage] -> Unit
+  ]
+  
 
 ] fields: [
   ToolbarView
@@ -164,7 +234,20 @@ Bind package: "org.gnome.adw" content: [
     content: Widget
     title: String
 
-  AdwRow
+  AdwRow // PreferencesRow
+    child: Widget
+    selectable: Boolean
+    title: String
+  EntryRow
+    showApplyButton: Boolean
+    textLength: Int
+    text: String
+    widthChars: Int
+    maxWidthChars: Int
+    activatesDefault: Boolean // Whether activating the embedded entry can activate the default widget
+    // inputHints: InputHints // TODO
+    // inputPurpose: InputPurpose // TODO
+  ActionRow
     subtitle: String
     titleLines: Int
 
@@ -178,5 +261,39 @@ Bind package: "org.gnome.adw" content: [
   PreferencesGroup 
     headerSuffix: Widget
     title: String
+
+  TabOverview
+    child: Widget
+    enableNewTab: Boolean
+    enableSearch: Boolean
+    extraDragPreload: Boolean
+    searchActive: Boolean
+    view: TabView
+    open: Boolean
+
+
+  // Tabs
+  TabView
+    altohide: Boolean
+    pages: SelectionModel
+    nPages: Int
+    nPinnedPages: Int
+    tabsRevealed: Boolean // getter
+    expandTabs: Boolean
+    
+  TabPage 
+    parent: Widget
+    selected: Boolean
+    loading: Boolean
+    keyword: String // for search
+    liveThumbnail: Boolean // in odverview
+    title: String
+
+  TabBar
+    autohide: Boolean
+    view: TabView
+
+  // ActionRow
+    // child: Widget
 
 ]
