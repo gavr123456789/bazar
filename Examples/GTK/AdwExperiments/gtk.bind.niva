@@ -58,6 +58,7 @@ Bind package: "org.gnome.gtk" content: [
 
   // Button
   constructor Button withLabel::String -> Button
+  constructor Button fromIconName::String -> Button
   Button onClicked::[ -> ] -> Unit
   
   // Box
@@ -71,15 +72,26 @@ Bind package: "org.gnome.gtk" content: [
   Grid attach::Widget nextTo::Widget position::PositionType w::Int h::Int -> Unit
 
 ] fields: [
+  Widget
+    halign: Align
+    valign: Align
+    vexpand: Boolean
+    hexpand: Boolean
+
   SelectionModel 
     selection: Bitset
+
+  Label 
+    text: String 
 
   Entry 
     text: String 
     textLength: Int 
     placeholderText: String 
     editable: Boolean
+    wrap: Boolean
     alignment: Float
+    maxWidthChars: Int
   
   Button 
     label: String
@@ -88,12 +100,6 @@ Bind package: "org.gnome.gtk" content: [
   ApplicationWindow
     child: Widget
     title: String
-
-  Widget
-    halign: Align
-    valign: Align
-    vexpand: Boolean
-    hexpand: Boolean
 
   Grid 
     columnSpacing: Int
@@ -114,9 +120,15 @@ Bind package: "org.gnome.adw" content: [
   @emit: """org.gnome.adw.Application($1, org.gnome.gio.ApplicationFlags.DEFAULT_FLAGS)"""
   constructor Application name::String -> Application
 
+  // https://gnome.pages.gitlab.gnome.org/libadwaita/doc/1.5/boxed-lists.html
   union AdwRow = 
-  | ExpanderRow
   | ActionRow
+  | ExpanderRow
+  | EntryRow
+  | PasswordRow // TODO
+  | ComboRow // TODO
+  | SpinRow // TODO
+  | SwitchRow // TODO
 
   union org.gnome.gtk.Widget = 
   | ApplicationWindow app: Application
@@ -139,17 +151,20 @@ Bind package: "org.gnome.adw" content: [
     on addController::EventController -> Unit
   ]
 
-  // AdwRow
   extend HeaderBar [
     on packEnd::Widget -> Unit
     on packStart::Widget -> Unit
   ]
 
-  // AdwRow
   extend AdwRow [
     on addPrefix::Widget -> Unit
     on addSuffix::Widget -> Unit
+    on remove::Widget -> Unit
   ]
+  extend EntryRow [
+    on onApply::[ -> ] -> Unit
+  ]
+  
 
   extend ExpanderRow [
     on addRow::Widget -> Unit
@@ -188,8 +203,6 @@ Bind package: "org.gnome.adw" content: [
     @rename: "closePageFinish"
     on closeFinish::TabPage confirm::Boolean -> Unit
 
-    
-
     on getNPages::TabView -> Int
     on getNPinnedPages::TabView -> Int
     on getNthPage::Int -> TabPage
@@ -203,9 +216,6 @@ Bind package: "org.gnome.adw" content: [
     on onPageDetached::[ TabPage, Int -> ] -> Unit
     on onPageReordered::[ TabPage, Int -> ] -> Unit
     on onIndicatorActivated::[ TabPage -> ] -> Unit
-
-
-
   ]
   
   extend TabOverview [
@@ -224,7 +234,20 @@ Bind package: "org.gnome.adw" content: [
     content: Widget
     title: String
 
-  AdwRow
+  AdwRow // PreferencesRow
+    child: Widget
+    selectable: Boolean
+    title: String
+  EntryRow
+    showApplyButton: Boolean
+    textLength: Int
+    text: String
+    widthChars: Int
+    maxWidthChars: Int
+    activatesDefault: Boolean // Whether activating the embedded entry can activate the default widget
+    // inputHints: InputHints // TODO
+    // inputPurpose: InputPurpose // TODO
+  ActionRow
     subtitle: String
     titleLines: Int
 
@@ -269,5 +292,8 @@ Bind package: "org.gnome.adw" content: [
   TabBar
     autohide: Boolean
     view: TabView
+
+  // ActionRow
+    // child: Widget
 
 ]

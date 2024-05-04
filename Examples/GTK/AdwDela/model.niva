@@ -32,6 +32,8 @@ Model add: name::String = [
       tasks remove: q // remove from model 
       widget remove: q widget
     ]
+
+    
   // add task to model
   tasks add: task
   lastId <- lastId inc

@@ -1,0 +1,55 @@
+Project use: "org.gnome.adw"
+
+app = Application name: "my.app"
+
+app onActivate: [
+
+  // window = [
+  //   x = org.gnome.adw.ApplicationWindow app: app
+  //   x title: "GTK from Niva"
+  //   x x: 250 y: 300
+  //   x
+  // ] do
+
+  window = (org.gnome.adw.ApplicationWindow app: app);
+    title: "GTK from Niva";
+    x: 250 y: 300
+
+
+  ui = [
+    mut n = 1
+    header = org.gnome.adw.HeaderBar new
+
+    pp = PreferencesPage new
+    pg = PreferencesGroup new
+    pp add: pg
+
+    entry = EntryRow new 
+    entry title: "qwfqwf"
+    entry2 = EntryRow new 
+    entry2 title: "qwfqwf"
+
+    pg add: entry
+    pg add: entry2
+
+    btn = (Button new); 
+      label: "Hello Adw";
+      onClicked: [
+        "clicked $n times!" echo
+        n <- n inc
+      ]
+
+    toolbar = (ToolbarView new); 
+      addTopBar: header;
+      content: pp
+
+    toolbar
+  ] do
+
+
+  window content: ui;
+    present
+]
+
+
+app run: args

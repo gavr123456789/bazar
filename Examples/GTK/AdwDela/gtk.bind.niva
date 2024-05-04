@@ -76,7 +76,10 @@ Bind package: "org.gnome.gtk" content: [
     halign: Align
     valign: Align
     vexpand: Boolean
-    hexpand: Boolean
+    hexpand: Boolean 
+    // heightRequest: Int // https://github.com/jwharm/java-gi/issues/97
+    tooltipText: String
+    // cssNames: Array::String // arrays needed, add when get static builders
 
   SelectionModel 
     selection: Bitset

@@ -47,14 +47,19 @@ app onActivate: [
 
       entryRow = (EntryRow new);
         showApplyButton: true;
-        addPrefix: addGroupBtn;
-        addSuffix: removeGroupBtn
-        // text: "Task 2"
+        // addPrefix: addGroupBtn;
+        addSuffix: removeGroupBtn;
+        title: "Add new task";
+        // heightRequest: 60;
+        addCssClass: "transparent";
+        addCssClass: "rounded-corners"
+        
 
 
       entryRow; onApply: [ onApply String: entryRow text ]
     ]
 
+    // сделать чтобы возвращала кастом объект который содержит все виджеты
     createTaskRow = [ text::String ->
       // label = Label str: text
 
@@ -63,12 +68,15 @@ app onActivate: [
         text: text;
         title: "Change task name"
 
-      // changeNameRow onApply: [ label text: changeNameRow text ]
 
-      (ExpanderRow new); 
-        addRow: changeNameRow
+      expRow = (ExpanderRow new); 
+        addRow: changeNameRow;
+        title: text
         // child: label
-
+      
+      changeNameRow onApply: [ expRow title: changeNameRow text ]
+      
+      expRow
     ]
     
 
@@ -79,9 +87,9 @@ app onActivate: [
       model = Model widgetConstructor: createTaskRow
       pg = model widget
 
-      ar1 = createTaskConstructorRow onApply: [x::String -> 
-        "adding task: $x" echo
-        model add: x
+      ar1 = createTaskConstructorRow onApply: [taskName::String -> 
+        "adding task: $taskName" echo
+        model add: taskName
       ]
       // ar1 subtitle: "mneieineinm"
 
