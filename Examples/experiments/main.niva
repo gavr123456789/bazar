@@ -1,0 +1,23 @@
+Person birthday = age <- age inc 
+
+Person sas::Int sus::Int = sas + sus + age
+
+
+
+p = Person age: 25 name: "ast"
+p birthday
+p age echo
+
+p sas: 123 sus: 123
+p sas: 345 sus: 567
+
+
+
+type Person age: Int name: String
+
+
+p = Person age: 32 name: "Alice"
+
+
+
+

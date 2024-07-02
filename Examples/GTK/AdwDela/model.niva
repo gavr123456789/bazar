@@ -2,16 +2,17 @@
 
 
 type Task 
+  widget: Widget
   name: String
   remove: [ -> ]
   id: Int
-  widget: Widget
 
 type Model 
   lastId: Int
   widget: PreferencesGroup
   tasks: MutableList::Task
   widgetConstructor: [String -> ExpanderRow]
+  
 
 constructor Model 
   widgetConstructor: wc::[String -> ExpanderRow] = 

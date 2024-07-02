@@ -1,0 +1,21 @@
+type WidgetFactory
+
+constructor WidgetFactory vBoxExpanded = 
+  (Box orientation: Orientation.VERTICAL spacing: 0);
+        hexpand: true;
+        vexpand: true
+constructor WidgetFactory hBoxExpanded = 
+  (Box orientation: Orientation.HORIZONTAL spacing: 0);
+        hexpand: true;
+        vexpand: true
+
+constructor WidgetFactory hBoxWithSpacing: x::Int = 
+  (Box orientation: Orientation.HORIZONTAL spacing: x);
+        hexpand: true;
+        vexpand: true
+constructor WidgetFactory vBoxWithSpacing: x::Int = 
+  (Box orientation: Orientation.VERTICAL spacing: x);
+        hexpand: true;
+        vexpand: true
+
+

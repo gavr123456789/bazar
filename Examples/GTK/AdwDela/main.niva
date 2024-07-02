@@ -3,28 +3,19 @@
 
 Project use: "org.gnome.adw"
 
-
-
-
-
-// Task changeName: newName::String = [ name <- newName ]
-
-
-
-app = Application name: "my.app"
+app = Application name: "my.app" 
 
 app onActivate: [
 
-
   window = (org.gnome.adw.ApplicationWindow app: app);
     title: "Dela";
-    x: 280 y: 340
+    x: 280 y: 340 
   
   incButton = [
-    mut n = 1
+    mut n = 1 
     btn = (Button new); 
       label: "Hello Adw";
-      hexpand: true;
+      hexpand: true; 
       vexpand: true;
       onClicked: [
         "clicked $n times!" echo
@@ -35,7 +26,7 @@ app onActivate: [
 
 
   addNewProjectBtn = Button fromIconName: "tab-new-symbolic"
-  overviewTabsBtn = Button fromIconName: "overview-symbolic"
+  overviewTabsBtn = Button fromIconName: "preferences-desktop-keyboard-shortcuts-symbolic" // org.gnome.Settings-multitasking-symbolic //"overview-symbolic"
   
 
   preferencePage = [
@@ -139,7 +130,12 @@ app onActivate: [
     box = (Box orientation: Orientation.VERTICAL spacing: 0);
       append: header;
       append: tabBar;
-      append: tabView
+      append: tabView 
+    
+    box 
+
+
+
 
 
     overview = (TabOverview new); 

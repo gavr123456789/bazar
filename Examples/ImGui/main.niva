@@ -1,0 +1,38 @@
+// btn = [
+//   mut c = 0
+//   text = ["pressed $c times!"]
+
+//   [
+//     ImGui button: text do => [
+//       text do echo
+//       c <- c inc 
+//     ]
+//   ]
+// ]
+
+// btn1 = btn do
+
+mut counter = 0
+
+Application 
+  configure: [ config::Configuration -> 
+    config 
+      title: "niva ImGui";
+      width: 700;
+      height: 700
+    Unit
+  ] 
+  preRun: [
+    ImGui getStyle scaleAllSizes: 2.0
+  ] 
+  launch: [
+    ImGui new setWindowFontScale: 2.0
+
+    ImGui text: "Hello from niva!"
+    ImGui button: "Pressed: $counter" => [
+      counter <- counter inc 
+      counter echo
+    ]
+
+  ]
+

@@ -31,8 +31,6 @@ Bind package: "org.gnome.gtk" content: [
   ]
 
 
-  
-
   enum Align = FILL | START | END | CENTER | BASELINE_FILL | BASELINE_CENTER
   enum PositionType = LEFT | RIGHT | TOP | BOTTOM
 
@@ -137,7 +135,7 @@ Bind package: "org.gnome.adw" content: [
 
   union org.gnome.gtk.Widget = 
   | ApplicationWindow app: Application
-  | ^AdwRow
+  | AdwRow
   | HeaderBar
   | PreferencesPage
   | PreferencesGroup

@@ -5,17 +5,18 @@ Bind package: "org.gnome.gtk" content: [
 
   type Bitset // TODO
   type SelectionModel // TODO
-
+ 
   extend SelectionModel [
     on onActivate::[ -> ] -> Unit
     on run::List::String -> Unit
-  ]
-
+  ] 
+ 
   enum Orientation = HORIZONTAL | VERTICAL // TODO не находит если поставитьь после
   /// WIDGETS
   union Widget = 
   | ApplicationWindow app: Application
   | Button
+  | ToggleButton
   | Entry 
   // | HeaderBar
   | Label str: String
@@ -29,7 +30,7 @@ Bind package: "org.gnome.gtk" content: [
     on onActivate::[ -> ] -> Unit
     on run::List::String -> Unit
   ]
-
+  
 
   enum Align = FILL | START | END | CENTER | BASELINE_FILL | BASELINE_CENTER
   enum PositionType = LEFT | RIGHT | TOP | BOTTOM
@@ -40,8 +41,6 @@ Bind package: "org.gnome.gtk" content: [
   | EventControllerKey
 
   EventControllerKey onKeyPressed::[Int, Int, ModifierType? -> Boolean] -> Unit
-
-
 
 
   // Widget
@@ -61,6 +60,10 @@ Bind package: "org.gnome.gtk" content: [
   constructor Button fromIconName::String -> Button
   Button onClicked::[ -> ] -> Unit
   
+  // ToggleButton
+  constructor ToggleButton withLabel::String -> ToggleButton
+  ToggleButton onToggled::[ -> ] -> Unit
+
   // Box
   Box append::Widget -> Unit
 
@@ -76,8 +79,15 @@ Bind package: "org.gnome.gtk" content: [
     halign: Align
     valign: Align
     vexpand: Boolean
-    hexpand: Boolean
-
+    hexpand: Boolean 
+    // heightRequest: Int // https://github.com/jwharm/java-gi/issues/97
+    tooltipText: String
+    // cssNames: Array::String // arrays needed, add when get static builders
+    marginStart: Int
+    marginEnd: Int
+    marginTop: Int
+    marginBottom: Int
+    
   SelectionModel 
     selection: Bitset
 
@@ -96,6 +106,9 @@ Bind package: "org.gnome.gtk" content: [
   Button 
     label: String
     iconName: String
+  ToggleButton 
+    label: String
+    iconName: String
 
   ApplicationWindow
     child: Widget
@@ -107,7 +120,6 @@ Bind package: "org.gnome.gtk" content: [
     rowSpacing: Int
     rowHomogeneous: Boolean
 ] 
-
 
 
 Bind package: "org.gnome.adw" content: [
@@ -132,7 +144,7 @@ Bind package: "org.gnome.adw" content: [
 
   union org.gnome.gtk.Widget = 
   | ApplicationWindow app: Application
-  | AdwRow
+  | ^AdwRow
   | HeaderBar
   | PreferencesPage
   | PreferencesGroup
@@ -142,6 +154,15 @@ Bind package: "org.gnome.adw" content: [
   | TabView
   | TabPage
   | TabOverview
+  // Navigation
+  | NavigationView
+  | NavigationPage child: Widget name: String
+  | Carousel
+  | CarouselIndicatorLines
+  | CarouselIndicatorDots
+
+  // params for carousel
+  type SpringParams mass: Double stiffness: Double damping: Double
 
   // ApplicationWindow
   extend ApplicationWindow [
@@ -218,12 +239,70 @@ Bind package: "org.gnome.adw" content: [
     on onIndicatorActivated::[ TabPage -> ] -> Unit
   ]
   
-  extend TabOverview [
+  extend TabOverview [ 
     on onCreateTab::[ -> TabPage] -> Unit
   ]
+
+  // NavigationView
+  extend NavigationView [
+    on add::NavigationPage -> Unit
+    on remove::NavigationPage -> Unit
+    on push::NavigationPage -> Unit
+    on pop -> NavigationPage
+    @rename: "pushByTag"
+    on pushByTag::NavigationPage -> Boolean
+    @rename: "popToTag"
+    on popToTag::NavigationPage -> Boolean
+    on getVisiblePage -> NavigationPage
+    on getPreviousPage -> NavigationPage
+    @rename: "replace"
+    on replacePages::MutableList::NavigationPage n_pages::Int -> Unit
+  ]
+
+  // NavigationPage
+  extend NavigationPage [
+    on onHidden::[ NavigationPage -> ] -> Unit
+    on onHiding::[ NavigationPage -> ] -> Unit
+    on onShowing::[ NavigationPage -> ] -> Unit
+    on onShown::[ NavigationPage -> ] -> Unit 
+  ]
+
+  extend Carousel [
+    on append::Widget -> Unit
+    on prepend::Widget -> Unit
+    on remove::Widget -> Unit
+
+    @rename: "scrollTo"
+    on scrollTo::Widget withAnimation::Boolean -> Unit
+    on getNthPage::Int -> Widget
+    on getNPages -> Int
+    on getPosition -> Double
+
+    on onPageChanged::[ Int -> ] -> Unit
+
+    
+  ]
+  
   
 
 ] fields: [
+
+  Carousel
+    interactive: Boolean
+    scrollParams: SpringParams
+    revealDuration: Int
+    spacing: Int
+
+    allowMouseDrag: Boolean
+    allowLongSwipes: Boolean
+    allowScrollWheel: Boolean
+
+  CarouselIndicatorLines
+    carousel: Carousel
+  
+  CarouselIndicatorDots
+    carousel: Carousel
+
   ToolbarView
     content: Widget
 
@@ -293,7 +372,14 @@ Bind package: "org.gnome.adw" content: [
     autohide: Boolean
     view: TabView
 
-  // ActionRow
-    // child: Widget
+  NavigationView
+    animateTransition: Boolean
+    visiblePage: NavigationPage
+
+  NavigationPage
+    child: Widget
+    canPop: Boolean
+    tag: String
+    title: String
 
 ]

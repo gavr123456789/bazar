@@ -1,0 +1,16 @@
+type Lexer
+  source: String
+  line: Int 
+  // tokens: MutableList::Token
+
+
+Char isWhiteSpace = | this
+| ' ', '\n', '\r' => true
+|=> false
+
+>? Char
+
+enum TokenKind = str
+// Creates a new token.
+type Token
+  kind: TokenKind

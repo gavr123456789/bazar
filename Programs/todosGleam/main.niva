@@ -1,0 +1,42 @@
+type TodoApp
+
+TodoApp args::List::String = [
+
+
+
+  oneArg = [arg::String -> 
+    arg echo
+    | arg 
+    | "list" => this list
+    | "clear" => this clear
+  ]
+
+  // "add", title
+  // 
+  twoArg = [arg1::String, arg2::String -> 
+    arg1 echo
+    arg2 echo
+  ]
+
+
+
+  | args count 
+  | 0 => this clear
+  | 1 => oneArg arg: (args at: 0)
+  | 2 => twoArg arg1: (args at: 0) arg2: (args at: 1)
+  |=> ["expected 1 or 2 args!" echo] // "done", ..ids
+  
+]
+
+TodoApp clear = [
+
+]
+
+TodoApp list = [
+
+]
+
+
+TodoApp new args: args toList
+
+

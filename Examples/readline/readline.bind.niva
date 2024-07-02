@@ -1,0 +1,7 @@
+Bind package: "kotlin.io" content: [
+    type Console
+    @emit: "kotlin.io.readLine()!!"
+    constructor Console readln -> String
+    // Console sas = 4
+    
+]

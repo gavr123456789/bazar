@@ -3,7 +3,7 @@ Project use: "org.gnome.adw"
 app = Application name: "my.app"
 
 app onActivate: [
-
+  
   // window = [
   //   x = org.gnome.adw.ApplicationWindow app: app
   //   x title: "GTK from Niva"
@@ -14,7 +14,7 @@ app onActivate: [
   window = (org.gnome.adw.ApplicationWindow app: app);
     title: "GTK from Niva";
     x: 250 y: 300
-
+ 
 
   ui = [
     mut n = 1

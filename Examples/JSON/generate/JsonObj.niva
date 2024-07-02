@@ -1,0 +1,5 @@
+JsonObj toJson -> String = | this 
+| JsonArray => this arrToJson
+| JsonNumber => num toString
+| JsonString => str packForJson 
+| JsonFields => this fieldToJson

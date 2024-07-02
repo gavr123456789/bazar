@@ -1,0 +1,85 @@
+Project use: "org.gnome.adw"
+
+
+
+app = Application name: "my.app"
+
+app onActivate: [ 
+
+  window = (org.gnome.adw.ApplicationWindow app: app);
+    title: "GTK from Niva";
+    x: 250 y: 300
+ 
+  reader = Reader new 
+     // READER
+    x = reader 
+      readFromFile: "/home/gavr/Documents/Projects/bazar/Examples/GTK/AdwLearnGreek/greekAlphabet.txt" 
+      wordsPerTest: 4 
+      invertArgs: false
+    
+    x echo
+    //
+  ui = [
+    header = org.gnome.adw.HeaderBar new
+
+    // hbox
+    hbox = WidgetFactory hBoxWithSpacing: 5
+    margin = 10
+    hbox marginTop: margin;  
+      marginBottom: margin;
+      marginStart: margin;
+      marginEnd: margin
+    
+    vboxQuestions = WidgetFactory vBoxWithSpacing: 5
+    vboxAnswers = WidgetFactory vBoxWithSpacing: 5
+
+    hbox 
+      append: vboxQuestions; 
+      append: vboxAnswers
+    
+    vboxQuestions 
+      append: (ToggleButton withLabel: "Cat");
+      append: (ToggleButton withLabel: "Dog");
+      append: (ToggleButton withLabel: "Animal");
+      append: (ToggleButton withLabel: "House")
+
+    vboxAnswers
+      append: (ToggleButton withLabel: "Кот");
+      append: (ToggleButton withLabel: "Собака");
+      append: (ToggleButton withLabel: "Животное");
+      append: (ToggleButton withLabel: "Дом")
+ 
+  
+
+
+    
+
+    createPage = [ name::String ->
+      Button withLabel: name
+    ]
+
+    carousel = Carousel new
+    carousel append: hbox
+    carousel append: (createPage name: "2")
+    carousel append: (createPage name: "3")
+
+    dots = (CarouselIndicatorDots new); carousel: carousel
+    
+
+    boxWithCarouselDots = (WidgetFactory vBoxWithSpacing: 0); append: carousel; append: dots
+
+
+    toolbar = (ToolbarView new); 
+      addTopBar: header;
+      content: boxWithCarouselDots
+
+    toolbar
+  ] do
+
+
+  window content: ui;
+    present
+]
+
+
+app run: args

@@ -1,0 +1,9 @@
+Project loadPackages: {"org.eclipse.swt:org.eclipse.swt.gtk.linux.x86_64:4.3"}
+
+Bind package: "kotlinx.serialization.json" imports: {"kotlinx.serialization.*"}  content: [
+  type Json 
+  @rename: "decodeFromString"
+  constructor Json::T decode::String -> T
+  @rename: "encodeToString"
+  constructor Json encode::T -> String
+]

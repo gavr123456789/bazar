@@ -1,0 +1,12 @@
+
+@Serializable
+type Person name: String age: Int
+
+person = Person name: "Alice" age: 35
+
+str = Json encode: person
+str echo
+
+personFromStr = Json::Person decode: str
+personFromStr echo
+

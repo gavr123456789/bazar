@@ -1,0 +1,53 @@
+type Reader 
+
+
+
+
+Reader readFromFile: file::String wordsPerTest::Int invertArgs::Boolean -> GameModel = [
+  readCardToLines = [
+    text = FileSystem read: file toPath 
+    text split: "\n" |> shuffled
+  ]
+  lines = readCardToLines do
+  linesChunked = lines chunked: wordsPerTest
+
+  fillGroups = [ chunk::List::String ->
+    pageModel = PageModel new
+
+    
+    chunk forEachIndexed: [ i, line ->
+      line trim != "" => [
+        num = i + 1 
+
+        r = line split: ":"
+        first = r at: 0 |> trim
+        second = r at: 1 |> trim
+
+        "$first $second" echo
+
+        result = invertArgs => 
+          PairModel
+            question: second
+            answer:   first |=> 
+          PairModel 
+            question: first
+            answer:   second 
+        
+
+        pageModel add: result
+      ]
+    ]
+
+    pageModel
+  ] 
+
+  gameModel = GameModel new
+
+  linesChunked forEach: [ 
+    pageModel = fillGroups chunk: it
+    gameModel add: pageModel
+    "---" echo
+  ]
+  
+  ^ gameModel
+] 
