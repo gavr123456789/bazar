@@ -1,19 +1,21 @@
-type WidgetFactory
+type GtkFactory
 
-constructor WidgetFactory vBoxExpanded = 
+constructor GtkFactory vBoxExpanded = 
   (Box orientation: Orientation.VERTICAL spacing: 0);
         hexpand: true;
         vexpand: true
-constructor WidgetFactory hBoxExpanded = 
+        
+constructor GtkFactory hBoxExpanded = 
   (Box orientation: Orientation.HORIZONTAL spacing: 0);
         hexpand: true;
         vexpand: true
 
-constructor WidgetFactory hBoxWithSpacing: x::Int = 
+constructor GtkFactory hBoxWithSpacing: x::Int = 
   (Box orientation: Orientation.HORIZONTAL spacing: x);
         hexpand: true;
         vexpand: true
-constructor WidgetFactory vBoxWithSpacing: x::Int = 
+
+constructor GtkFactory vBoxWithSpacing: x::Int = 
   (Box orientation: Orientation.VERTICAL spacing: x);
         hexpand: true;
         vexpand: true

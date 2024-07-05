@@ -1,0 +1,10 @@
+type PairViewModel 
+  pairModel: PairModel
+  qWidget: ToggleButton
+  aWidget: ToggleButton
+
+
+type PageViewModel  
+  pairViewModels: MutableList::PairViewModel
+  
+constructor PageViewModel new = PageViewModel pairViewModels: {}

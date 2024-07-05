@@ -4,10 +4,12 @@ type Reader
 
 
 Reader readFromFile: file::String wordsPerTest::Int invertArgs::Boolean -> GameModel = [
+
   readCardToLines = [
     text = FileSystem read: file toPath 
-    text split: "\n" |> shuffled
+    text split: "\n" |> filter: [it trim != ""] |> shuffled
   ]
+  
   lines = readCardToLines do
   linesChunked = lines chunked: wordsPerTest
 

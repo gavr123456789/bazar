@@ -7,7 +7,7 @@ constructor PairModel
   question::String
   answer::String = PairModel question: question answer: answer answered: false
 
-PairModel answer = answered <- true
+PairModel rightAnswer = answered <- true
 
 
 
