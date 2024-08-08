@@ -15,7 +15,6 @@ Reader readFromFile: file::String wordsPerTest::Int invertArgs::Boolean -> GameM
 
   fillGroups = [ chunk::List::String ->
     pageModel = PageModel new
-
     
     chunk forEachIndexed: [ i, line ->
       line trim != "" => [

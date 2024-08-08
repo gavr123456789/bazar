@@ -1,38 +1,41 @@
-Project use: "org.gnome.adw"
+// Project use: "org.gnome.adw"
 
-
-app = Application name: "my.app"
+app = org.gnome.adw.Application name: "my.app"
 
 app onActivate: [ 
   args isEmpty => Error throwWithMessage: "Pass path to file with questions"
   path = args at: 0
 
-  window = (org.gnome.adw.ApplicationWindow app: app);
+  window = (ApplicationWindow app: app);
     title: "GTK from Niva";
     x: 250 y: 300
- 
+  
   reader = Reader new 
 
 
   // READER
   gameModel = reader 
     readFromFile: path
-    wordsPerTest: 4 
+    wordsPerTest: 8
     invertArgs: false
-
   pages = gameModel pages
+
+
+  mainViewModel = MainViewModel fromModel: gameModel
 
   mut score = 0
 
   ui = [
     header = org.gnome.adw.HeaderBar new
     allToggles::MutableList::ToggleButton = {}
+    
 
     resetButton = Button fromIconName: "view-refresh"
     //shuffleButton = Button fromIconName: "media-playlist-shuffle"
     header packStart: resetButton
     //; packStart: shuffleButton
 
+    
 
     createPage = [ pageModel::PageModel ->
       hbox = GtkFactory hBoxWithSpacing: 5
@@ -55,7 +58,7 @@ app onActivate: [
         append: vboxQuestions; 
         append: vboxAnswers
       
-
+ 
       // create view models
       pageViewModel = PageViewModel new
 
@@ -101,8 +104,16 @@ app onActivate: [
       hbox
     ]
 
+    
+    //new way to build ui
+    pages2 = mainViewModel createUIPages
+    //
     carousel = Carousel new
 // add pages
+    // pages2 forEach: [
+    //   carousel append: it
+    // ]
+    
     pages forEach: [
       carousel append: (createPage pageModel: it)
     ]

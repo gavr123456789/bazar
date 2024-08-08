@@ -1,5 +1,11 @@
+// useless since pprint works only with data classes
 Project loadPackages: {"io.exoquery:pprint-kotlin:2.0.2"}
 Bind package: "io.exoquery" content: [
   @emit: "pprint($0)"
   Any pprint -> String
 ]
+
+// 1 pprint
+// "sas" pprint
+// type Person name: String age: Int
+// (Person name: "Alice" age: 24) |> pprint |> echo

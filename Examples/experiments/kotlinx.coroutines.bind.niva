@@ -1,0 +1,20 @@
+Project loadPackages: {"org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0"}
+
+Bind package: "kotlinx.coroutines" content: [
+  type CoroutineContext
+
+  builder CoroutineContext runBlocking -> Unit = []
+
+  /// Delays coroutine for at least the given time without blocking a thread
+  /// and resumes it after a specified time.
+  /// using Millis
+  @emit: "delay($1)"
+  CoroutineContext delay::Long -> Unit 
+
+  @emit: "delay($1)"
+  constructor CoroutineContext delay::Long -> Unit 
+
+  CoroutineContext launch::CoroutineContext[ -> ] -> Unit 
+
+
+]

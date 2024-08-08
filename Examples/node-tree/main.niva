@@ -30,22 +30,26 @@ union Node =
 | Add left: Node right: Node
 | Value v: Int
 
+
+
 Node walk -> Int = | this
 | Add => left walk + right walk
 | Sub => left walk - right walk
 | Value => v
 
+Int Value = Value v: this
+
 expr = Add 
   right: (
     Add 
-      right: (Value v: 10) 
+      right: 10 Value
       left: (
         Sub 
-          left: (Value v: 40) 
-          right: (Value v: 20)
+          left: 40 Value
+          right: 20 Value
       )
   )
-  left: (Value v: 40)
+  left: 40 Value
 
 expr walk echo
 

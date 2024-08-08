@@ -4,7 +4,155 @@ type PairViewModel
   aWidget: ToggleButton
 
 
+
 type PageViewModel  
   pairViewModels: MutableList::PairViewModel
   
 constructor PageViewModel new = PageViewModel pairViewModels: {}
+PageViewModel add: x::PairViewModel = pairViewModels add: x
+
+PageViewModel createUI = [
+  hbox = GtkFactory hBoxWithSpacing: 5
+  margin = 10
+  // pairViewModels = it pairViewModels
+  
+        
+  
+  hbox marginTop: margin;  
+    marginBottom: margin;
+    marginStart: margin;
+    marginEnd: margin
+  vboxQuestions = GtkFactory vBoxWithSpacing: 5
+  vboxAnswers = GtkFactory vBoxWithSpacing: 5
+
+  
+
+  // questionWidgetsList::MutableList::ToggleButton = pairViewModels map: [ ] 
+  // answerWidgetsList::MutableList::ToggleButton = {}
+
+  hbox 
+    append: vboxQuestions; 
+    append: vboxAnswers
+
+  ^hbox
+]
+
+
+type MainViewModel
+  pageViewModels: MutableList::PageViewModel
+  allToggles: MutableList::ToggleButton
+  score: Int
+  shuffledAnswers: MutableList::ToggleButton
+  shuffledQestions: MutableList::ToggleButton
+
+
+constructor MainViewModel empty -> MainViewModel = [
+  ^ MainViewModel
+    pageViewModels: {}
+    allToggles: {}
+    score: 0
+    shuffledAnswers: {}
+    shuffledQestions: {}
+]
+
+
+constructor MainViewModel fromModel: gm::GameModel -> MainViewModel = [
+  empty = MainViewModel empty
+  pages::MutableList::PageModel = gm pages
+
+  mut score = empty score
+  allToggles = empty allToggles
+
+  
+  createPage = [ pageModel::PageModel ->
+    // hbox = GtkFactory hBoxWithSpacing: 5
+    // margin = 10
+          
+    
+    // hbox marginTop: margin;  
+    //   marginBottom: margin;
+    //   marginStart: margin;
+    //   marginEnd: margin
+    
+    // vboxQuestions = GtkFactory vBoxWithSpacing: 5
+    // vboxAnswers = GtkFactory vBoxWithSpacing: 5
+
+    // questionWidgetsList::MutableList::ToggleButton = {}
+    // answerWidgetsList::MutableList::ToggleButton = {}
+
+    // hbox 
+    //   append: vboxQuestions; 
+    //   append: vboxAnswers
+    
+
+    // create view models
+    pageViewModel = PageViewModel new
+    pairModels = pageModel pairs
+
+    pairModels forEach: [
+      answerToggle = ToggleButton withLabel: it answer
+      questionToggle = ToggleButton withLabel: it question
+      allToggles add: answerToggle; add: questionToggle
+      
+
+      // pageViewModel 
+
+      // questionWidgetsList add: questionToggle
+      // answerWidgetsList add: answerToggle
+
+      // add widgets to view model
+      x = PairViewModel pairModel: it qWidget: answerToggle aWidget: questionToggle
+      pageViewModel add: x
+
+      answerToggle onToggled: [
+        questionToggle active => [
+          score <- score inc
+          "all right!" + score toString |> echo
+          questionToggle sensitive: false; addCssClass: "suggested-action"
+          answerToggle sensitive: false; addCssClass: "suggested-action"
+
+        ]
+      ]
+
+      questionToggle onToggled: [
+        answerToggle active => [
+          score <- score inc
+          "all right!" + score toString |> echo
+          questionToggle sensitive: false; addCssClass: "suggested-action"
+          answerToggle sensitive: false; addCssClass: "suggested-action"
+        ]
+      ]
+
+    ]
+    
+    // questionWidgetsList shuffled forEach: [
+    //   vboxQuestions append: it
+    // ]
+    // answerWidgetsList shuffled forEach: [
+    //   vboxAnswers append: it
+    // ]
+
+    // hbox
+
+    pageViewModel
+  ]
+
+
+  pages forEach: [
+    x = createPage pageModel: it
+    empty pageViewModels add: x
+  ]
+
+  ^ empty
+
+]
+
+
+MainViewModel createUIPages -> MutableList::Box = [
+  pagesForCarousel = pageViewModels map: [
+    it createUI
+  ]
+  
+  ^ pagesForCarousel toMutableList
+]
+

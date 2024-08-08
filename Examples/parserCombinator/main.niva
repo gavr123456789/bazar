@@ -1,0 +1,26 @@
+// union CombinatorResult = 
+// | Success value: String rest: String captures: MutableMap(String, String)
+// | Failure
+
+// type Parser
+// type ParserCombinator = [String -> CombinatorResult]
+
+// Char parse -> ParserCombinator = ^ [str::String -> 
+//   str isEmpty && (str first == this) 
+//     ifTrue: [Success value: "$this" rest: (str substring: 1) captures: #{}]
+//     ifFalse: [Failure new]
+// ]
+
+
+type ParserCombinators = MutableList::Int
+
+// type Sas
+// Sas to::MutableMap(Int, String) = 4
+
+// sas = Sas new
+// sas to: #{}
+
+
+
+
+
