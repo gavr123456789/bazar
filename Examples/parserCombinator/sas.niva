@@ -1,0 +1,6 @@
+Int sus = [
+  x = 23
+//> 23
+  > x
+  "sas" echo
+]

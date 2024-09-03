@@ -1,26 +1,94 @@
-// union CombinatorResult = 
-// | Success value: String rest: String captures: MutableMap(String, String)
-// | Failure
+union CombinatorResult = 
+| Success value: String rest: String captures: MutableMap(String, String)
+| Failure
+type ParserCombinator = [String -> CombinatorResult]
 
-// type Parser
-// type ParserCombinator = [String -> CombinatorResult]
+type Parser 
 
-// Char parse -> ParserCombinator = ^ [str::String -> 
-//   str isEmpty && (str first == this) 
-//     ifTrue: [Success value: "$this" rest: (str substring: 1) captures: #{}]
-//     ifFalse: [Failure new]
-// ]
+Parser char::Char -> ParserCombinator = ^ [ text::String ->
+  text isNotEmpty && (text first == char) 
+    ifTrue: [Success value: "$char" rest: (text substring: 1) captures: #{}]
+    ifFalse: [Failure new]
+]
+
+Parser either: combinators::List::ParserCombinator -> ParserCombinator =  ^ [str::String ->
+  // lazily found first success in list
+  combinators asSequence map: [it String: str] |>
+    firstOrNull: [
+      | it
+      | Success => true
+      | Failure => false
+    ] |> unpackOrValue: Failure new
+]
+
+Parser sequence: combinators::MutableList::ParserCombinator -> ParserCombinator =  ^ [str::String ->
+  mut current = str
+  mut value = ""
+  mut fail = false
+  captures ::MutableMap(String, String) = #{}
+  x = combinators asSequence map: [it String: current] |>
+    firstOrNull: [
+//> Success value: 42 rest: .21 captures: {}, Success value: . rest: 21 captures: {}, Success value: 21 rest:  captures: {}, Success value: 42 rest: .21 captures: {}, Success value: . rest: 21 captures: {}, Success value: 21 rest:  captures: {}
+      >10 it
+      | it
+      | Success => [
+        current <- it rest
+        value <- value + it value
+        captures putAll: it captures
+        false
+      ]
+      | Failure => [
+        fail <- true // distinguish is x null because list is complete, or is it null because of early fail
+        true
+      ]
+    ]
+  | fail 
+  | true => Failure new
+  |=> Success value: value rest: current captures: captures
+]
+
+Parser n::Int orMore: combinator::ParserCombinator = ^ [str::String ->
+  mut matches = 0
+  mut rest = str
+  mut value = ""
+  mut isFailure = false
+  captures ::MutableMap(String, String) = #{}
+
+  [isFailure] whileFalse: [
+    result = combinator String: rest 
+    | result
+    | Success => [
+      matches <- matches inc
+      rest <- result rest
+      value <- value + result value
+      captures putAll: result captures
+    ]
+    | Failure => isFailure <- true
+  ]
+
+  matches >= n 
+    =>  Success value: value rest: rest captures: captures
+    |=> Failure new
+]
 
 
-type ParserCombinators = MutableList::Int
+parser = Parser new
 
-// type Sas
-// Sas to::MutableMap(Int, String) = 4
+x = parser char: '1'
+x String: "1qwf"
 
-// sas = Sas new
-// sas to: #{}
+digitParsers = ('0'..'9') toList map: [parser char: it]
+digit = parser either: digitParsers
+integer = parser n: 1 orMore: digit
 
+//> Success value: 123456 rest: aaa captures: {}
+>integer str: "123456aaa" 
+//> Success value: 123456 rest:  captures: {}
+>integer str: "123456" 
 
+float = parser sequence: {integer (parser char: '.') integer}
 
+//> Success value: 42.21 rest:  captures: {}
+>float String: "42.21"
 
-
+// >{1 2 3} inject: 0 into: [a, b -> a + b]

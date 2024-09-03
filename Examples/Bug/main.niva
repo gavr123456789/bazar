@@ -1,0 +1,6 @@
+type Sas 
+Test sas -> Unit! = [
+  Assert that: 2 equals: 2
+] 
+
+1 echo

@@ -16,9 +16,13 @@ Bind package: "org.gnome.gtk" content: [
   ] 
  
   enum Orientation = HORIZONTAL | VERTICAL // TODO не находит если поставитьь после
+  
+  union Window = 
+  | ApplicationWindow app: Application
+  
   /// WIDGETS
   union Widget = 
-  | ApplicationWindow app: Application
+  | ^Window
   | Button
   | ToggleButton
   | Entry 
@@ -26,6 +30,8 @@ Bind package: "org.gnome.gtk" content: [
   | Label str: String
   | Box orientation: Orientation spacing: Int
   | Grid
+  | Stack
+  | Viewport 
 
   @emit: """org.gnome.gtk.Application($1, org.gnome.gio.ApplicationFlags.DEFAULT_FLAGS)"""
   constructor Application name::String -> Application
@@ -38,6 +44,7 @@ Bind package: "org.gnome.gtk" content: [
 
   enum Align = FILL | START | END | CENTER | BASELINE_FILL | BASELINE_CENTER
   enum PositionType = LEFT | RIGHT | TOP | BOTTOM
+  enum StackTransitionType = NONE | CROSSFADE | SLIDE_RIGHT | SLIDE_LEFT | SLIDE_UP | SLIDE_DOWN | SLIDE_LEFT_RIGHT | SLIDE_UP_DOWN | OVER_UP | OVER_DOWN | OVER_LEFT | OVER_RIGHT | UNDER_UP | UNDER_DOWN  | ROTATE_LEFT | ROTATE_RIGHT | ROTATE_LEFT_RIGHT
 
   // EVENTS
   enum ModifierType = ALT_MASK | SHIFT_MASK | CONTROL_MASK | BUTTON1_MASK
@@ -78,6 +85,30 @@ Bind package: "org.gnome.gtk" content: [
 
   @rename: "attachNextTo"
   Grid attach::Widget nextTo::Widget position::PositionType w::Int h::Int -> Unit
+
+  // File dialog
+  type FileDialog
+  type Cancellable
+  type AsyncResult
+  type MemoryRegion
+  Cancellable onCancelled::[ -> ] -> Unit
+
+  @rename: "open"
+  FileDialog 
+    openInside::Window 
+    ifCancelled::Cancellable? 
+    whenReadyDo::[Any, AsyncResult, MemoryRegion] -> Unit
+  FileDialog openFinish::AsyncResult -> File
+
+  // Stack
+  Stack addChild::Widget -> Unit
+  Stack add::Widget named::String -> Unit
+  @rename: "addTitled"
+  Stack add::Widget named::String titled::String -> Unit
+  Stack getChildByName::String -> Widget
+  Stack remove::Widget -> Unit
+
+
 
 ] fields: [
   Widget
@@ -127,7 +158,27 @@ Bind package: "org.gnome.gtk" content: [
     columnHomogeneous: Boolean
     rowSpacing: Int
     rowHomogeneous: Boolean
+  Stack 
+    hhomogeneous: Boolean
+    interpolateSize: Boolean
+    pages: SelectionModel
+    transitionDuration: Int
+    transitionRunning: Boolean
+    transitionType: StackTransitionType
+    vhomogeneous: Boolean
+    visibleChild: Widget
+    visibleChildName: String
+  
+  Viewport
+    child: Widget
 ] 
+
+Bind package: "org.gnome.gio" content: [
+  type File
+  File getPath -> String
+  constructor File newForPath::String -> File
+  constructor File newForUri::String -> File
+]
 
 
 Bind package: "org.gnome.adw" content: [
@@ -150,8 +201,10 @@ Bind package: "org.gnome.adw" content: [
   | SpinRow // TODO
   | SwitchRow // TODO
 
-  union org.gnome.gtk.Widget = 
+  union org.gnome.gtk.Window = 
   | ApplicationWindow app: Application
+
+  union org.gnome.gtk.Widget = 
   | ^AdwRow
   | HeaderBar
   | PreferencesPage
@@ -286,11 +339,8 @@ Bind package: "org.gnome.adw" content: [
     on getNPages -> Int
     on getPosition -> Double
 
-    on onPageChanged::[ Int -> ] -> Unit
-
-    
+    on onPageChanged::[ Int -> ] -> Unit    
   ]
-  
   
 
 ] fields: [

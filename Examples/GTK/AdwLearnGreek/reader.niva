@@ -18,7 +18,7 @@ Reader readFromFile: file::String wordsPerTest::Int invertArgs::Boolean -> GameM
     
     chunk forEachIndexed: [ i, line ->
       line trim != "" => [
-        num = i + 1 
+        num = i + 1
 
         r = line split: ":"
         first = r at: 0 |> trim
@@ -52,3 +52,21 @@ Reader readFromFile: file::String wordsPerTest::Int invertArgs::Boolean -> GameM
   
   ^ gameModel
 ] 
+
+
+
+type FileFromDialog
+
+/// open file choose dialog, read file, run lambda on its content
+constructor FileFromDialog fromWindow: window::org.gnome.adw.ApplicationWindow doWithContent::[String -> ] -> Unit = [
+  fileDialog = FileDialog new
+  fileDialog 
+    openInside: window 
+    ifCancelled: null 
+    whenReadyDo: [ x, asyncResult, z -> 
+      filePath = fileDialog openFinish: asyncResult |> getPath
+      x = FileSystem read: filePath toPath
+      x echo
+      doWithContent String: x
+    ]
+]

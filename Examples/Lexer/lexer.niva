@@ -1,0 +1,186 @@
+type Cond = [ -> Boolean] 
+Cond whileLoop: block::[ -> Boolean] -> Unit = 
+  this do => [
+    block do => [this whileLoop: block]
+  ] |=> Unit
+
+mut x = 3
+[x > 0] whileLoop: [
+  x <- x dec
+  x echo
+  false
+]
+
+
+
+type Lexer 
+  source: String
+  line: Int
+  start: Int
+  current: Int
+  spaces: Int
+  linePos: Int
+  lineCurrent: Int
+  tokens: MutableList::Token
+
+constructor Lexer source::String = Lexer 
+  source: source
+  line: 1
+  start: 0
+  current: 0
+  spaces: 0
+  linePos: 0
+  lineCurrent: 0
+  tokens: {}
+
+Lexer done = current >= source count
+
+Lexer peek = this peekDistance: 0 length: 1
+Lexer peekDistance: distance::Int length::Int -> String = [
+  b = StringBuilder new
+  mut i = distance
+
+  // IGNORED || current + i > source.lastIndex || current + i < 0
+  [b count < length] whileLoop: [
+    mut condition = true
+    this done 
+      => condition <- false
+      |=> b append: (source at: current + i)
+    
+    i <- i inc
+    condition
+  ]
+
+  ^ b toString
+]
+
+Lexer step = this step: 1
+Lexer step: n::Int -> String = [
+  b = StringBuilder new
+
+  // IGNORED current > source.lastIndex
+  [b count < n] whileLoop: [
+    mut condition = true
+    this done 
+      => condition <- false
+      |=> b append: (source at: current)
+    
+    current <- current inc
+    condition
+  ]
+  
+  linePos <- linePos + n
+  ^ b toString
+]
+
+
+Lexer check: arg::String = this check: arg distance: 0
+Lexer check: arg::String distance::Int -> Boolean = [
+  this done => ^false
+  ^(this peekDistance: distance length: arg count) == arg
+]
+
+Lexer match::String -> Boolean = [
+  this check: match |> not => ^ false
+  this step: match count
+  ^ true
+]
+
+
+Lexer createTokenWithType: tokType::TokenType -> Token = [
+  lexeme = source slice: start..<current
+
+//> ,, ,, ,, ], ], [, [
+  >10 lexeme
+  
+  end = current - 1
+
+  tok = Token 
+    kind: tokType 
+    lexeme: lexeme
+    line: line
+    pos: (Position start: start end: end) 
+    lineEnd: -1
+
+  ^tok
+]
+
+
+Lexer incLine = this incLineWithNewToken: false
+Lexer incLineWithNewToken: needNewToken::Boolean = [
+  line <- line inc
+  linePos <- 0
+  // needNewToken => [
+  //   start <- current
+  // ]
+]
+
+Lexer parseNumber = [ 
+  
+]
+Lexer parseIdentifier = [ ]
+
+Lexer next = [
+  
+  this done => ^
+
+  letter = this step
+  // check for all complex variants like words and numbers first
+  letter first isDigit => this parseNumber
+  letter first isLetter => this parseIdentifier
+
+  // spaces and stuff
+  (this match: " ") || (this match: "\t") => [
+    spaces <- spaces inc
+    start <- start inc
+    ^
+  ]
+  this match: "\n" => [
+    this incLine
+    ^
+  ]
+  
+  // then match on symbols
+  tokType = | letter 
+  | "(" => TokenType.OpenParen
+  | ")" => TokenType.CloseParen
+  | "{" => TokenType.OpenBrace
+  | "}" => TokenType.CloseBrace
+  | "[" => TokenType.OpenBracket
+  | "]" => TokenType.CloseBracket
+
+  | "," => TokenType.Comma
+  | ":" => TokenType.Colon
+  | ";" => TokenType.Cascade
+  
+  //TODO NEGATIVE NUMS
+  | "-" => // -(BinSym), -42(Number)
+    TokenType.BinarySymbol 
+
+  | "+", "/", "*" => TokenType.BinarySymbol
+
+  | "." => // ., ..(BinSym), ..<(BinSym)
+    this match: ".<" => TokenType.BinarySymbol |=>
+    this match: "." => TokenType.BinarySymbol |=> TokenType.Dot
+  | "|" => // |, |>, |=>
+    this match: ">" => TokenType.Pipe |=>
+    this match: "=>" => TokenType.Else |=> TokenType.If
+  
+  | "=" => // =, ==, =>
+    this match: "=" => TokenType.BinarySymbol |=>
+    this match: ">" => TokenType.Then |=> TokenType.Assign
+  |=> TokenType.Unknown
+
+  // create token with that type
+  tokens add: (this createTokenWithType: tokType)
+]
+
+Lexer main  = [
+  // while not done, scan next token with `next`
+  [this done not] whileTrue: [
+    this next
+    start <- current
+    lineCurrent <- linePos
+  ]
+
+]

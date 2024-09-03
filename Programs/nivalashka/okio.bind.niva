@@ -11,7 +11,8 @@ Bind package: "okio.Path"  imports: {"okio.Path.Companion.toPath"}  content: [
   String toPath -> Path 
   Path normalized -> Path
   Path toString -> String
-  Path / String -> Path
+  Path / x::String -> Path
+ 
   Path == Path -> Boolean
   Path != Path -> Boolean
 ] 

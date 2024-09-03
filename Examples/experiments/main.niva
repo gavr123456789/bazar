@@ -1,15 +1,17 @@
+type Person 
 
+p = Person new 
 
+type Rule
 
-
-Int sec = this * 1000 |> toLong
-
-String delayedEcho >>= [
-    CoroutineContext delay: 1 sec
-    this echo
+constructor Rule kindAt::String = [
+  ^Rule anyOf: (Rule genericType) 
 ]
 
-runBlocking [
-    this launch: [ "World!" delayedEcho ]
-    "Hello" echo
-]
+constructor Rule genericType = 
+  Rule kindAt: "ooo"
+
+constructor Rule anyOf::Rule =
+  Rule new
+
+1 echo

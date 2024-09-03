@@ -1,0 +1,39 @@
+enum TokenType =
+    | On // on for many messages declarations
+    // Literal types
+    | Integer
+    | Float // 4.2f
+    | String | Char
+    | Double // 4.2
+    | Identifier | NullableIdentifier
+    // Keywords
+    | Type | Enum | Union | Constructor | Mut | ErrorDomain
+    | True | False | Null
+    // arrows
+    | ReturnArrow // -> for return types
+    | AssignArrow // <-
+    // Symbols
+    | BinarySymbol
+    | Pipe // |> 
+    // Parens
+    | OpenParen | CloseParen
+    | OpenBrace | CloseBrace
+    | OpenBracket | CloseBracket
+    // Punctuation
+    | Dot | Comma | Colon | DoubleColon | Cascade // ;
+    // ControlFlow
+    | If // |
+    | Then   // =>
+    | Else   // |=>
+    | PipeOperator   // |>
+    // Statements
+    | Assign // = 
+    | Return // ^
+    | Unknown // TEMP for testing
+
+type Token
+  kind: TokenType
+  lexeme: String
+  line: Int
+  pos: Position
+  lineEnd: Int 

@@ -21,3 +21,9 @@ constructor GtkFactory vBoxWithSpacing: x::Int =
         vexpand: true
 
 
+
+type BtnFactory
+
+/// create nice flat btn icon
+constructor BtnFactory flatIcon: icon::String = 
+  (Button fromIconName: icon); valign: Align.CENTER; addCssClass: "flat"

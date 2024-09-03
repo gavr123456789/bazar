@@ -4,7 +4,6 @@ type PairViewModel
   aWidget: ToggleButton
 
 
-
 type PageViewModel  
   pairViewModels: MutableList::PairViewModel
   
@@ -24,8 +23,6 @@ PageViewModel createUI = [
     marginEnd: margin
   vboxQuestions = GtkFactory vBoxWithSpacing: 5
   vboxAnswers = GtkFactory vBoxWithSpacing: 5
-
-  
 
   // questionWidgetsList::MutableList::ToggleButton = pairViewModels map: [ ] 
   // answerWidgetsList::MutableList::ToggleButton = {}
@@ -56,7 +53,7 @@ constructor MainViewModel empty -> MainViewModel = [
 ]
 
 
-constructor MainViewModel fromModel: gm::GameModel -> MainViewModel = [
+constructor MainViewModel fromModel: gm::GameModel winCondition::[] -> MainViewModel = [
   empty = MainViewModel empty
   pages::MutableList::PageModel = gm pages
 
@@ -65,25 +62,6 @@ constructor MainViewModel fromModel: gm::GameModel -> MainViewModel = [
 
   
   createPage = [ pageModel::PageModel ->
-    // hbox = GtkFactory hBoxWithSpacing: 5
-    // margin = 10
-          
-    
-    // hbox marginTop: margin;  
-    //   marginBottom: margin;
-    //   marginStart: margin;
-    //   marginEnd: margin
-    
-    // vboxQuestions = GtkFactory vBoxWithSpacing: 5
-    // vboxAnswers = GtkFactory vBoxWithSpacing: 5
-
-    // questionWidgetsList::MutableList::ToggleButton = {}
-    // answerWidgetsList::MutableList::ToggleButton = {}
-
-    // hbox 
-    //   append: vboxQuestions; 
-    //   append: vboxAnswers
-    
 
     // create view models
     pageViewModel = PageViewModel new
@@ -93,12 +71,6 @@ constructor MainViewModel fromModel: gm::GameModel -> MainViewModel = [
       answerToggle = ToggleButton withLabel: it answer
       questionToggle = ToggleButton withLabel: it question
       allToggles add: answerToggle; add: questionToggle
-      
-
-      // pageViewModel 
-
-      // questionWidgetsList add: questionToggle
-      // answerWidgetsList add: answerToggle
 
       // add widgets to view model
       x = PairViewModel pairModel: it qWidget: answerToggle aWidget: questionToggle
@@ -110,7 +82,6 @@ constructor MainViewModel fromModel: gm::GameModel -> MainViewModel = [
           "all right!" + score toString |> echo
           questionToggle sensitive: false; addCssClass: "suggested-action"
           answerToggle sensitive: false; addCssClass: "suggested-action"
-
         ]
       ]
 

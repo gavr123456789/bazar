@@ -1,0 +1,35 @@
+type Menu
+
+constructor Menu path::String testChoose::[Path -> ] -> PreferencesGroup = [
+
+  disr = FileSystem list: path toPath |> filter: [
+    it name endsWith: "txt"
+  ] 
+  
+  disr echo
+  
+
+  widget = ListOfChoosibleItems names: (disr toList) testChoose: testChoose
+  
+  ^widget
+]
+
+type ListOfChoosibleItems 
+constructor ListOfChoosibleItems names::List::Path testChoose::[Path -> ] -> PreferencesGroup = [
+  group = PreferencesGroup new
+  group title: "Choose the test"
+  names forEach: [ path::Path ->
+    btn = Button withLabel: path name
+
+    btn onClicked: [testChoose Path: path]
+
+    // create group of action rows
+    actionRow = ActionRow new
+    // actionRow subtitle: it name 
+    actionRow addPrefix: btn
+
+    actionRow 
+    group add: actionRow
+  ]
+  ^ group
+]

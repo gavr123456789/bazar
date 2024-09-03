@@ -1,49 +1,169 @@
-// Project use: "org.gnome.adw"
-
 app = org.gnome.adw.Application name: "my.app"
 
 app onActivate: [ 
-  args isEmpty => Error throwWithMessage: "Pass path to file with questions"
-  path = args at: 0
+  // args isEmpty => Error throwWithMessage: "Pass path to file with questions"
+  // path = args at: 0
 
   window = (ApplicationWindow app: app);
     title: "GTK from Niva";
     x: 250 y: 300
-  
-  reader = Reader new 
+
+  // readerr = Reader new 
 
 
   // READER
-  gameModel = reader 
-    readFromFile: path
-    wordsPerTest: 8
-    invertArgs: false
-  pages = gameModel pages
+  // gameModel = readerr
+  //   readFromFile: path
+  //   wordsPerTest: 8
+  //   invertArgs: false
+  // pages = gameModel pages
 
 
-  mainViewModel = MainViewModel fromModel: gameModel
+  // mainViewModel = MainViewModel fromModel: gameModel
+
+  // mut score = 0
+//////////////////////////
+//   ui = [ mainViewModel::MainViewModel ->
+//     header = org.gnome.adw.HeaderBar new
+//     allToggles::MutableList::ToggleButton = {}
+    
+//     resetButton = Button fromIconName: "view-refresh"
+//     //shuffleButton = Button fromIconName: "media-playlist-shuffle"
+//     header packStart: resetButton
+
+//     createPage = [ pageModel::PageModel ->
+//       mainHbox = GtkFactory hBoxWithSpacing: 5
+//       margin = 10
+//       pairModels = pageModel pairs
+            
+      
+//       mainHbox marginTop: margin;  
+//         marginBottom: margin;
+//         marginStart: margin;
+//         marginEnd: margin
+      
+//       vboxQuestions = GtkFactory vBoxWithSpacing: 5
+//       vboxAnswers = GtkFactory vBoxWithSpacing: 5
+
+//       questionWidgetsList::MutableList::ToggleButton = {}
+//       answerWidgetsList::MutableList::ToggleButton = {}
+
+//       mainHbox 
+//         append: vboxQuestions; 
+//         append: vboxAnswers
+      
+ 
+//       // create view models
+//       pageViewModel = PageViewModel new
+
+//       pairModels forEach: [
+//         answerToggle = ToggleButton withLabel: it answer
+//         questionToggle = ToggleButton withLabel: it question
+//         allToggles add: answerToggle; add: questionToggle
+        
+//         x = PairViewModel pairModel: it qWidget: answerToggle aWidget: questionToggle
+
+//         // pageViewModel 
+
+//         questionWidgetsList add: questionToggle
+//         answerWidgetsList add: answerToggle
+
+//         answerToggle onToggled: [
+//           questionToggle active => [
+//             score <- score inc
+//             "all right!" + score toString |> echo
+//             questionToggle sensitive: false; addCssClass: "suggested-action"
+//             answerToggle sensitive: false; addCssClass: "suggested-action"
+
+//           ]
+//         ]
+
+//         questionToggle onToggled: [
+//           answerToggle active => [
+//             score <- score inc
+//             "all right!" + score toString |> echo
+//             questionToggle sensitive: false; addCssClass: "suggested-action"
+//             answerToggle sensitive: false; addCssClass: "suggested-action"
+//           ]
+//         ]
+//       ]
+
+//       questionWidgetsList shuffled forEach: [
+//         vboxQuestions append: it
+//       ]
+//       answerWidgetsList shuffled forEach: [
+//         vboxAnswers append: it
+//       ]
+
+//       mainHbox
+//     ]
+
+    
+  
+//     carousel = Carousel new
+
+//     pages forEach: [
+//       carousel append: (createPage pageModel: it)
+//     ]
+
+// // reset
+//     resetButton onClicked: [
+//       allToggles forEach: [
+//         it active: false; sensitive: true; removeCssClass: "suggested-action"
+//       ]
+
+//       // right now its not recreating
+//       // allToggles clear
+//     ]
+
+//     dots = (CarouselIndicatorDots new); carousel: carousel
+    
+    
+//     boxWithCarouselDots = (GtkFactory vBoxExpanded); 
+//       append: carousel; 
+//       append: dots
+
+//     stack = (Stack new)
+//     btn = Button withLabel: "arsarsars" 
+//     menu = Menu path: "." testChoose: [ 
+//       it echo
+      
+//       gameModel = readerr
+//         readFromFile: it toString
+//         wordsPerTest: 8
+//         invertArgs: false
+//       MainViewModel fromModel: gameModel
+      
+      
+//       pages = gameModel pages
+//     ]
+
+//     stack
+//       transitionType: StackTransitionType.SLIDE_UP;
+//       add: menu named: "1";
+//       add: boxWithCarouselDots named: "2"
+
+//     btn onClicked: [
+//       stack visibleChildName: "2"
+//     ]
+
+//     toolbar = (ToolbarView new); 
+//       addTopBar: header;
+//       content: stack
+
+//     toolbar
+//   ] mainViewModel: mainViewModel
+
+
 
   mut score = 0
-
-  ui = [
-    header = org.gnome.adw.HeaderBar new
-    allToggles::MutableList::ToggleButton = {}
-    
-
-    resetButton = Button fromIconName: "view-refresh"
-    //shuffleButton = Button fromIconName: "media-playlist-shuffle"
-    header packStart: resetButton
-    //; packStart: shuffleButton
-
-    
-
-    createPage = [ pageModel::PageModel ->
-      hbox = GtkFactory hBoxWithSpacing: 5
+  createPage = [ pageModel::PageModel ->
+      mainHbox = GtkFactory hBoxWithSpacing: 5
       margin = 10
       pairModels = pageModel pairs
             
       
-      hbox marginTop: margin;  
+      mainHbox marginTop: margin;  
         marginBottom: margin;
         marginStart: margin;
         marginEnd: margin
@@ -54,7 +174,7 @@ app onActivate: [
       questionWidgetsList::MutableList::ToggleButton = {}
       answerWidgetsList::MutableList::ToggleButton = {}
 
-      hbox 
+      mainHbox 
         append: vboxQuestions; 
         append: vboxAnswers
       
@@ -65,7 +185,6 @@ app onActivate: [
       pairModels forEach: [
         answerToggle = ToggleButton withLabel: it answer
         questionToggle = ToggleButton withLabel: it question
-        allToggles add: answerToggle; add: questionToggle
         
         x = PairViewModel pairModel: it qWidget: answerToggle aWidget: questionToggle
 
@@ -80,7 +199,6 @@ app onActivate: [
             "all right!" + score toString |> echo
             questionToggle sensitive: false; addCssClass: "suggested-action"
             answerToggle sensitive: false; addCssClass: "suggested-action"
-
           ]
         ]
 
@@ -101,49 +219,69 @@ app onActivate: [
         vboxAnswers append: it
       ]
 
-      hbox
+      mainHbox
     ]
 
-    
-    //new way to build ui
-    pages2 = mainViewModel createUIPages
-    //
+  
+  
+  carousel = [gm::GameModel ->
+    // Carousel
     carousel = Carousel new
-// add pages
-    // pages2 forEach: [
-    //   carousel append: it
-    // ]
+    dots = (CarouselIndicatorDots new); carousel: carousel
+
+    carouselDots = (GtkFactory vBoxExpanded); 
+      append: carousel; 
+      append: dots  
     
+    pages = gm pages
     pages forEach: [
       carousel append: (createPage pageModel: it)
     ]
-
-// reset
-    resetButton onClicked: [
-      allToggles forEach: [
-        it active: false; sensitive: true; removeCssClass: "suggested-action"
-      ]
-
-      // right now its not recreating
-      // allToggles clear
-    ]
-
-    dots = (CarouselIndicatorDots new); carousel: carousel
     
 
-    boxWithCarouselDots = (GtkFactory vBoxExpanded); 
-      append: carousel; 
-      append: dots
+    carouselDots
+  ]
+
+  mainUi = [
+    header = org.gnome.adw.HeaderBar new
+    resetButton = Button fromIconName: "view-refresh"
+    header packStart: resetButton
+
+    //Stack
+    stack = (Stack new);
+      transitionType: StackTransitionType.SLIDE_UP
+      // add: menu named: "1";
+      // add: boxWithCarouselDots named: "2"
+  
+      // btn = Button withLabel: "arsarsars" 
+    menu = Menu path: "." testChoose: [ 
+      it echo
+      readerr = Reader new
+      gameModel = readerr
+        readFromFile: it toString
+        wordsPerTest: 8
+        invertArgs: false
+
+      model = MainViewModel fromModel: gameModel winCondition: []
+      
+      carousel = carousel gm: gameModel
+     
+      stack add: carousel named: "2"
+      stack visibleChildName: "2"
+      // TODO: remove the previous
+    ]
+    
+    stack add: menu named: "1"
 
 
+// Toolbar 
     toolbar = (ToolbarView new); 
       addTopBar: header;
-      content: boxWithCarouselDots
-
+      content: stack
     toolbar
   ] do
 
-  window content: ui;
+  window content: mainUi;
     present
 ]
 

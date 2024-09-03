@@ -1,0 +1,18 @@
+type MenuListItem 
+
+constructor MenuListItem text::String removeFromList::[Widget -> Unit] = [
+  // label crossIconBtn
+
+  box = GtkFactory hBoxExpanded
+
+  label = Label str: text
+  remove = BtnFactory flatIcon: "close-symbolic"
+  box append: label; append: remove
+
+  remove onClicked: [
+    removeFromList Widget: box
+  ]
+
+  ^ box
+  
+]

@@ -1,6 +1,6 @@
 Project loadPackages: {"com.squareup.okio:okio:3.6.0"}
 
-Bind package: "okio.Path"  imports: {"okio.Path.Companion.toPath"}  content: [
+Bind package: "okio"  imports: {"okio.Path.Companion.toPath" "okio.Path.*"}  content: [
   type Path 
     name: String 
     parent: Path? 

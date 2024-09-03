@@ -22,6 +22,22 @@
 // Assert that: "sas" equals: "sas"
 
 
+union Shape x: Int y: Int =
+    | Rectangle width: Int height: Int
+    | Circle    radius: Int
+
+
+constructor Double pi = 3.14
+
+Shape getArea -> Double =
+  | this
+  | Rectangle => width * height |> toDouble
+  | Circle => Double pi * (radius * radius) toDouble
+
+
+x = Rectangle width: 2 height: 3 x: 0 y: 0
+x getArea echo
+
 
 
 
@@ -29,7 +45,6 @@ union Node =
 | Sub left: Node right: Node
 | Add left: Node right: Node
 | Value v: Int
-
 
 
 Node walk -> Int = | this

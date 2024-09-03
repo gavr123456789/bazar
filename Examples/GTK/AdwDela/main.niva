@@ -100,8 +100,6 @@ app onActivate: [
     pp add: pg1;
        add: pg2;
        add: pg3
-
-  
   ] 
 
 
