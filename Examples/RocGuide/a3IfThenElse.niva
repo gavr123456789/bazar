@@ -1,0 +1,15 @@
+birds = 3
+iguanas = 2
+
+Int addAndStringify: n::Int = [
+  sum = this + n
+
+  ^ sum == 0 => "" |=> 
+    sum < 0 => "negative"
+    |=> sum toString
+]
+
+
+total = birds addAndStringify: iguanas
+
+total echo

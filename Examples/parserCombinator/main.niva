@@ -1,3 +1,36 @@
+type Cond = [ -> Boolean] 
+Cond whileLoop: block::[ -> Boolean] -> Unit = 
+  this do => [
+    block do => [this whileLoop: block]
+  ] |=> Unit
+
+MutableList::T forEachBreak::[T -> Boolean] -> Unit = [
+  this forEach: [
+    forEachBreak T: it |> not => ^
+  ]
+]
+
+Sequence::T forEachBreak::[T -> Boolean] -> Unit = [
+  this forEach: [
+    forEachBreak T: it |> not => ^
+  ]
+]
+
+
+{1 2 3} forEachBreak: [ 
+  it echo
+  
+  false
+]
+
+// mut x = 3
+// [x > 0] whileLoop: [
+//   x <- x dec
+//   x echo
+//   false
+// ]
+
+
 union CombinatorResult = 
 | Success value: String rest: String captures: MutableMap(String, String)
 | Failure
@@ -25,23 +58,39 @@ Parser sequence: combinators::MutableList::ParserCombinator -> ParserCombinator 
   mut current = str
   mut value = ""
   mut fail = false
-  captures ::MutableMap(String, String) = #{}
+  captures::MutableMap(String, String) = #{}
+  // x = combinators asSequence map: [it String: current] |>
+  //   firstOrNull: [
+  //     | it
+  //     | Success => [
+  //       current <- it rest
+  //       value <- value + it value
+  //       captures putAll: it captures
+  //       false
+  //     ]
+
+  //     | Failure => [
+  //       fail <- true // distinguish is x null because list is complete, or is it null because of early fail
+  //       true
+  //     ]
+  //   ]
+
   x = combinators asSequence map: [it String: current] |>
-    firstOrNull: [
-//> Success value: 42 rest: .21 captures: {}, Success value: . rest: 21 captures: {}, Success value: 21 rest:  captures: {}, Success value: 42 rest: .21 captures: {}, Success value: . rest: 21 captures: {}, Success value: 21 rest:  captures: {}
-      >10 it
+    forEachBreak: [
       | it
       | Success => [
         current <- it rest
         value <- value + it value
         captures putAll: it captures
-        false
-      ]
-      | Failure => [
-        fail <- true // distinguish is x null because list is complete, or is it null because of early fail
         true
       ]
+
+      | Failure => [
+        fail <- true // distinguish is x null because list is complete, or is it null because of early fail
+        false
+      ]
     ]
+
   | fail 
   | true => Failure new
   |=> Success value: value rest: current captures: captures

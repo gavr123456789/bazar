@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="main2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Examples/readline/main.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

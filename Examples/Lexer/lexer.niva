@@ -90,9 +90,6 @@ Lexer match::String -> Boolean = [
 Lexer createTokenWithType: tokType::TokenType -> Token = [
   lexeme = source slice: start..<current
 
-//> ,, ,, ,, ], ], [, [
-  >10 lexeme
-  
   end = current - 1
 
   tok = Token 
@@ -115,9 +112,51 @@ Lexer incLineWithNewToken: needNewToken::Boolean = [
   // ]
 ]
 
-Lexer parseNumber = [ 
-  
+
+String isDigit -> Boolean = [
+  this forEach: [
+    it isDigit not => ^false
+  ]
+  ^true
 ]
+String isAlphaNumeric -> Boolean = [
+  this forEach: [
+    it isLetterOrDigit not => ^false
+  ]
+  ^true
+]
+
+Lexer stepWhileDigits = [
+  [this peek isDigit && (this done not)] whileTrue: [
+    this step
+  ]
+]
+Lexer stepWhileAlphaNumeric = [
+  [(this peek isAlphaNumeric || (this check: "_")) && (this done not)] whileTrue: [
+    this step
+  ]
+]
+
+Lexer parseNumberOrDotDot = [ 
+  mut kind = TokenType.Integer
+  .stepWhileDigits
+
+  // .. binary operator
+  (.check: "..<") || (.check: "..") => [
+    this createTokenWithType: TokenType.Integer
+    start <- start inc 
+    .match: "..<"
+    .match: ".."
+
+
+  ]
+]
+
+
+
+
+
+
 Lexer parseIdentifier = [ ]
 
 Lexer next = [
@@ -126,7 +165,7 @@ Lexer next = [
 
   letter = this step
   // check for all complex variants like words and numbers first
-  letter first isDigit => this parseNumber
+  letter first isDigit => this parseNumberOrDotDot
   letter first isLetter => this parseIdentifier
 
   // spaces and stuff
