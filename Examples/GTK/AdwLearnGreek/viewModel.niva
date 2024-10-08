@@ -13,9 +13,6 @@ PageViewModel add: x::PairViewModel = pairViewModels add: x
 PageViewModel createUI = [
   hbox = GtkFactory hBoxWithSpacing: 5
   margin = 10
-  // pairViewModels = it pairViewModels
-  
-        
   
   hbox marginTop: margin;  
     marginBottom: margin;
@@ -23,9 +20,6 @@ PageViewModel createUI = [
     marginEnd: margin
   vboxQuestions = GtkFactory vBoxWithSpacing: 5
   vboxAnswers = GtkFactory vBoxWithSpacing: 5
-
-  // questionWidgetsList::MutableList::ToggleButton = pairViewModels map: [ ] 
-  // answerWidgetsList::MutableList::ToggleButton = {}
 
   hbox 
     append: vboxQuestions; 

@@ -15,7 +15,7 @@ Bind package: "org.gnome.gtk" content: [
     on run::List::String -> Unit
   ] 
  
-  enum Orientation = HORIZONTAL | VERTICAL // TODO не находит если поставитьь после
+  enum Orientation = HORIZONTAL | VERTICAL 
   
   union Window = 
   | ApplicationWindow app: Application
@@ -26,7 +26,6 @@ Bind package: "org.gnome.gtk" content: [
   | Button
   | ToggleButton
   | Entry 
-  // | HeaderBar
   | Label str: String
   | Box orientation: Orientation spacing: Int
   | Grid
@@ -196,10 +195,10 @@ Bind package: "org.gnome.adw" content: [
   | ActionRow
   | ExpanderRow
   | EntryRow
-  | PasswordRow // TODO
-  | ComboRow // TODO
-  | SpinRow // TODO
-  | SwitchRow // TODO
+  | PasswordRow
+  | ComboRow
+  | SpinRow
+  | SwitchRow
 
   union org.gnome.gtk.Window = 
   | ApplicationWindow app: Application

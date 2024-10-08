@@ -4,6 +4,7 @@ Bind package: "java.lang" content: [
   constructor Math sin::Double -> Double
   constructor Math round::Double -> Int
 ]
+
 // dsl
 Double sin -> Double = Math sin: this
 Double cos -> Double = Math cos: this
