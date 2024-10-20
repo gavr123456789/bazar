@@ -15,14 +15,14 @@ Bind package: "imgui" imports: {"imgui.app.*"} content: [
   constructor Application configure::[Configuration -> Unit] preRun::[ -> ] launch::[ -> ] -> Unit
 
   type ImGuiStyle
-  ImGuiStyle scaleAllSizes::Float -> Unit
+  ImGuiStyle scaleAllSizes::Double -> Unit
 
   type Style
-  Style scaleAllSizes::Float -> Unit
+  Style scaleAllSizes::Double -> Unit
 
   type ImGui
 
-  ImGui setWindowFontScale::Float -> Unit
+  ImGui setWindowFontScale::Double -> Unit
 
   constructor ImGui getStyle -> Style
   constructor ImGui beginWithTitle::String -> Boolean

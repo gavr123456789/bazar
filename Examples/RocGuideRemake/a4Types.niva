@@ -1,0 +1,11 @@
+
+
+
+
+type Sum birds: Int iguanas: Int
+
+
+total = (Sum birds: 2 iguanas: 3) addAndStringify
+
+Sum addAndStringify = 
+  (this birds + this iguanas) toString

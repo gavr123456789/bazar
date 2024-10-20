@@ -1,0 +1,91 @@
+type AoC2015
+
+AoC2015 readFile: path::String = [
+    filePath = path toPath
+    contents = FileSystem read: filePath
+    contents trim
+]
+
+String readFile = 
+    FileSystem read: this toPath |> trim
+
+AoC2015 read: sample::Int =
+    "../inputs/sample." readFile + (sample toString)
+
+
+AoC2015 part1: input::String =
+    input 
+        split: "" |>
+        filter: [it isNotEmpty] |>
+        map: [
+            (it == "(") => 1 |=> -1
+        ] |> 
+        sum
+
+Test test1 -> Unit! = [
+    aoc = AoC2015 new
+
+    expectedResults = {0 0 3 3 3 -1 -1 -3 -3}
+    1 to: 9 do: [ 
+        sample = aoc read: it
+        expected = expectedResults at: (it - 1)
+        actual = aoc part1: sample
+        
+        Assert that: expected equals: actual withMsg: "Sample $it is incorrect"
+    ]
+]
+
+Test test2 -> Unit! = [
+    aoc = AoC2015 new
+
+    input = "../inputs/input" readFile  
+    answer = aoc part1: input
+    answer echo
+]
+
+// readFile = [ path::String ->
+//     filePath = path toPath
+//     contents = FileSystem read: filePath
+//     contents trim
+// ]
+
+// read = [ sample::Int ->  
+//     readFile path: "../inputs/sample." + (sample toString)
+// ]
+
+// part1 = [input::String ->
+//     input 
+//         split: "" |>
+//         filter: [it isNotEmpty] |>
+//         map: [
+//             (it == "(") => 1 |=> -1
+//         ] |> 
+//         sum
+// ]
+
+// expectedResults = {0 0 3 3 3 -1 -1 -3 -3}
+
+// mut allTestsPassed = true
+
+// checkSamples = 1 to: 9 do: [ 
+//     sample = read sample: it
+//     expected = expectedResults at: (it - 1)
+//     actual = part1 input: sample
+    
+//     (expected == actual) ifTrue: [
+//         "Sample is correct!" echo
+//     ] ifFalse: [
+//         "Sample is incorrect!" echo
+//         allTestsPassed = false
+//     ]
+// ]
+
+// allTestsPassed ifTrue: [
+//    input = readFile path: "../inputs/input"  
+//    answer = part1 input: input
+//    answer echo
+// ] ifFalse: []
+
+
+
+//

@@ -5,7 +5,7 @@ constructor Node v::T = Node value: v left: null right: null
 Node addAll -> Int = [
     v = this value
     "adding $v" echo
-    ^| v
+   ^| v
     | Int, Float => [
         leftSum =  left unpack: [it addAll] or: 0
         rightSum = right unpack: [it addAll] or: 0

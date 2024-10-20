@@ -1,7 +1,5 @@
-// Project target: "linux"
-// x = Console readln
-x = Console new
+Project target: "linux"
 
-x 
-
+x = Console readln
+x echo
 

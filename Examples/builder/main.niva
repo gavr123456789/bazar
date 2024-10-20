@@ -1,31 +1,12 @@
-builder Person buildStr  = [ 
+builder Person buildPerson  = [ 
     build this: (Person name: "Alice" age: 32)
 ]
 
-buildStr [ 
-    name echo
+buildPerson [ 
+    name echo // Alice
+    age echo
+    .sayHello
 ] 
  
 type Person name: String age: Int
-
-// .................
-// builder Int buildStr2 -> Int = [
-//     mut x = 0
-//     defaultAction = [ default::Any->
-//         | default
-//         | Int => x <- x + default
-//         | String => x <- x + default toInt
-//         |=> []
-//     ]
-
-//     build this: x defaultAction: defaultAction
-
-//     ^ x
-// ]
-
-// x = buildStr2 [
-//     123
-//     "123"
-// ]
-
-// x echo
+Person sayHello = "Hi! My name is $name" echo

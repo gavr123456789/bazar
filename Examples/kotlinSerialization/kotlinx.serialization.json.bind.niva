@@ -1,4 +1,4 @@
-Project loadPackages: {"org.eclipse.swt:org.eclipse.swt.gtk.linux.x86_64:4.3"}
+// Project loadPackages: {"org.eclipse.swt:org.eclipse.swt.gtk.linux.x86_64:4.3"}
 
 Bind package: "kotlinx.serialization.json" imports: {"kotlinx.serialization.*"}  content: [
   type Json 
@@ -7,3 +7,14 @@ Bind package: "kotlinx.serialization.json" imports: {"kotlinx.serialization.*"} 
   @rename: "encodeToString"
   constructor Json encode::T -> String
 ]
+
+@Serializable
+type Person name: String age: Int
+
+person = Person name: "Alice" age: 35
+
+str = Json encode: person
+str echo
+
+personFromStr = Json::Person decode: str
+personFromStr echo

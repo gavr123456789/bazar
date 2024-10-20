@@ -1,25 +1,17 @@
 type COLOR
-constructor COLOR RED = "\u001B[31m"
-constructor COLOR CYAN = "\u001B[36m"
-constructor COLOR YEL = "\u001B[33m"
-constructor COLOR RESET = "\u001B[0m"
-constructor COLOR WHITE = "\u001B[37m"
+constructor COLOR [
+  on RED =  "\u001B[31m"
+  on GREEN =  "\u001B[32m"
+  on PURP = "\u001B[35m"
+  on YEL = "\u001B[33m"
+  on CYAN =  "\u001B[36m"
+  on RESET =  "\u001B[0m"
+  on WHITE =  "\u001B[37m"
+]
 String red = COLOR RED + this + COLOR RESET 
 String yel = COLOR YEL + this + COLOR RESET 
 String cyan = COLOR CYAN + this + COLOR RESET 
+String purp = COLOR PURP + this + COLOR RESET 
 
-// "sas"red + " sus"cyan |> echo
-
-// type Pair a: String b: String
-
-// String diff: str::String = [
-//   lookup::MutableMap(Int, Pair) = #{}
-//   ^
-// ]
-
-// String diffHelp str::String lookup::MutableMap(Int, Pair) = [
-
-
-// ]
-
+"Hello"red + " World"purp + "!"cyan |> echo
 

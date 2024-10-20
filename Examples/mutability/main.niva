@@ -1,0 +1,21 @@
+
+type MyClass x: Int y: Int
+
+MyClass sum = 
+  x + y
+
+myClass = MyClass x: 1 y: 2
+myClass2 = myClass x: 2 // no mutation, shadow copy
+
+//> MyClass x: 1 y: 2
+>myClass
+//> MyClass x: 2 y: 2
+>myClass2
+
+// local mutable
+myClass3::mut MyClass = MyClass x: 1 y: 2
+myClass3 x: 2
+//> MyClass x: 2 y: 2
+>myClass3
+
+ 

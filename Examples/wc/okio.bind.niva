@@ -1,7 +1,7 @@
 Project loadPackages: {"com.squareup.okio:okio:3.6.0"}
 
 Bind package: "okio"  imports: {"okio.Path.Companion.toPath" "okio.Path.*"}  content: [
-  errordomain IOError
+  errordomain IOError = IOException
 
   type Path 
     name: String 
@@ -10,7 +10,7 @@ Bind package: "okio"  imports: {"okio.Path.Companion.toPath" "okio.Path.*"}  con
     segments: List::String 
     volumeLetter: Char?
   
-  String toPath -> Path!IOError
+  String toPath -> Path
   Path normalized -> Path
   Path toString -> String
   Path / x::String -> Path
@@ -31,12 +31,12 @@ Bind package: "okio" content: [
 
 
   @emit: "okio.FileSystem.SYSTEM.read($1) { readUtf8() }"
-  constructor FileSystem read::Path -> String
+  constructor FileSystem read::Path -> String!IOException
   @emit: "okio.FileSystem.SYSTEM.write($1) { writeUtf8($2) }"
   constructor FileSystem write::Path content::String -> Unit
 
   @emit: "okio.FileSystem.SYSTEM.metadata($1)"
-  constructor FileSystem metadata::Path -> FileMetadata
+  constructor FileSystem metadata::Path -> FileMetadata!IOException
  
   @emit: "okio.FileSystem.SYSTEM.exists($1)"
   constructor FileSystem exists::Path -> Boolean
@@ -71,6 +71,6 @@ Bind package: "okio" content: [
 ]
 
 
-Path renameTo::String = [
+Path renameTo::String -> Unit = [
   FileSystem moveFrom: this to: renameTo toPath
 ]

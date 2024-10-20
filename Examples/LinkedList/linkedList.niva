@@ -73,10 +73,7 @@ LinkedList map::[Int -> T] -> MutableList::T = [
 list = LinkedList empty
 list push: 1 |> push: 2 |> push: 3
 list add: -1 |> add: -2 |> add: -3
-// "element 4" echo
-// list at: 4 |> unpackOrError v echo
-// "full list" echo
-// list str echo
+
 "forEach" echo
 list forEach: [it echo]
 "map" echo

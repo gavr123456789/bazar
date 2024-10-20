@@ -10,6 +10,7 @@ JsonObj toJson -> String = | this
 | JsonString => str packForJson 
 | JsonFields => this fieldToJson
 
+
 JsonArray arrToJson -> String = [
 
   createArr = [
@@ -43,9 +44,6 @@ JsonFields fieldToJson -> String = [
 
   ^createObj do surroundWith: "{ " and: " }" 
 ]
-
-
-
 
 jsonNum = JsonNumber num: 5.0
 jsonStr = JsonString str: "t'e'x't"

@@ -21,7 +21,3 @@ constructor Assert that::Any equals::Any -> Unit! = [
     Error throwWithMessage: "Assertion failed: $a' != $b' ($that != $equals)"
   ]
 ]
-
-
-
-// Assert that: "sas" equals: "sas"

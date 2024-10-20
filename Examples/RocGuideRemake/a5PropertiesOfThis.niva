@@ -1,0 +1,10 @@
+
+
+type Sum birds: Int iguanas: Int
+
+
+total = (Sum birds: 2 iguanas: 3) addAndStringify
+
+// all the properties of `this` are already in scope
+Sum addAndStringify = 
+  (birds + iguanas) toString

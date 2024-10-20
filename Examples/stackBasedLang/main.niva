@@ -1,0 +1,78 @@
+type StackLang
+  list: MutableList::Int
+
+StackLang dup = [
+  list isEmpty => ^
+  list add: list last
+]
+
+StackLang swap = [
+  list count < 2 => ^
+
+  lastIndex = list count - 1
+  secondIndex = list count - 2
+  // swap
+  temp = list at: lastIndex
+  list at: lastIndex put: (list at: secondIndex)
+  list at: secondIndex put: temp
+]
+
+type Last2Elems last: Int secondLast: Int
+
+StackLang take2 -> Last2Elems? = [
+  list count < 2 => ^ null
+
+  lastElem =       list at: (list count - 1)
+  secondLastElem = list at: (list count - 2)
+  list removeAt: (list count - 1)
+  list removeAt: (list count - 1)
+  ^ Last2Elems last: lastElem secondLast: secondLastElem
+]
+
+
+StackLang add = [
+  {last secondLast} = .take2 unpackOrError
+  list add: last + secondLast
+]
+StackLang sub = [
+  {last secondLast} = .take2 unpackOrError
+  list add: secondLast - last
+]
+StackLang mul = [
+  {last secondLast} = .take2 unpackOrError
+  list add: last * secondLast
+]
+
+builder StackLang stack -> MutableList::Int = [
+  sl = StackLang list: {}
+  {list} = sl
+  defaultAction = [ x::Any->
+      | x
+      | String => [
+        "$list  \t$x" echo
+        | x
+        | "dup" => sl dup
+        | "swap" => sl swap
+        | "+" => sl add
+        | "-" => sl sub
+        | "*" => sl mul
+        |=> "I dont recognize command $x" echo
+      ]
+      | Int => [
+        sl list add: x
+        Unit
+      ]
+      |=> ["I dont recognize $x" echo]
+  ]
+
+  build this: sl defaultAction: defaultAction
+  result = sl list
+  result echo
+//> [-24]
+  > result
+  ^ result
+]
+
+stack [ 1 2 3 "+" "dup" "*" "swap" "-" ] 
+
+

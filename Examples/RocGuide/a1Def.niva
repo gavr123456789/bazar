@@ -1,8 +1,0 @@
-// Def
-birds = 3
-
-iguanas = 2
-
-total = (birds + iguanas) toString
-
-total echo

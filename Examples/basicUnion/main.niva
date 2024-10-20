@@ -1,0 +1,14 @@
+union Shape x: Int y: Int =
+    | Rectangle width: Int height: Int
+    | Circle    radius: Int
+
+
+constructor Double pi = 3.14
+
+Shape getArea -> Double = | this
+    | Rectangle => (width * height) toDouble
+    | Circle => Double pi * (radius * radius) toDouble
+
+
+x = Rectangle width: 2 height: 3 x: 0 y: 0
+x getArea echo

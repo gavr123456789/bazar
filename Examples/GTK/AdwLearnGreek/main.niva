@@ -121,7 +121,9 @@ app onActivate: [
     stack add: menu named: "1"
 
 
-// Toolbar 
+
+
+    // Toolbar 
     toolbar = (ToolbarView new); 
       addTopBar: header;
       content: stack
