@@ -1,12 +1,20 @@
 Bind package: "kotlin" content: [
   type IntArray ofSize: Int
   extend IntArray [
+    on toSet -> Set::Int
+    on toMutableSet -> MutableSet::Int
+
     @rename: "set"
     on at::Int put::Int -> Unit
     @rename: "get"
     on at::Int -> Int
     on toString -> String
+    /// Returns new array which is a copy of the original array.
+    on copyOf -> IntArray
+    /// Returns new array which is a copy of the original array, resized to the given size
     on copyOf::Int -> IntArray
+    on forEach::[Int -> Unit] -> Unit
+    on map::[Int -> T] -> List::T
   ]
 
   MutableList::Int toIntArray -> IntArray

@@ -1,15 +1,12 @@
 # How to use
 
+## IntArray
+IntArray can be more efficient if you work with really big amount of numbers, since it is specified for ints.  
+Size cant be changed(only with copy with `copyOf::Int`).  
+There is no pretty print.  
 ```Scala
-@Serializable
-type Person name: String age: Int
-
-person = Person name: "Alice" age: 35
-// serialization to JSON
-str = Json encode: person
-str echo // {"name":"Alice","age":35}
-
-// deserialization from JSON string
-personFromStr = Json::Person decode: str
-personFromStr echo // Person name: Alice age: 35
+arr = IntArray ofSize: 10
+arr at: 0 put: 42
+x = arr at: 0
+x echo // 42
 ```
