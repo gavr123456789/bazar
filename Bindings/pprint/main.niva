@@ -1,5 +1,0 @@
-type Person name: String list: MutableList::String 
-
-p = Person name: "sas" list: {"sasasasas" "qweqweqweqwe" "rtyrtyrtyrtyrty"}
-
-p pprint echo

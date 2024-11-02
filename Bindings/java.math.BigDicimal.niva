@@ -1,7 +1,0 @@
-Bind package: "java.math" content: [
-    type BigDecimal value: String
-    BigDecimal + BigDecimal -> BigDecimal
-    BigDecimal - BigDecimal -> BigDecimal
-    BigDecimal * BigDecimal -> BigDecimal
-    BigDecimal / BigDecimal -> BigDecimal
-]

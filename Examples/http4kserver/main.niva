@@ -3,13 +3,28 @@ app = [request::Request ->
     // query = request query: "name"
     response body: "Hello, " + "gavr"
 ]
+// app asServer: (SunHttp port: 9000) |> start
 
-app asServer: (SunHttp port: 9000) |> start
+//
+path = "/" bind: Method.GET
+route = path to: [
+    response = Response status: Status.OK
+    response body: "Hello, from niva okhttp server"
 
+]
+
+path2 = "/sas" bind: Method.GET
+route2 = path2 to: [
+    response = Response status: Status.OK
+    response body: "Hello, from niva okhttp server"
+]
+routes = Router routes: {route, route2}
+// routes asServer: (SunHttp port: 9000) 
+routes asServer: (SunHttp port: 9000) |> start
+// 
 
 client = JavaHttpClient new
 printingClient::HttpHandler = PrintResponse new |> then: client
 
 request = Request method: Method.GET uri: "http://localhost:9000"
 responce = printingClient Request: request
-

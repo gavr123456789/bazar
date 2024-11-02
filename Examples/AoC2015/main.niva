@@ -43,6 +43,15 @@ Test test2 -> Unit! = [
     answer echo
 ]
 
+mut x = true
+[
+    "always do" echo
+    x
+] whileTrue: [
+    "body" echo
+    x <- false
+]
+
 // readFile = [ path::String ->
 //     filePath = path toPath
 //     contents = FileSystem read: filePath

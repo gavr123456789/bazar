@@ -1,0 +1,19 @@
+Bind package: "kotlinx.serialization.json" imports: {"kotlinx.serialization.*"}  content: [
+  type Json 
+  @rename: "decodeFromString"
+  constructor Json::T decode::String -> T
+  @rename: "encodeToString"
+  constructor Json encode::T -> String
+]
+
+
+@Serializable
+type Person name: String age: Int
+
+person = Person name: "Alice" age: 35
+
+str = Json encode: person
+str echo // {"name":"Alice","age":35}
+
+personFromStr = Json::Person decode: str
+personFromStr echo // Person name: Alice age: 35
