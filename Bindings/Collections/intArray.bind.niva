@@ -1,6 +1,8 @@
 Bind package: "kotlin" content: [
   type IntArray ofSize: Int
   extend IntArray [
+    on toList -> List::Int
+    on toMutableLIst -> MutableLIst::Int
     on toSet -> Set::Int
     on toMutableSet -> MutableSet::Int
 
