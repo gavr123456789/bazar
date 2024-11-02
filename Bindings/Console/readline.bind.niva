@@ -1,0 +1,8 @@
+Bind package: "kotlin.io" content: [
+    type Console
+    @emit: "kotlin.io.readLine()!!"
+    constructor Console readln -> String
+]
+
+// "enter your name:" echo
+// name = Console readln

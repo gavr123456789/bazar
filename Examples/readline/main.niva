@@ -2,11 +2,3 @@ Project target: "linux"
 
 x = Console readln
 x echo
-
-enum Color = Red | Blue
-
-Int c::Color = [
-  x = | c
-  | Color.Blue => 1 echo
-
-]
