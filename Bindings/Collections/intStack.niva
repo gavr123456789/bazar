@@ -1,0 +1,54 @@
+type IntStack 
+  size: Int
+  top: Int
+  stack: IntArray
+
+constructor IntStack ofSize::Int = 
+  IntStack 
+    size: ofSize
+    top: -1
+    stack: (IntArray ofSize: ofSize)
+
+
+extend IntStack [
+  on isEmpty = top == -1
+  on push: value::Int -> Unit = [
+    top >= (size - 1) ifTrue: [
+      Error throwWithMessage: "Stack is full!" |> orPANIC
+    ] 
+    top <- top inc
+    stack at: top put: value
+  ]
+  on pop -> Int = [
+    .isEmpty => Error throwWithMessage: "Stack is empty!" |> orPANIC
+    result = stack at: top
+    top <- top dec
+    ^ result
+  ]
+   on peek -> Int = [
+    .isEmpty => Error throwWithMessage: "Stack is empty!" |> orPANIC
+    ^ stack at: top
+  ]
+  on isFull = top == (size - 1)
+  on count = top + 1 
+  on toStr -> String = [
+    sb = StringBuilder new
+    sb append: "IntStack{ "
+    0..top forEach: [
+      sb append: (stack at: it) toString + " "
+    ]
+    sb append: "}"
+    ^ sb toString
+  ]
+]
+
+
+// stack = IntStack ofSize: 3
+
+// stack push: 1
+// stack push: 2
+// stack push: 3
+// stack pop
+
+// IntStack{ 1 2 }
+// stack toStr 
