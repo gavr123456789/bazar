@@ -1,0 +1,20 @@
+Bind package: "kotlin.time" content: [
+  type Duration
+  extend Duration [
+    /// Returns an ISO-8601 based string representation of this duration.
+    /// The returned value is presented in the format PThHmMs.fS
+    on toIsoString -> String 
+    on toString -> String 
+  ]
+  /// Executes the given function block and returns the duration of elapsed time interval
+  builder Duration measureTime -> Duration = []
+] fields: [
+  Duration 
+    inWholeSeconds: Long 
+    inWholeHours: Long 
+    inWholeDays: Long 
+    inWholeMinutes: Long 
+    inWholeNanoseconds: Long
+    inWholeMicroseconds: Long
+    inWholeMilliseconds: Long
+]

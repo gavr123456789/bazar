@@ -6,8 +6,17 @@ String delayedEcho >>= [
     this echo
 ]
 
-runBlocking [
-    this launch: [ "World!" delayedEcho ]
-    "Hello" echo
-]
+measureTime [
+    runBlocking [
+        // launch when u dont need the result
+        .launch: [ "World!" delayedEcho ]
+        .launch: [ "1" delayedEcho ]
+        .launch: [ "2" delayedEcho ]
+        // async when u need the result
+        job1 = .async: [ 10 + 11 ]
+        job2 = .async: [ 10 + 11 ]
+        "Hello" echo
 
+        job1 await + job2 await |> echo
+    ]
+] echo
