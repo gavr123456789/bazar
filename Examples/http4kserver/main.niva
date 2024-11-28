@@ -1,30 +1,56 @@
-app = [request::Request ->
-    response = Response status: Status.OK
-    // query = request query: "name"
-    response body: "Hello, " + "gavr"
-]
-// app asServer: (SunHttp port: 9000) |> start
+// @Serializable
+// type Person name: String age: Int 
 
-//
-path = "/" bind: Method.GET
-route = path to: [
-    response = Response status: Status.OK
-    response body: "Hello, from niva okhttp server"
 
-]
+// app = [request::Request ->
+//     response = Response status: Status.OK
+//     // query = request query: "name"
+//     response body: "Hello, " + "gavr"
+// ]
+// // app asServer: (SunHttp port: 9000) |> start
 
-path2 = "/sas" bind: Method.GET
-route2 = path2 to: [
-    response = Response status: Status.OK
-    response body: "Hello, from niva okhttp server"
-]
-routes = Router routes: {route, route2}
-// routes asServer: (SunHttp port: 9000) 
-routes asServer: (SunHttp port: 9000) |> start
-// 
+// path = "/" bind: Method.GET
+// route = path to: [
+//     response = Response status: Status.OK
+//     response body: "Hello, from niva okhttp server"
+// ]
 
-client = JavaHttpClient new
-printingClient::HttpHandler = PrintResponse new |> then: client
 
-request = Request method: Method.GET uri: "http://localhost:9000"
-responce = printingClient Request: request
+
+
+
+// path2 = "/sas" bind: Method.GET
+// route2 = path2 to: [
+//     response = Response status: Status.OK
+//     response body: "Hello, from niva okhttp server"
+// ]
+
+// pathPost = "/person" bind: Method.POST
+// routePost = pathPost to: [
+//     person = Json::Person decode: it body strPayload 
+//     response = Response status: Status.OK
+//     response body: person toString
+// ]
+// routes = Router routes: {route, route2, routePost}
+// routes asServer: (SunHttp port: 9000) |> start
+
+Router routes: {(
+    "/example" bind: Method.GET |> 
+               to: [ Response status: Status.OK |> 
+                              body: "Hii! niva server"])} |>
+    asServer: (SunHttp port: 9000) |> 
+    start
+
+
+
+// CREATE a client that send a get request to that server
+
+// client = JavaHttpClient new
+// printingClient::HttpHandler = PrintResponse new |> then: client
+
+// request = Request method: Method.GET uri: "http://localhost:9000"
+// responce = printingClient Request: request
+
+// curl -X POST http://localhost:9000/person \                                       main ✱ ◼
+//                       -H "Content-Type: application/json" \
+//                       -d '{"name": "Alex", "age": 25}'

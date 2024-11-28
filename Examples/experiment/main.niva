@@ -1,0 +1,1 @@
+person = Json::Person decode: """{"name": "Alex", "age": 25}""" 
