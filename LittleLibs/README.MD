@@ -68,6 +68,7 @@ Printing text with colors
 ```Scala
 "Hello"red + " World"purp + "!"cyan |> echo
 ```
+![image](https://github.com/user-attachments/assets/0cddc3da-cb1f-4dcb-a4bf-e719bc35ea97)
 
 # TODO
 Can be used for not implemented methods
