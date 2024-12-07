@@ -1,0 +1,5 @@
+{1 2 3 4 5} 
+  map: [it + 1] |> debug |>
+  filter: [ it % 2 == 0] |> debug |>
+  inject: 0 into: [a, b -> a + b] |> debug
+
