@@ -123,8 +123,8 @@ Parser n::Int orMore: combinator::ParserCombinator = ^ [str::String ->
 
 parser = Parser new
 
-x = parser char: '1'
-x String: "1qwf"
+// x = parser char: '1'
+// x String: "1qwf"
 
 digitParsers = ('0'..'9') toList map: [parser char: it]
 digit = parser either: digitParsers
@@ -140,4 +140,4 @@ float = parser sequence: {integer (parser char: '.') integer}
 //> Success value: 42.21 rest:  captures: {}
 >float String: "42.21"
 
-// >{1 2 3} inject: 0 into: [a, b -> a + b]
+

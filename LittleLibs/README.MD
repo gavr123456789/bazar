@@ -48,6 +48,21 @@ filter: [ it % 2 == 0 ] = [2, 4, 6]
 inject: 0 into: [ a, b -> a + b ] = 12
 ```
 
+# Json generator
+Just generate JSON objects, escaping is supported
+```Scala
+jsonNum = JsonNumber num: 5.0
+jsonStr = JsonString str: "t'e'x't"
+jsonFields = JsonFields fld: #{"a\ng'e" jsonNum}
+
+arr = JsonArray arr: {jsonNum jsonNum jsonStr jsonFields}
+arr toJson echo 
+```
+outputs:
+```
+[ 5.0, 5.0, "t\'e\'x\'t", { "a\ng\'e": 5.0 } ]
+```
+
 # Color print
 Printing text with colors
 ```Scala
@@ -72,4 +87,4 @@ Method: sas             File: main.niva::8
 Method: main            File: main.niva::11
 ```
 
-It works because `TO DO` returns Nothing type, which is bottob type and can be placed instead of any other type. 
+It works because `TO DO` returns Nothing type, which is bottom type and can be placed instead of any other type. 
