@@ -1,0 +1,18 @@
+type Vec2 x: Int y: Int 
+
+constructor Vec2 new = 
+  Vec2 x: 90 y: 0
+
+Vec2 + vector::Vec2 = Vec2 x: x + vector x y: y + vector y
+Vec2 - vector::Vec2 = Vec2 x: x - vector x y: y - vector y
+Vec2 * vector::Vec2 = Vec2 x: x * vector x y: y * vector y
+Vec2 / vector::Vec2 = Vec2 x: x / vector x y: y / vector y
+
+a = Vec2 x: 10 y: 20 
+b = Vec2 x: 5 y: 4 
+
+(a + b) echo
+(a - b) echo
+(a * b) echo
+(a / b) echo
+
