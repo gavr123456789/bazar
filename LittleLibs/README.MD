@@ -1,4 +1,7 @@
 # Asserts
+Assert that prints the value and code for that value:  
+![image](https://github.com/user-attachments/assets/fb5caea6-1743-4429-8a95-d7d7e75c0ea5)
+
 ```Scala
 Test push = [
   stack = Stack::Int ofSize: 3
