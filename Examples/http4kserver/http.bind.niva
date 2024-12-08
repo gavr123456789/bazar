@@ -38,6 +38,7 @@ Bind package: "org.http4k.core" imports: {"org.http4k.asString"} content: [
 
     type HttpHandler = [Request -> Response]
     HttpHandler asServer: config::ServerConfig -> Http4kServer
+    
 ] fields: [
     Request
         body: Body
