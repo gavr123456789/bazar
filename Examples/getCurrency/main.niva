@@ -1,0 +1,40 @@
+type Program client: JavaHttpClient
+constructor Program new = Program client: JavaHttpClient new 
+
+
+@Serializable
+type CurrencyResponce 
+    amount: Double
+    base: String
+    date: String
+    rates: Map(String, Double)
+
+
+extend Program [
+    on httpGet: uri::String -> Response = [
+        request = Request method: Method.GET uri: uri
+        ^ client Request: request
+    ]
+    on getCurrency = [
+        "getCurrency" echo
+        responce = .httpGet: "https://api.frankfurter.dev/v1/latest"
+        responce status echo; bodyString echo
+        curResponce = Json::CurrencyResponce decode: responce bodyString
+        curResponce echo
+    ]
+]
+
+// uncomment to run Smalltalk like version
+// Program new |> getCurrency
+
+// Clojure style!
+URI = "https://api.frankfurter.dev/v1/latest"
+cur = Json::CurrencyResponce 
+    decode: ((JavaHttpClient new) 
+                Request: (Request 
+                            method: Method.GET 
+                            uri: URI)
+            ) bodyString
+cur rates at: "USD" |> 
+    echo
+

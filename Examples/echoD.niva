@@ -1,7 +1,0 @@
-// debug print with var name
-T echoD -> T = [
-    receiverName = Compiler getName: 0
-    value = this toString
-    "$receiverName is $value" echo
-    ^ this
-]

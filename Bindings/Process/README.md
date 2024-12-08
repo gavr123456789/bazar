@@ -18,4 +18,8 @@ getPictureSize = [ path::String ->
   Size w: (q at: 0 |> toInt) h: (q at: 1 |> toInt)
 ]
 ```
+### Get env
+```Scala
+Process getEnv: "JAVA_HOME" |> echo
+```
 
