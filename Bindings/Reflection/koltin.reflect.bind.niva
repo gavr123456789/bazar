@@ -1,0 +1,18 @@
+Bind package: "kotlin.reflect" content: [
+    @rename: "KClass"
+    type Class::T
+
+    @emit: "$0::class"
+    T class -> Class::T
+
+    Class::T cast::Any? -> T
+
+    Class::T isInstance::Any? -> Boolean
+
+    @emit: "$0::class"
+    constructor T class -> Class::T
+] fields: [
+    Class::T
+        simpleName: String
+        qualifiedName: String
+]
