@@ -1,0 +1,34 @@
+Project loadPackages: {"org.jetbrains:markdown:0.7.3"}
+
+Bind package: "org.intellij.markdown.flavours.commonmark" content: [
+  union MarkdownFlavourDescriptor = 
+  | CommonMarkFlavourDescriptor
+]
+
+Bind package: "org.intellij.markdown.ast" content: [
+  type IElementType name: String
+]
+
+Bind package: "org.intellij.markdown.ast" content: [
+  type ASTNode
+    startOffset: Int
+    endOffset: Int
+    paren: ASTNode?
+    children: List::ASTNode
+  
+  @rename: "type"
+  ASTNode kind -> IElementType
+]
+Bind package: "org.intellij.markdown.parser" content: [
+  type MarkdownParser flavor: MarkdownFlavourDescriptor
+  MarkdownParser buildMarkdownTreeFromString::String -> ASTNode
+]
+
+Bind package: "org.intellij.markdown.html" content: [
+  type HtmlGenerator
+    markdownText: String 
+    root: ASTNode 
+    flavour: CommonMarkFlavourDescriptor
+  
+  HtmlGenerator generateHtml -> String
+]

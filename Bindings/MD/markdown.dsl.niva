@@ -1,0 +1,9 @@
+type MarkdownToHtml
+String fromMdToHtml -> String = [
+  flavour = CommonMarkFlavourDescriptor new
+  ^ HtmlGenerator 
+    markdownText: . 
+    root: (MarkdownParser flavor: flavour |> buildMarkdownTreeFromString: .) 
+    flavour: flavour
+    |> generateHtml
+]
