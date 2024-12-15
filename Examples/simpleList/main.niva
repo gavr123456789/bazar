@@ -1,0 +1,13 @@
+union MyList = 
+| Nil
+| Cons head: T tail: MyList
+
+MyList count -> Int = |this
+| Nil => 0
+| Cons => 1 + .tail count
+
+x = Cons head: 3 tail: 
+    (Cons head: 5 tail: 
+    (Cons head: 2 tail: Nil new))
+x echo
+x count echo
