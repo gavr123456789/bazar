@@ -1,0 +1,10 @@
+; = fib BLOCK                           # function fib:
+    ; = a 0                             #    a = 0
+    ; = b 1                             #    b = 1
+    ; WHILE n                           #    while n != 0:
+        ; = b + a (= tmp b              #       b = a + (tmp = b)
+        ; = a tmp                       #       a = tmp
+        : = n - n 1                     #       n -= 1
+    : a                                 #    return a
+; = n 10                                # n = 10
+: OUTPUT +++ 'fib(' n ')=' CALL fib     # print "fib(" + n + ")=" + fib()

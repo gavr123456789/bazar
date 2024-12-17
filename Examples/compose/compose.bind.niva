@@ -1,0 +1,32 @@
+Project loadPackages: {"$compose.desktop.currentOs"}
+
+Bind package: "androidx.compose.ui.window" content: [
+  type ApplicationScope
+  ApplicationScope exitApplication -> Unit
+
+  builder ApplicationScope application -> Unit = []
+
+  builder ApplicationScope Window onCloseRequest::[] -> Unit = []
+
+  
+]
+
+Bind package: "androidx.compose.material" content: [
+  type Material
+  type RowScope
+  builder Material MaterialTheme -> Unit = []
+  builder RowScope Button onClick::[] -> Unit = []
+  // wont work with many args in receiver
+  @emit: "Text($0)"
+  String Text -> Unit
+
+  //fake
+  type Text
+
+  @emit: "Text($1)"
+  constructor Text value::String -> Unit
+
+
+  // RowScope Text text::String -> Unit
+
+]

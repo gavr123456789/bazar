@@ -1,0 +1,4 @@
+type FunctinonT 
+  name: String 
+  arity: Int 
+  fn: [List::String -> String]

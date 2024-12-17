@@ -1,0 +1,7 @@
+Bind package: "java.io" content: [
+  type File path: String
+  /// `File path: "main.niva" |> readText`
+  File readText -> String!Error
+  /// `File path: "newFile.txt" |> writeText`
+  File writeText::String -> Unit!Error
+]

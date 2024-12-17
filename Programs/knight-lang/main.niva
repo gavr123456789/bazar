@@ -1,0 +1,19 @@
+type Program
+
+extend Program [
+  on main: args::List::String -> Unit! = [
+    args echo
+    | args count 
+    | 2 => [
+      path = args at: 1
+      content = File path: path |> readText
+      content echo
+      Unit
+    ]
+    |=> "usage: %s [-h] (-e 'expr' | -f file)" echo
+  ]
+]
+
+
+
+Program new main: {"-f" "file.kn"} toList //args toList

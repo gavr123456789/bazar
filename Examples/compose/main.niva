@@ -1,0 +1,28 @@
+Project target: "jvmCompose"
+
+type CoolText
+
+@androidx.compose.runtime.Composable
+constructor CoolText foo::Int = 
+  Text value: foo toString
+
+type App
+
+@androidx.compose.runtime.Composable
+constructor App new = [
+  Button (onClick: ["clicked!" echo]) [
+    CoolText foo: 42
+  ]
+]
+
+
+application [
+  Window (onCloseRequest: [this exitApplication]) [
+    MaterialTheme [
+      App new
+      // Button (onClick: ["clicked!" echo]) [
+      //   CoolText foo: 42
+      // ]
+    ]
+  ]
+]

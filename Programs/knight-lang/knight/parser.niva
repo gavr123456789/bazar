@@ -1,0 +1,113 @@
+type Parser source: String index: Int
+
+constructor Parser source::String = 
+  Parser source: source index: 0
+
+extend mut Parser [
+  /// IsAtEnd returns whether the parser is at the end of its stream.
+  on isAtEnd = source count <= index
+
+  on linenoAt: index::Int -> Int = [
+    mut lineno = 0
+
+    0..<index forEach: [ 
+      (source at: it) == '\n' ifTrue: [
+        lineno <- lineno inc
+      ]
+    ]
+
+    ^ lineno
+  ]
+
+  on peek -> Char! = [
+    .isAtEnd => Error throwWithMessage: "peeked past end of source"
+
+    ^ source at: index
+  ]
+
+  on advance -> Unit! = [
+    .isAtEnd => Error throwWithMessage: "advanced past end of source"
+
+    index <- index inc
+  ]
+
+  on takeWhile: condition::[Char -> Boolean] -> String! = [
+    start = index
+
+    [.isAtEnd not && (condition Char: .peek)] whileTrue: [
+      .advance
+    ]
+
+    ^ source slice: start..index
+  ]
+
+  on parseNextValue -> Value! = [
+    .isAtEnd => Error throwWithMessage: "End of input"
+    
+    c = .peek
+
+    c isWhitespace => [
+      .advance 
+      ^ .parseNextValue
+    ]
+
+    // Comment, delete it and parse again.
+    c == '#' => [
+      .takeWhile: [it isntNewLine]
+      ^ .parseNextValue
+    ]
+
+    c isDigit => [
+      TO DO: "NewVariable(p.TakeWhile(isVariableBody)), nil"
+    ]
+
+    c == '\'' || (c == '"') => [
+      startIndex = index
+      .advance
+
+      contents = .takeWhile: [it != c] 
+      // If we reached end of file, that means we never found the ending quote.
+      .isAtEnd => [
+        line = .linenoAt: startIndex
+        Error throwWithMessage: "[line $line] unterminated $c string"
+      ]
+      // Consume the ending quote, and return the contents of the string.
+      .advance
+
+      ^ StringT v: contents
+    ]
+
+    c isWordFunctionCharacter => [
+      .takeWhile: [it isWordFunctionCharacter]
+    ] |=> [
+      .advance
+    ]
+
+    startIndex = index
+
+    // Get the function definition; If it doesn't exist, then we've been given an invalid token.
+    // function, ok := KnownFunctions[c]
+    function = FunctionT knownFunctions at: c |> unpackOrPANIC
+    
+    arguments::MutableList::Value = {}
+
+    0..<function arity forEach: [ i -> 
+      value = .parseNextValue ifError: [
+        | it
+        | Error => [
+          lineAt = .linenoAt: startIndex
+          argNum = i + 1
+          funcName = function name
+          Error throwWithMessage: "[line $lineAt] missing argument $argNum for function $funcName"
+        ]
+      ]
+      arguments add: value
+    ]
+
+    ^ TO DO: "..."
+  ]
+
+
+
+
+]

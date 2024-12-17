@@ -1,0 +1,11 @@
+type Knight
+
+
+
+
+Knight play: source::String = [
+  parser::mut Parser = Parser source: source
+
+  value = parser parseNextValue
+
+]

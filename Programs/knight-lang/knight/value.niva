@@ -1,0 +1,81 @@
+union Value = 
+| Ast function: FunctionT arguments: List::Value
+| BoolT v: Boolean
+| IntegerT v: Int
+| ListT v: MutableList::Value
+| NullT
+| StringT v: String
+| Variable name: String value: Value
+
+// constructor Ast newFunction: FunctionT arguments: List::Value = [
+
+// ]
+
+constructor Ast newFunction::FunctionT args::List::Value -> Ast! = [
+  argsCount = args count
+  newFunction arity != argsCount ifTrue: [
+    Error throwWithMessage: "function arity mismatch: expected"
+  ]
+  ^ Ast function: newFunction arguments: args
+]
+
+
+extend Value [
+  on run -> Value! = [
+    value = | this
+    // Run executes the ast by passing its arguments to its function.
+    | Ast => .function fn List: .arguments
+
+    // Run simply returns the boolean unchanged.
+    | BoolT => this
+    
+    // Run simply returns the integer unchanged.
+    | IntegerT => this
+    
+    // Run simply returns the list unchanged.
+    | ListT => this
+
+    // Run simply returns the null unchanged.
+    | NullT => this
+      
+    // Run simply returns the String unchanged.
+    | StringT => this
+
+    // Run looks up the last-assigned value for the variable, returning an error if the variable hasn't
+    // been assigned yet.
+    | Variable => .value
+    
+    ^ value
+  ]
+  on dump = .echo
+
+  on toBoolean -> BoolT! = [
+    result::Boolean = | this
+    | Ast => Error throwWithMessage: "Ast doesn't define boolean conversions"
+    // ToBoolean simply returns the boolean unchanged.
+    | BoolT     => .v
+    | IntegerT  => .v != 0
+    | ListT     => .v count != 0
+    | NullT     => false
+    | StringT   => .v != ""
+    | Variable  => Error throwWithMessage: "Variable doesn't define boolean conversions"
+
+    ^ BoolT v: result
+  ]
+  on toIndeger -> BoolT = [
+    ^ TO DO: "value"
+  ]
+  on toString -> BoolT = [
+    ^ TO DO: "value"
+  ]
+  on toList -> BoolT = [
+    ^ TO DO: "value"
+  ]
+]
+
+
+
+constructor ListT new = [
+  empty::MutableList::Value = {}
+  ^ ListT v: empty
+]

@@ -1,15 +1,6 @@
 @Serializable
 type Person name: String age: Int 
 
-
-// app = [request::Request ->
-//     response = Response status: Status.OK
-//     // query = request query: "name"
-//     response body: "Hello, " + "gavr"
-// ]
-// // app asServer: (SunHttp port: 9000) |> start
-
-
 // curl -v http://localhost:8080/hi
 path = "/hi" bind: Method.GET
 route = path to: [

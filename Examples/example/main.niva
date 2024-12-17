@@ -129,20 +129,21 @@ Int class ifInstance: 1 thenDo: [ "An int" echo ]
 
 ////
 
-MutableList second = this at: 1
+// MutableList second = this at: 1
 
-MutableList sorted = this sortedBy: [ it ]
+// MutableList sorted = this sortedBy: [ it ]
 
-List::Int zipWith::List::Int = [
-    result::MutableList::MutableList::Int = {}
+// List::Int zipWith::List::Int = [
+//     result::MutableList::MutableList::Int = {}
 
-    this forEachIndexed: [ index, it ->
-        result add: { it, (zipWith at: index) }
-    ]
+//     this forEachIndexed: [ index, it ->
+//         result add: { it, (zipWith at: index) }
+//     ]
 
-    ^ result
-]
+//     ^ result
+// ]
 
+//////////
 // List::List::Int unzip = [
 //     first::MutableList::Int = {}
 //     second::MutableList::Int = {}
@@ -166,4 +167,22 @@ List::Int zipWith::List::Int = [
 // list = {1 2 3}
 // set = #(1 2 3)
 // map = #{1 2 3}
+
+// union MyList = 
+// | Nil
+// | Cons head: T tail: MyList
+
+// MyList count -> Int = |this
+// | Nil => 0
+// | Cons => 1 + .tail count
+
+// x = Cons head: 3 tail: 
+//     (Cons head: 5 tail: 
+//     (Cons head: 2 tail: Nil new))
+// x echo
+// x count echo
+
+x = [block::[] -> block do]
+
+x block: [1 echo]
 

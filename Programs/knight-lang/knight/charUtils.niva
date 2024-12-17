@@ -1,0 +1,12 @@
+
+
+extend Char [
+  on isntNewLine = . != '\n'
+  on isUnderscore = . == '_'
+  on isVariableStart = .isLowerCase || .isUnderscore
+  on isVariableBody = .isVariableStart || (.isDigit)
+  on isWordFunctionCharacter = .isUpperCase || .isUnderscore
+  on isWhitespace = (. == ' ') || (. == '(') || (. == ')')
+
+
+]
