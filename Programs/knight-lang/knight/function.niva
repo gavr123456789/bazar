@@ -42,7 +42,103 @@ constructor FunctionT knownFunctions = [
   noopF = FunctionT 
     name: ":" 
     arity: 1
-    fn: [ TO DO: "Run" ]
+    fn: [ args -> args at: 0 |> run ]
+  
+  // block returns its argument unevaluated. This is intended to be used in conjunction with call (see
+  // below) to defer evaluation to a later point in time.
+  blockF = FunctionT 
+    name: "BLOCK" 
+    arity: 1
+    fn: [ args -> args at: 0 ]
+
+  // call runs its argument, and then returns the result of running _that_ value. This allows us to
+  // defer execution of `BLOCK`s until later on.    
+  callF = FunctionT 
+    name: "CALL" 
+    arity: 1
+    fn: [ args -> 
+      block = args at: 0 |> run
+      block run 
+    ]
+  // quit exits the program with the given exit status code.
+  quitF = FunctionT 
+    name: "QUIT" 
+    arity: 1
+    fn: [ args -> 
+      status = args at: 0 |> runToInteger |> v
+      TO DO: "exit status: $status"
+    ]
+  // not returns the logical negation of its argument
+  notF = FunctionT 
+    name: "!" 
+    arity: 1
+    fn: [ args -> 
+      BoolT v: (args at: 0 |> runToBoolean |> v not)
+    ]
+
+  negateF = FunctionT 
+    name: "~" 
+    arity: 1
+    fn: [ args -> 
+      IntegerT 
+        v: (args at: 0 |> runToInteger |> v |> + 1 )
+    ]
+  
+  lengthF = FunctionT 
+    name: "LENGTH" 
+    arity: 1
+    fn: [ args -> 
+      container = args at: 0 |> run
+
+      | container
+      | ListT => IntegerT v: container v count
+      | StringT => IntegerT v: container v count
+      |=> [
+        // Knight 2.0.1 required `LENGTH` to coerce its arguments to lists, instead of having it be
+        // undefined behaviour
+        list = container toListT
+        IntegerT v: list v count
+      ]
+    ]
+  
+  negateF = FunctionT 
+    name: "NEGATE" 
+    arity: 1
+    fn: [ args -> 
+      args at: 0 |> run |> dump
+    ]
+  
+  // output writes its argument to stdout and returns null. Normally, a newline is added after its
+  // argument, however if the argument ends in a `\`, the backslash is removed and no newline is
+  // printed.
+  outputF = FunctionT 
+    name: "OUTPUT" 
+    arity: 1
+    fn: [ args -> 
+      str = args at: 0 |> runToString v
+
+      
+      str isEmpty not && (str at: (str count - 1) |> == '\\')
+        ifTrue: [
+          str slice: 0..<(str count - 1) |> echo
+        ] ifFalse: [
+          str echo
+        ]
+
+      NullT new
+    ]
+
+  asciiF = FunctionT 
+    name: "ASCII" 
+    arity: 1
+    fn: [ args -> 
+      value = args at: 0 |> run
+      | value
+      | IntegerT => StringT v: value v toChar toString
+      | StringT => IntegerT v: value v toInt
+      |=> TO DO: "invalid type given to 'ASCII': $value, only Integer and String is supported"
+    ]
+  
 
   result = #{
     'T' trueF

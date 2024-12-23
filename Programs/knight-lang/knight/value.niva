@@ -19,9 +19,8 @@ constructor Ast newFunction::FunctionT args::List::Value -> Ast! = [
   ^ Ast function: newFunction arguments: args
 ]
 
-
 extend Value [
-  on run -> Value! = [
+  on run -> Value = [
     value = | this
     // Run executes the ast by passing its arguments to its function.
     | Ast => .function fn List: .arguments
@@ -49,7 +48,7 @@ extend Value [
   ]
   on dump = .echo
 
-  on toBoolean -> BoolT! = [
+  on toBooleanT -> BoolT! = [
     result::Boolean = | this
     | Ast => Error throwWithMessage: "Ast doesn't define boolean conversions"
     // ToBoolean simply returns the boolean unchanged.
@@ -62,20 +61,42 @@ extend Value [
 
     ^ BoolT v: result
   ]
-  on toIndeger -> BoolT = [
+
+  on toIntegerT -> IntegerT! = [
+    result = | this
+    | BoolT => .v ifTrue: [1] ifFalse: [0]
+    | IntegerT => .v
+    | NullT => 0
+    | Variable => TO DO: "sas"
+    | Ast => Error throwWithMessage: "Ast $this toInteger impossible"
+    | ListT => Error throwWithMessage: "List $this toInteger impossible"
+    | StringT => Error throwWithMessage: "String $this toInteger impposible"
+
+    ^ IntegerT v: result
     ^ TO DO: "value"
   ]
-  on toString -> BoolT = [
+  on toStringT -> StringT = [
     ^ TO DO: "value"
   ]
-  on toList -> BoolT = [
+  on toListT -> ListT = [
+
+
     ^ TO DO: "value"
   ]
 ]
-
-
 
 constructor ListT new = [
   empty::MutableList::Value = {}
   ^ ListT v: empty
 ]
+
+// set protocol for every definition below
+Project protocol: "helpers"
+
+extend Value [
+  on runToInteger = .run toIntegerT
+  on runToBoolean = .run toBooleanT
+  on runToString = .run toStringT
+  on runToList = .run toListT
+]
+

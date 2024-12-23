@@ -104,7 +104,9 @@ extend mut Parser [
       arguments add: value
     ]
 
-    ^ TO DO: "..."
+    result = Ast newFunction: function args: arguments toList
+    
+    ^ result
   ]
 
 
