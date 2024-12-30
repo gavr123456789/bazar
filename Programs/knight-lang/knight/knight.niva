@@ -1,11 +1,20 @@
 type Knight
 
+// Knight sas -> Unit! = [
+//   Error throwWithMessage: "qwf"
+// ]
+
+// Knight sus -> Unit = [
+//   x = [
+//     .sas
+//   ]
+//   x do
+// ]
 
 
-
-Knight play: source::String = [
+Knight play: source::String -> Value = [
   parser::mut Parser = Parser source: source
 
   value = parser parseNextValue
-
+  ^ value
 ]

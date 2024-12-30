@@ -9,3 +9,10 @@ constructor Assert that::Any equals::Any -> Unit! = [
     Error throwWithMessage: "Assertion failed: $a' != $b' ($that != $equals)"
   ]
 ]
+
+/// If thats false - ends the program with message
+Boolean assertTrue: msg::String = [
+  x = Compiler getName: 0
+  this == false => 
+    Error throwWithMessage: x + "\n" + msg |> orPANIC
+]

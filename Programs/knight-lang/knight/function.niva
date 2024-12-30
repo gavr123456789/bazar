@@ -101,13 +101,50 @@ constructor FunctionT knownFunctions = [
       ]
     ]
   
-  negateF = FunctionT 
-    name: "NEGATE" 
+  dubpF = FunctionT 
+    name: "DUMP" 
     arity: 1
     fn: [ args -> 
       args at: 0 |> run |> dump
     ]
-  
+  boxF = FunctionT 
+    name: "," 
+    arity: 1
+    fn: [ args -> 
+      ListT v: {(args at: 0 |> run)}
+    ]
+  headF = FunctionT 
+    name: "[" 
+    arity: 1
+    fn: [ args -> 
+      arg = args at: 0 |> run
+      | arg
+      | ListT => [
+        arg v count != 0 assertTrue: "empty list given to '['"
+        arg v at: 0
+      ]
+      | StringT => [
+        arg v count != 0 assertTrue: "empty list given to '['"
+        StringT v: (arg v at: 0 |> toString)
+      ]
+      |=> TO DO: "invalid type given to ']': $arg"
+    ]
+  tailF = FunctionT 
+    name: "]" 
+    arity: 1
+    fn: [ args -> 
+      arg = args at: 0 |> run
+      | arg
+      | ListT => [
+        arg v count != 0 assertTrue: "empty list given to ']'"
+        ListT v: (arg v viewFrom: 1 to: arg v count)
+      ]
+      | StringT => [
+        arg v count != 0 assertTrue: "empty list given to ']'"
+        StringT v: (arg v drop: 1)
+      ]
+      |=> TO DO: "invalid type given to '': $arg"
+    ]
   // output writes its argument to stdout and returns null. Normally, a newline is added after its
   // argument, however if the argument ends in a `\`, the backslash is removed and no newline is
   // printed.
@@ -132,12 +169,115 @@ constructor FunctionT knownFunctions = [
     name: "ASCII" 
     arity: 1
     fn: [ args -> 
-      value = args at: 0 |> run
-      | value
-      | IntegerT => StringT v: value v toChar toString
-      | StringT => IntegerT v: value v toInt
-      |=> TO DO: "invalid type given to 'ASCII': $value, only Integer and String is supported"
+      v = args at: 0 |> run
+      | v
+      | IntegerT => StringT v: v v toChar toString
+      | StringT => IntegerT v: v v toInt
+      |=> TO DO: "invalid type given to 'ASCII': $v, only Integer and String is supported"
     ]
+
+  // binary
+  addF = FunctionT 
+    name: "ASCII" 
+    arity: 1
+    fn: [ args -> 
+      lhs = args at: 0 |> run
+
+      | lhs
+      | IntegerT => [
+        rhs = args at: 1 |> runToInteger v
+        IntegerT v: rhs + lhs v
+      ]
+      | StringT => [
+        rhs = args at: 1 |> runToString v 
+        StringT v: lhs v + rhs
+      ]
+      | ListT => [
+        rhs = args at: 1 |> runToList v
+        ListT v: (lhs v + rhs) toMutableList
+      ]
+      |=> TO DO: "invalid type given to '+': $lhs, only Integer, String, List is supported"
+    ]
+
+  substractF = FunctionT 
+    name: "ASCII" 
+    arity: 1
+    fn: [ args -> 
+      lhs = args at: 0 |> run
+      | lhs
+      | IntegerT => [
+        rhs = args at: 1 |> runToInteger v
+        IntegerT v: lhs v - rhs
+      ]
+    
+      |=> TO DO: "invalid type given to '-': $lhs, only Integer is supported"
+    ]
+  // multiply an integer by another, or repeats a list or string. It returns an error for other types.
+  multiplyF = FunctionT 
+    name: "ASCII" 
+    arity: 1
+    fn: [ args -> 
+      lhs = args at: 0 |> run
+      rhs = args at: 1 |> runToInteger v
+
+      | lhs
+      | IntegerT => IntegerT v: lhs v * rhs
+      | StringT => [
+        rhs < 0 ifTrue: [TO DO: "negative replication amount for a string in '*': $rhs"]
+
+        sb = StringBuilder new
+        rhs repeat: [
+          sb append: lhs v
+        ]
+
+        StringT v: sb toString 
+      ]
+      | ListT => [
+        rhs < 0 ifTrue: [TO DO: "negative replication amount for a list in '*': $rhs"]
+
+        list::MutableList::Value = {}
+         
+        rhs repeat: [
+          list addAll: lhs v
+        ]
+
+        ListT v: list 
+      ]
+    
+      |=> TO DO: "invalid type given to '/': $rhs, only Integer, String, List is supported"
+    ]
+  divideF = FunctionT 
+    name: "ASCII" 
+    arity: 1
+    fn: [ args -> 
+      lhs = args at: 0 |> run
+      | lhs
+      | IntegerT => [
+        rhs = args at: 1 |> runToInteger v
+        IntegerT v: lhs v / rhs
+      ]
+    
+      |=> TO DO: "invalid type given to '/': $lhs, only Integer is supported"
+    ]
+
+  // remainder gets the remainder of the first argument and the second. It returns an error for other
+  // types, or if the second argument is zero.
+  remainderF = FunctionT 
+    name: "ASCII" 
+    arity: 1
+    fn: [ args -> 
+      lhs = args at: 0 |> run
+      | lhs
+      | IntegerT => [
+        rhs = args at: 1 |> runToInteger v
+        IntegerT v: lhs v % rhs
+      ]
+    
+      |=> TO DO: "invalid type given to '/': $lhs, only Integer is supported"
+    ]
+  
+  // TODO exponentiate
+
   
 
   result = #{
@@ -147,8 +287,21 @@ constructor FunctionT knownFunctions = [
     '@' atF
     'P' promptF
     'R' randomF
-    
+    // Arity 1
     ':' noopF
+    'B' blockF
+    'C' callF
+    'Q' quitF
+    '!' notF
+    'L' lengthF
+    'D' dubpF
+    'O' outputF
+    'A' asciiF
+    '~' negateF
+    ',' negateF
+    '[' headF
+    ']' tailF
+
 
   }
   

@@ -46,7 +46,10 @@ extend Value [
     
     ^ value
   ]
-  on dump = .echo
+  on dump = [
+    .echo
+    ^ .
+  ]
 
   on toBooleanT -> BoolT! = [
     result::Boolean = | this

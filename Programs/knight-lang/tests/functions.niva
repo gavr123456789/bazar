@@ -1,0 +1,14 @@
+Test trueF -> Unit! = [
+  // x = FunctionT knownFunctions at: 'T' |> unpackOrPANIC
+  
+  // Assert that: x arity equals: 0
+  // emptyValueList = 
+  // Assert that: x fn List:  equals: 0
+]
+
+
+Test eval -> Unit! = [
+  code = "CALL BLOCK + 1 2"
+  result = Knight new play: code
+  
+]
