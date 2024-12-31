@@ -42,7 +42,7 @@ constructor FunctionT knownFunctions = [
   noopF = FunctionT 
     name: ":" 
     arity: 1
-    fn: [ args -> args at: 0 |> run ]
+    fn: [ args -> args at: 0 |> execute ]
   
   // block returns its argument unevaluated. This is intended to be used in conjunction with call (see
   // below) to defer evaluation to a later point in time.
@@ -57,8 +57,8 @@ constructor FunctionT knownFunctions = [
     name: "CALL" 
     arity: 1
     fn: [ args -> 
-      block = args at: 0 |> run
-      block run 
+      block = args at: 0 |> execute
+      block execute 
     ]
   // quit exits the program with the given exit status code.
   quitF = FunctionT 
@@ -88,7 +88,7 @@ constructor FunctionT knownFunctions = [
     name: "LENGTH" 
     arity: 1
     fn: [ args -> 
-      container = args at: 0 |> run
+      container = args at: 0 |> execute
 
       | container
       | ListT => IntegerT v: container v count
@@ -105,19 +105,19 @@ constructor FunctionT knownFunctions = [
     name: "DUMP" 
     arity: 1
     fn: [ args -> 
-      args at: 0 |> run |> dump
+      args at: 0 |> execute |> dump
     ]
   boxF = FunctionT 
     name: "," 
     arity: 1
     fn: [ args -> 
-      ListT v: {(args at: 0 |> run)}
+      ListT v: {(args at: 0 |> execute)}
     ]
   headF = FunctionT 
     name: "[" 
     arity: 1
     fn: [ args -> 
-      arg = args at: 0 |> run
+      arg = args at: 0 |> execute
       | arg
       | ListT => [
         arg v count != 0 assertTrue: "empty list given to '['"
@@ -133,7 +133,7 @@ constructor FunctionT knownFunctions = [
     name: "]" 
     arity: 1
     fn: [ args -> 
-      arg = args at: 0 |> run
+      arg = args at: 0 |> execute
       | arg
       | ListT => [
         arg v count != 0 assertTrue: "empty list given to ']'"
@@ -169,7 +169,7 @@ constructor FunctionT knownFunctions = [
     name: "ASCII" 
     arity: 1
     fn: [ args -> 
-      v = args at: 0 |> run
+      v = args at: 0 |> execute
       | v
       | IntegerT => StringT v: v v toChar toString
       | StringT => IntegerT v: v v toInt
@@ -178,10 +178,10 @@ constructor FunctionT knownFunctions = [
 
   // binary
   addF = FunctionT 
-    name: "ASCII" 
-    arity: 1
+    name: "+" 
+    arity: 2
     fn: [ args -> 
-      lhs = args at: 0 |> run
+      lhs = args at: 0 |> execute
 
       | lhs
       | IntegerT => [
@@ -200,10 +200,10 @@ constructor FunctionT knownFunctions = [
     ]
 
   substractF = FunctionT 
-    name: "ASCII" 
-    arity: 1
+    name: "-" 
+    arity: 2
     fn: [ args -> 
-      lhs = args at: 0 |> run
+      lhs = args at: 0 |> execute
       | lhs
       | IntegerT => [
         rhs = args at: 1 |> runToInteger v
@@ -214,10 +214,10 @@ constructor FunctionT knownFunctions = [
     ]
   // multiply an integer by another, or repeats a list or string. It returns an error for other types.
   multiplyF = FunctionT 
-    name: "ASCII" 
-    arity: 1
+    name: "*" 
+    arity: 2
     fn: [ args -> 
-      lhs = args at: 0 |> run
+      lhs = args at: 0 |> execute
       rhs = args at: 1 |> runToInteger v
 
       | lhs
@@ -247,10 +247,10 @@ constructor FunctionT knownFunctions = [
       |=> TO DO: "invalid type given to '/': $rhs, only Integer, String, List is supported"
     ]
   divideF = FunctionT 
-    name: "ASCII" 
-    arity: 1
+    name: "/" 
+    arity: 2
     fn: [ args -> 
-      lhs = args at: 0 |> run
+      lhs = args at: 0 |> execute
       | lhs
       | IntegerT => [
         rhs = args at: 1 |> runToInteger v
@@ -263,10 +263,10 @@ constructor FunctionT knownFunctions = [
   // remainder gets the remainder of the first argument and the second. It returns an error for other
   // types, or if the second argument is zero.
   remainderF = FunctionT 
-    name: "ASCII" 
-    arity: 1
+    name: "%" 
+    arity: 2
     fn: [ args -> 
-      lhs = args at: 0 |> run
+      lhs = args at: 0 |> execute
       | lhs
       | IntegerT => [
         rhs = args at: 1 |> runToInteger v
@@ -276,10 +276,61 @@ constructor FunctionT knownFunctions = [
       |=> TO DO: "invalid type given to '/': $lhs, only Integer is supported"
     ]
   
-  // TODO exponentiate
-
+  // TODO block
+  lessThanF = FunctionT 
+    name: "<" 
+    arity: 2
+    fn: [ args -> 
+      TO DO: "lessThanF not implemented" 
+    ]
+  greaterThanF = FunctionT 
+    name: ">" 
+    arity: 2
+    fn: [ args -> 
+      TO DO: "greaterThanF not implemented" 
+    ]
+  equalToF = FunctionT 
+    name: ">" 
+    arity: 2
+    fn: [ args -> 
+      TO DO: "equalToF not implemented" 
+    ]
+  andF = FunctionT 
+    name: ">" 
+    arity: 2
+    fn: [ args -> 
+      TO DO: "andF not implemented" 
+    ]
+  orF = FunctionT 
+    name: ">" 
+    arity: 2
+    fn: [ args -> 
+      TO DO: "orF not implemented" 
+    ]
+  //
+  thenF = FunctionT 
+    name: ";"
+    arity: 2
+    fn: [ args -> 
+      args at: 0 |> execute
+      args at: 1 |> execute
+    ]
+  assignF = FunctionT 
+    name: "="
+    arity: 2
+    fn: [ args -> 
+      lhs = args at: 0
+      
+      | lhs
+      | Variable => [
+        // lhs = rhs
+        rhs::mut Value = args at: 1 |> execute
+        lhs assign: rhs
+        rhs
+      ]
+      |=> [TO DO: "invalid type given to '=': $lhs"]
+    ]
   
-
   result = #{
     'T' trueF
     'F' falseF
@@ -301,10 +352,30 @@ constructor FunctionT knownFunctions = [
     ',' negateF
     '[' headF
     ']' tailF
+    // Arity 2
+    '+' addF
+    '-' substractF
+    '*' multiplyF
+    '/' divideF
+    '%' remainderF
+    // '^' exponentiateF,
+    '<' lessThanF
+    // '>' greaterThanF,
+    // '?' equalToF,
+    // '&' andF,
+    // '|' orF,
+    ';' thenF
+    '=' assignF,
+    // 'W' whileF
 
 
   }
   
   ^ result
   // stdinScanner = bufio.NewScanner(os.Stdin)
+]
+
+
+Value compare: v::Value fName::String = [
+  
 ]

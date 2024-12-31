@@ -6,7 +6,10 @@ extend Char [
   on isVariableStart = .isLowerCase || .isUnderscore
   on isVariableBody = .isVariableStart || (.isDigit)
   on isWordFunctionCharacter = .isUpperCase || .isUnderscore
-  on isWhitespace = (. == ' ') || (. == '(') || (. == ')')
-
-
+  on isWhitespace = (. == ' ') || 
+                    (. == '(') || 
+                    (. == ')') || 
+                    (. == '\t') || 
+                    (. == '\r') || 
+                    (. == '\n') 
 ]

@@ -5,11 +5,30 @@ union Value =
 | ListT v: MutableList::Value
 | NullT
 | StringT v: String
-| Variable name: String value: Value
+| Variable name: String v: Value
 
-// constructor Ast newFunction: FunctionT arguments: List::Value = [
-
-// ]
+mut Variable assign::Value = [
+  "assign `$assign` to `$this`" echo
+  v <- assign
+  "assign complete, `$this`" echo
+]
+// NewVariable returns the Variable corresponding to name, creating it if it doesn't exist.
+constructor Variable 
+  withName: name::String 
+  variablesMap::MutableMap(String, Variable) -> Variable = [
+  // If the variable already exists, then return it.
+  result = variablesMap containsKey: name |>
+    ifTrue: [
+      variablesMap at: name |> unpackOrPANIC
+    ] ifFalse: [
+      // The variable doesn't exist. Create it, add it to variablesMap, then return it.
+      newVar = Variable name: name v: NullT new
+      variablesMap at: name put: newVar
+      newVar
+    ]
+  
+  ^ result
+]
 
 constructor Ast newFunction::FunctionT args::List::Value -> Ast! = [
   argsCount = args count
@@ -20,7 +39,7 @@ constructor Ast newFunction::FunctionT args::List::Value -> Ast! = [
 ]
 
 extend Value [
-  on run -> Value = [
+  on execute -> Value = [
     value = | this
     // Run executes the ast by passing its arguments to its function.
     | Ast => .function fn List: .arguments
@@ -42,7 +61,7 @@ extend Value [
 
     // Run looks up the last-assigned value for the variable, returning an error if the variable hasn't
     // been assigned yet.
-    | Variable => .value
+    | Variable => .v
     
     ^ value
   ]
@@ -76,14 +95,20 @@ extend Value [
     | StringT => Error throwWithMessage: "String $this toInteger impposible"
 
     ^ IntegerT v: result
-    ^ TO DO: "value"
   ]
   on toStringT -> StringT = [
-    ^ TO DO: "value"
+    result = | this
+    | StringT => .v
+    | IntegerT => .v toString
+    | BoolT => .v ifTrue: ["true"] ifFalse: ["false"]
+    | ListT => .v joinWith: "\n" transform: [it toStringT v]
+    | NullT => "NULL"
+    | Variable => TO DO: "Variable doesn't define string conversions"
+    | Ast => TO DO: "Ast doesn't define string conversions"
+  
+    ^ StringT v: result
   ]
   on toListT -> ListT = [
-
-
     ^ TO DO: "value"
   ]
 ]
@@ -97,9 +122,9 @@ constructor ListT new = [
 Project protocol: "helpers"
 
 extend Value [
-  on runToInteger = .run toIntegerT
-  on runToBoolean = .run toBooleanT
-  on runToString = .run toStringT
-  on runToList = .run toListT
+  on runToInteger = .execute toIntegerT
+  on runToBoolean = .execute toBooleanT
+  on runToString = .execute toStringT
+  on runToList = .execute toListT
 ]
 

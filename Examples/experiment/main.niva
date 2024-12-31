@@ -1,32 +1,34 @@
-Bind package: "kotlin.reflect" content: [
-    @rename: "KClass"
-    type Class::T
 
-    @emit: "$0::class"
-    T class -> Class::T
 
-    Class::T cast::Any? -> T
+// Bind package: "kotlin.reflect" content: [
+//     @rename: "KClass"
+//     type Class::T
 
-    Class::T isInstance::Any? -> Boolean
+//     @emit: "$0::class"
+//     T class -> Class::T
 
-    @emit: "$0::class"
-    constructor T class -> Class::T
+//     Class::T cast::Any? -> T
 
-    @emit: "$0!!"
-    T? assertNotNull -> T
-]
+//     Class::T isInstance::Any? -> Boolean
 
-errordomain Match = | Unmatched
+//     @emit: "$0::class"
+//     constructor T class -> Class::T
 
-type MatchBlock = [I -> R!Unmatched]
+//     @emit: "$0!!"
+//     T? assertNotNull -> T
+// ]
 
-Class::C matchWith::[C -> R] -> MatchBlock = ^[ input::I ->
-    (.isInstance: input) ifTrue: [
-        matchWith C: (.cast: input)
-    ] ifFalse: [
-        Unmatched throwWithMessage: "No match"
-    ]
-]
+// errordomain Match = | Unmatched
+
+// type MatchBlock = [I -> R!Unmatched]
+
+// Class::C matchWith::[C -> R] -> MatchBlock = ^[ input::I ->
+//     (.isInstance: input) ifTrue: [
+//         matchWith C: (.cast: input)
+//     ] ifFalse: [
+//         Unmatched throwWithMessage: "No match"
+//     ]
+// ]
 
 // T match::List::MatchBlock -> R = [
 //     match forEach: [
