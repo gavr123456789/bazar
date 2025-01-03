@@ -1,27 +1,18 @@
 type Program
 
 extend Program [
-  on main: args::List::String -> Unit! = [
-    args echo
+  on main: args::List::String -> Unit! = 
     | args count 
     | 2 => [
       path = args at: 1
       content = File path: path |> readText
-      "file content is $content\n\n" echo
+      "file content is\n$content\n\n" echo
       val = Knight new play: content
-      // "printing functions from ast" echo
-      // | val
-      // | Ast => [
-      //   val function name echo
-      // ]
-      // |=> []
-      // val echo
-      // "finished parsing!" echo
+
       val execute
       "finished executing!" echo
     ]
     |=> "usage: %s [-h] (-e 'expr' | -f file)" echo
-  ]
 ]
 
 Program new main: {"-f" "hello.kn"} toList

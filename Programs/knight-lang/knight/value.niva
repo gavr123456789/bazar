@@ -109,8 +109,32 @@ extend Value [
     ^ StringT v: result
   ]
   on toListT -> ListT = [
+    // TODO
     ^ TO DO: "value"
   ]
+  on compare: rhs::Value funcName::String -> Int! = 
+  | this
+  | IntegerT => .v - rhs toIntegerT v
+  | BoolT => [
+    v2 = rhs toBooleanT v
+    .v not && v2 => -1 |=>
+    .v && v2 not => 1  |=>
+    0
+  ]
+  | ListT => .compare: rhs toListT funcName: funcName
+  |=> TO DO: "invalid type given to $funcName, comparable types are: Int, List, Boolean"
+]
+
+ListT compare: list::ListT funcName::String -> Int! = [
+  len = v count 
+  v2 = list toListT v
+
+  len repeat: [
+    cmp = (v at: it) compare: (v2 at: it) funcName: funcName
+    cmp != 0 => ^cmp
+  ]
+
+  ^ v count - list v count
 ]
 
 constructor ListT new = [

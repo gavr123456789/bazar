@@ -107,7 +107,6 @@ extend mut Parser [
     // Get the function definition; If it doesn't exist, then we've been given an invalid token.
     // function, ok := KnownFunctions[c]
     knownFunctions = FunctionT knownFunctions
-    // "'$c'" echo
     function = knownFunctions at: c |> unpackOrPANIC
     
     arguments::MutableList::Value = {}

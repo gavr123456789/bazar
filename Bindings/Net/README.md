@@ -47,7 +47,7 @@ routes asServer: (SunHttp port: 9000) |> start
 
 run to test Post 
 ```
-curl -X POST http://localhost:9000/person \                
+curl -X POST http://localhost:9000/person \
                       -H "Content-Type: application/json" \
                       -d '{"name": "Alex", "age": 25}'
 ```

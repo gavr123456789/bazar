@@ -3,21 +3,8 @@ type FunctionT
   arity: Int 
   fn: [List::Value -> Value]
 
+constructor FunctionT knownFunctions = [  
 
-
-
-constructor FunctionT knownFunctions = [
-  
-  trueF = FunctionT 
-    name: "TRUE" 
-    arity: 0 
-    fn: [ BoolT v: true ]
-
-  falseF = FunctionT 
-    name: "FALSE" 
-    arity: 0 
-    fn: [ BoolT v: false ]
-  
   nullF = FunctionT 
     name: "NULL" 
     arity: 0 
@@ -51,6 +38,16 @@ constructor FunctionT knownFunctions = [
     arity: 1
     fn: [ args -> args at: 0 ]
 
+  
+  trueF = FunctionT 
+    name: "TRUE" 
+    arity: 0 
+    fn: [ BoolT v: true ]
+
+  falseF = FunctionT 
+    name: "FALSE" 
+    arity: 0 
+    fn: [ BoolT v: false ]
   // call runs its argument, and then returns the result of running _that_ value. This allows us to
   // defer execution of `BLOCK`s until later on.    
   callF = FunctionT 
@@ -281,33 +278,48 @@ constructor FunctionT knownFunctions = [
     name: "<" 
     arity: 2
     fn: [ args -> 
-      TO DO: "lessThanF not implemented" 
+      lhs = args at: 0 |> execute
+      rhs = args at: 1 |> execute
+      BoolT v: (lhs compare: rhs funcName: "<") < 0
     ]
   greaterThanF = FunctionT 
     name: ">" 
     arity: 2
     fn: [ args -> 
-      TO DO: "greaterThanF not implemented" 
+      lhs = args at: 0 |> execute
+      rhs = args at: 1 |> execute
+      BoolT v: (lhs compare: rhs funcName: ">") > 0
     ]
   equalToF = FunctionT 
-    name: ">" 
+    name: "?"
     arity: 2
     fn: [ args -> 
-      TO DO: "equalToF not implemented" 
+      // TODO: not deep equal
+      lhs = args at: 0 |> execute
+      rhs = args at: 1 |> execute
+      BoolT v: (lhs compare: rhs funcName: ">") == 0
     ]
   andF = FunctionT 
     name: ">" 
     arity: 2
     fn: [ args -> 
-      TO DO: "andF not implemented" 
+      lhs = args at: 0 |> execute
+      isTruthy = lhs toBooleanT v
+      isTruthy 
+        ifTrue: [args at: 1 |> execute]
+        ifFalse: [lhs]
     ]
   orF = FunctionT 
     name: ">" 
     arity: 2
     fn: [ args -> 
-      TO DO: "orF not implemented" 
+      lhs = args at: 0 |> execute
+      isTruthy = lhs toBooleanT v
+      isTruthy 
+        ifFalse: [args at: 1 |> execute]
+        ifTrue: [lhs]
     ]
-  //
+  
   thenF = FunctionT 
     name: ";"
     arity: 2
@@ -360,10 +372,10 @@ constructor FunctionT knownFunctions = [
     '%' remainderF
     // '^' exponentiateF,
     '<' lessThanF
-    // '>' greaterThanF,
-    // '?' equalToF,
-    // '&' andF,
-    // '|' orF,
+    '>' greaterThanF,
+    '?' equalToF,
+    '&' andF,
+    '|' orF,
     ';' thenF
     '=' assignF,
     // 'W' whileF
@@ -376,6 +388,3 @@ constructor FunctionT knownFunctions = [
 ]
 
 
-Value compare: v::Value fName::String = [
-  
-]
