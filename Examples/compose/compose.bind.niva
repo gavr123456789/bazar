@@ -10,23 +10,149 @@ Bind package: "androidx.compose.ui.window" content: [
 
   
 ]
+Bind package: "androidx.compose.ui.unit" content: [
+  type Dp value: Float
+]
+Bind package: "androidx.compose.runtime" content: [
+  type MutableState value: T //setValue: [T -> Unit]
+  MutableState component1 -> T
+  MutableState component2 -> [T -> Unit]
+
+  // not possible for now
+  // builder T remember -> T = []
+
+  @emit: "remember { mutableStateOf($1) }"
+  constructor MutableState remember::T -> MutableState
+]
+MutableState::T get = .component1
+MutableState::T set::T = .component2 T: set
+
+Int dp -> Dp = Dp value: .toFloat
+Double dp -> Dp = Dp value: .toFloat
+Float  dp -> Dp = Dp value: .
+
+Bind package: "androidx.compose.ui" content: [
+  type Modifier
+  constructor Modifier [
+    on padding::Dp -> Modifier
+  ]
+]
+Bind package: "androidx.compose.foundation.lazy" imports: {"androidx.compose.ui.Modifier"} 
+content: [
+  type LazyListScope
+  // extend LazyListScope [
+  //   on items
+  // ]
+
+  @emit: "items($0) $1"
+  MutableList::T lazyItems::[T -> Unit] -> Unit
+  // LazyListScope builder items items::List::T -> Unit = []
+  // @rename: "items"
+  // LazyListScope builder keyItems items::List::T key::[T -> Any?] -> Unit = []
+  builder LazyListScope LazyColumn -> Unit = []
+  builder LazyListScope LazyRow -> Unit = []
+]
+
+Bind package: "androidx.compose.foundation.layout" imports: {"androidx.compose.ui.Modifier"} 
+content: [
+  type ColumnScope
+  type RowScope
+
+  builder ColumnScope Column -> Unit = []
+  builder RowScope Row -> Unit = []
+
+  // temp solution, while builder with and without args is not supported
+  @rename: "Modifier"
+  type SpacerModifier 
+  @emit: "Modifier.height($1)"
+  constructor SpacerModifier height::Dp -> SpacerModifier
+  @emit: "Modifier.width($1)"
+  constructor SpacerModifier width::Dp -> SpacerModifier
+
+  type Spacer modifier: SpacerModifier
+  // constructor Spacer modifier::SpacerModifier -> Spacer 
+  
+  type Row 
+  constructor Row modifier::Modifier -> Row
+]
+
+
+Bind package: "androidx.compose.ui.text" content: [
+  type TextStyle
+]
+
 
 Bind package: "androidx.compose.material" content: [
-  type Material
-  type RowScope
-  builder Material MaterialTheme -> Unit = []
-  builder RowScope Button onClick::[] -> Unit = []
-  // wont work with many args in receiver
+  type MaterialTheme
+  constructor MaterialTheme [
+    @emit: "MaterialTheme.colors"
+    on colors -> Colors 
+    @emit: "MaterialTheme.typography"
+    on typography -> Typography 
+
+  ]
+
+  builder MaterialTheme MaterialTheme -> Unit = []
+  builder RowScope Button onClick::[-> Unit] -> Unit = []
+  // Typography
+  type Typography 
+  // COLOR
+  type Color value: Long
+  extend Color [
+    on red -> Float
+    on blue -> Float
+    on green -> Float
+    on alpha -> Float
+  ]
+
+  type Colors
+
+  // TEXT
   @emit: "Text($0)"
   String Text -> Unit
 
-  //fake
+
+  //fake, because we cant create functions without receiver
   type Text
 
   @emit: "Text($1)"
   constructor Text value::String -> Unit
 
+  @emit: "Text(text = $1, style = $2)"
+  constructor Text value::String style::TextStyle -> Unit
 
-  // RowScope Text text::String -> Unit
+  @emit: "Text(text = $1, color = $2)"
+  constructor Text value::String color::Color -> Unit
 
+
+] getters: [
+  Colors
+    primary: Color
+    primaryVariant: Color
+    secondary: Color
+    secondaryVariant: Color
+    background: Color
+    surface: Color
+    error: Color
+    onPrimary: Color
+    onSecondary: Color
+    onBackground: Color
+    onSurface: Color
+    onError: Color
+    isLight: Boolean
+
+  Typography 
+    h1: TextStyle
+    h2: TextStyle
+    h3: TextStyle
+    h4: TextStyle
+    h5: TextStyle
+    h6: TextStyle
+    subtitle1: TextStyle
+    subtitle2: TextStyle
+    body1: TextStyle
+    body2: TextStyle
+    button: TextStyle
+    caption: TextStyle
+    overline: TextStyle
 ]
