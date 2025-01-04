@@ -15,4 +15,11 @@ extend Program [
     |=> "usage: %s [-h] (-e 'expr' | -f file)" echo
 ]
 
-Program new main: {"-f" "hello.kn"} toList
+// Program new main: {"-f" "hello.kn"} toList
+
+
+type Person name: String
+p = Person name: "Alice"
+
+
+p name echo  

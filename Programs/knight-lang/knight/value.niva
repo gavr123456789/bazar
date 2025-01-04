@@ -123,7 +123,46 @@ extend Value [
   ]
   | ListT => .compare: rhs toListT funcName: funcName
   |=> TO DO: "invalid type given to $funcName, comparable types are: Int, List, Boolean"
-]
+
+  on deepEqual: rhs::Value -> Boolean = | this 
+    | Ast => 
+      | rhs 
+      | Ast => 
+        (.arguments == rhs arguments) && 
+        (.function == rhs function)
+      |=> false
+    
+    | BoolT => 
+      | rhs
+      | BoolT => .v == rhs v
+      |=> false
+    
+    | IntegerT => 
+      | rhs
+      | IntegerT => .v == rhs v
+      |=> false
+
+    | ListT => 
+      | rhs
+      | ListT => .v == rhs v
+      |=> false
+
+    | NullT => [
+      | rhs
+      | NullT => true
+      |=> false
+    ]
+    | StringT =>
+      | rhs
+      | StringT => .v == rhs v
+      |=> false
+    | Variable => 
+      | rhs
+      | Variable => 
+        (.v == rhs v) && 
+        (.name == rhs name)
+      |=> false
+  ]
 
 ListT compare: list::ListT funcName::String -> Int! = [
   len = v count 

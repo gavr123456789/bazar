@@ -319,6 +319,16 @@ constructor FunctionT knownFunctions = [
         ifFalse: [args at: 1 |> execute]
         ifTrue: [lhs]
     ]
+  exponentiateF = FunctionT 
+    name: "^" 
+    arity: 2
+    fn: [ args -> 
+      lhs = args at: 0 |> runToInteger v
+      rhs = args at: 1 |> runToInteger v
+      mut c = lhs
+      rhs repeat: [ c <- c * c ]
+      IntegerT v: c
+    ]
   
   thenF = FunctionT 
     name: ";"
@@ -332,16 +342,74 @@ constructor FunctionT knownFunctions = [
     arity: 2
     fn: [ args -> 
       lhs = args at: 0
-      
-      | lhs
-      | Variable => [
-        // lhs = rhs
-        rhs::mut Value = args at: 1 |> execute
-        lhs assign: rhs
-        rhs
-      ]
-      |=> [TO DO: "invalid type given to '=': $lhs"]
+      rhs = args at: 1
+      BoolT v: (lhs deepEqual: rhs)
     ]
+  whileF = FunctionT 
+    name: "WHILE"
+    arity: 2
+    fn: [ args -> 
+      [args at: 0 |> runToBoolean] whileTrue: [
+        args at: 1 |> execute // body
+      ]
+      NullT new
+    ]
+
+
+  // 3
+
+  // if_ evaluates and returns the second argument if the first is truthy; if it's falsey, if_
+  // evaluates and returns the third argument instead.
+  ifF = FunctionT 
+    name: "IF"
+    arity: 3
+    fn: [ args -> 
+      args at: 0 |> runToBoolean v |> 
+        ifTrue: [
+          args at: 1 |> execute // then
+        ] ifFalse: [
+          args at: 2 |> execute // else
+        ]
+    ]
+
+  getF = FunctionT 
+    name: "IF"
+    arity: 3
+    fn: [ args -> 
+      collection = args at: 0 |> execute
+      // Get the starting index, returning an error if it's negative
+      start = args at: 1 |> runToInteger v
+      start < 0 ifTrue: [TO DO: "negative start given to 'GET': $start"]
+
+      length = args at: 2 |> runToInteger v
+      length < 0 ifTrue: [TO DO: "negative length given to 'GET': $length"]
+      
+      stop = start + length
+      
+      | collection
+      | StringT => [
+        low = collection v count
+        high = stop
+        low < high 
+          ifTrue: [
+            TO DO: "string index out of bounds for 'GET': $low < $high"
+          ] ifFalse: [
+            StringT v: (collection v substringFrom: start to: stop)
+          ]
+      ]
+      | ListT => [
+        low = collection v count
+        high = stop
+        low < high 
+          ifTrue: [
+            TO DO: "string index out of bounds for 'GET': $low < $high"
+          ] ifFalse: [
+            ListT v: (collection v viewFrom: start to: stop)
+          ]
+      ]
+      |=> TO DO: "invalid type given to 'GET': $collection"
+    ]
+  
   
   result = #{
     'T' trueF
@@ -370,16 +438,20 @@ constructor FunctionT knownFunctions = [
     '*' multiplyF
     '/' divideF
     '%' remainderF
-    // '^' exponentiateF,
+    '^' exponentiateF
     '<' lessThanF
-    '>' greaterThanF,
-    '?' equalToF,
-    '&' andF,
-    '|' orF,
+    '>' greaterThanF
+    '?' equalToF
+    '&' andF
+    '|' orF
     ';' thenF
-    '=' assignF,
-    // 'W' whileF
-
+    '=' assignF
+    'W' whileF
+    // Arity 3
+    // 'I' ifF
+    // 'G' getF
+    // Arity 4
+    // 'S' setF
 
   }
   
