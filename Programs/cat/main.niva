@@ -1,0 +1,29 @@
+// 4 lines impl
+// args count == 1 ifFalse: [Error throwWithMessage: "file path argument expected"]
+// file = File path: (args at: 0) 
+// file exists ifFalse: [Error throwWithMessage: "file $file is not exit"]
+// file readText echo
+
+// real proj impl
+errordomain CatErrors = 
+| NoArg
+
+type Cat 
+
+Cat args::List::String -> Unit!{NoArg FileNotFoundException} = [
+  | args count 
+  | 1 => [
+    file = File path: (args at: 0) 
+    file readText echo
+
+    "" echo
+  ]
+  |=> NoArg new throw
+]
+
+(Cat new args: args toList) ifError: [
+  | it
+  | FileNotFoundException => "No such file found" echo
+  | NoArg => "Missing file argument" echo
+]
+

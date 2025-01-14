@@ -1,0 +1,25 @@
+Project loadPackages: {"$compose.desktop.currentOs"}
+
+
+Bind package: "androidx.compose.ui.unit" content: [
+  type Dp value: Float
+]
+
+Bind package: "androidx.compose.runtime" content: [
+  type MutableState value: T //setValue: [T -> Unit]
+  MutableState component1 -> T
+  MutableState component2 -> [T -> Unit]
+
+  @emit: "remember { mutableStateOf($1) }"
+  constructor MutableState remember::T -> MutableState
+]
+
+
+
+
+// MutableState::T get = .component1
+// MutableState::T set::T = .component2 T: set
+
+// Int dp -> Dp = Dp value: .toFloat
+// Double dp -> Dp = Dp value: .toFloat
+// Float  dp -> Dp = Dp value: .

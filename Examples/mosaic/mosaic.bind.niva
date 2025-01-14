@@ -1,0 +1,80 @@
+Project loadPackages: {"com.jakewharton.mosaic:mosaic-runtime:0.14.0"}
+
+Bind package: "com.jakewharton.mosaic" content: [
+  builder Unit runMosaicBlocking = [] 
+]
+
+
+Bind package: "com.jakewharton.mosaic.modifier" content: [
+  type Modifier
+  extend Modifier [
+    on then::Modifier -> Modifier
+  ]
+  @emit: "Modifier"
+  constructor Modifier new -> Modifier
+]
+
+Bind package: "com.jakewharton.mosaic.layout" content: [
+  extend Modifier [
+    /// Declare the preferred width of the content to be exactly width. The incoming measurement Constraints may override this value, forcing the content to be either smaller or larger.
+    on width::Int -> Modifier
+    /// Declare the preferred height of the content to be exactly height. The incoming measurement Constraints may override this value, forcing the content to be either smaller or larger.
+    on height::Int -> Modifier
+    on size::Int -> Modifier
+    @rename: "size"
+    on width::Int height::Int -> Modifier
+  ]
+]
+
+
+Bind package: "com.jakewharton.mosaic.ui" content: [
+  type Text
+
+  @emit: "Text($1)"
+  constructor Text value::String -> Unit
+
+  // layout 
+
+  // Arrangement
+  enum Arrangement = Center | Start | End 
+  enum Alignment = 
+  // 2D Alignments.
+  // | TopStart 
+  // | TopCenter 
+  // | TopEnd 
+  // | CenterStart
+  // | Center
+  // | CenterEnd
+  // | BottomStart
+  // | BottomCenter
+  // | BottomEnd
+  // 1D Alignment.Verticals.
+  | Top
+  | CenterVertically
+  | Bottom
+  // 1D Alignment.Horizontals.
+  // | Start
+  // | CenterHorizontally
+  // | End
+
+  // Row Column
+  type ColumnScope
+  type RowScope
+
+  builder ColumnScope Column -> Unit = []
+  builder RowScope Row -> Unit = []
+
+  type Row
+  @emit: "Row($1, $2, $3, $4)"
+  constructor Row 
+    modifier::Modifier
+    horizontalArrangement::Arrangement
+    verticalAlignment::Alignment
+    content::RowScope[] -> Unit
+  @emit: "Row(modifier = $1, content = $2)"
+  constructor Row 
+    modifier::Modifier
+    content::RowScope[] -> Unit
+
+
+]

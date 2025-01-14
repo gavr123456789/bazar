@@ -1,0 +1,88 @@
+Project target: "jvmCompose"
+
+runMosaicBlocking [
+  Column [
+    Row [
+      Text value: "sas"
+      Text value: "sus"
+    ]
+    Row 
+      modifier: (Modifier new size: 10)
+      horizontalArrangement: Arrangement.Start 
+      verticalAlignment: Alignment.CenterVertically
+      content: [
+        Text value: "sos"
+        Text value: "sys"
+      ]
+  ]
+
+]
+
+// type CoolText
+
+// @androidx.compose.runtime.Composable
+// constructor CoolText foo::Int = 
+//   Text value: foo toString
+
+
+// type Message author: String body: String
+// type MessageCard
+
+// @androidx.compose.runtime.Composable
+// constructor MessageCard msg::Message = [
+//   Column [
+//     // author
+//     Text 
+//       value: msg author 
+//       color: MaterialTheme colors error
+
+//     Spacer modifier: (SpacerModifier height: 2 dp)
+//     // body
+//     Text value: msg body style: MaterialTheme typography body1
+//   ]
+// ]
+
+
+
+// type App
+
+// @androidx.compose.runtime.Composable
+// constructor App new = [
+//   counter = MutableState remember: 0
+//   messages = MutableState remember: {
+//     (Message author: "Gavr" body: "hii!")
+//     (Message author: "Vlad" body: "Hello")
+//     (Message author: "Kiril" body: "Kek ^_^")
+//   }
+
+//   increase = [counter set: counter get inc]
+//   Column [
+//     Row [
+//       Button (onClick: [increase do]) [
+//         CoolText foo: counter get
+//       ]
+//       Button (onClick: ["clicked!" echo]) [
+//         CoolText foo: 2
+//       ]
+//     ]
+
+//     Spacer modifier: (SpacerModifier height: 30 dp)
+
+//     LazyColumn [
+//       messages get lazyItems: [
+//         MessageCard msg: it
+//         Spacer modifier: (SpacerModifier height: 6 dp)
+//       ]
+//     ]
+
+//   ]
+// ]
+
+
+// application [
+//   Window (onCloseRequest: [this exitApplication]) [
+//     MaterialTheme [
+//       App new
+//     ]
+//   ]
+// ]
