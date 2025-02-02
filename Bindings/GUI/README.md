@@ -8,7 +8,6 @@ Put both Header and Button to a ToolbarView container
 Show the Window  
 
 ```Scala
-@Serializable
 Project use: "org.gnome.adw"
 
 app = Application name: "my.app"
