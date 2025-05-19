@@ -7,7 +7,7 @@ constructor Parser source::String =
   Parser 
     source: source 
     index: 0
-    variablesMap: #{}
+    variablesMap: #{}m
 
 extend mut Parser [
   /// IsAtEnd returns whether the parser is at the end of its stream.

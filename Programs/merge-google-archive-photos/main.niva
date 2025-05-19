@@ -1,0 +1,14 @@
+type Program args: List::String
+
+
+Program run -> Unit! = [
+  | args count
+  | 2 => [
+
+  ]
+  |=> Error throwWithMessage: "name of the folder and path expected"
+]
+
+
+
+Program args: args toList, run

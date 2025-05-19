@@ -108,7 +108,7 @@ constructor FunctionT knownFunctions = [
     name: "," 
     arity: 1
     fn: [ args -> 
-      ListT v: {(args at: 0 |> execute)}
+      ListT v: {(args at: 0 |> execute)}m
     ]
   headF = FunctionT 
     name: "[" 
@@ -349,7 +349,7 @@ constructor FunctionT knownFunctions = [
     name: "WHILE"
     arity: 2
     fn: [ args -> 
-      [args at: 0 |> runToBoolean] whileTrue: [
+      [args at: 0 |> runToBoolean v] whileTrue: [
         args at: 1 |> execute // body
       ]
       NullT new

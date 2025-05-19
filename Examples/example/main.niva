@@ -1,188 +1,74 @@
-Bind package: "kotlin.reflect" content: [
-    @rename: "KClass"
-    type Class::T
+String surroundWith::String and::String = 
+  surroundWith + this + and
 
-    @emit: "$0::class"
-    T class -> Class::T
+String surroundWith: x::String = 
+  x + this + x
 
-    Class::T cast::Any? -> T
+String packForJson -> String = 
+   this escape surroundWith: "\""
 
-    Class::T isInstance::Any? -> Boolean
+String escape = 
+  this replace: "\\" with: "\\\\",
+  replace: "\"" with: "\\\"",
+  replace: "\n" with: "\\n",
+  replace: "\r" with: "\\r",
+  replace: "\t" with: "\\t",
+  replace: "\'" with: "\\'" 
 
-    @emit: "$0::class"
-    constructor T class -> Class::T
-] fields: [
-    Class::T
-        simpleName: String
-        qualifiedName: String
+Dynamic toJson -> String = | this 
+| DynamicStr => value packForJson 
+| DynamicInt => value toString
+| DynamicDouble => value toString
+| DynamicBoolean => value toString
+| DynamicList => value dynListToJson
+| DynamicObj  => value dynObjectToJson
+
+enum Color = Red | Blue | Green
+type Card color: Color
+
+c = Card color: Color.Red
+dynamic = Card toDynamic: c
+dynamic toJson echo
+c2 = Card fromDynamic: dynamic
+c2 echo
+
+
+
+MutableMap(String, Dynamic) dynObjectToJson -> String = [
+  createObj = [
+    b = StringBuilder new
+    mut i = 0
+    this forEach: [ k, v ->
+
+      b append: k packForJson |>
+        append: ": " |>
+        append: v toJson 
+      i + 1 != this count => b append: ", "
+
+      i <- i inc
+    ]
+    b toString
+  ]
+
+  ^createObj do surroundWith: "{ " and: " }" 
 ]
 
-Class::T ifInstance::Any? thenDo::[T -> R] -> R? =     
-    (.isInstance: ifInstance) ifTrue: [
-        thenDo T: (.cast: ifInstance)
-    ] ifFalse: [
-        null
+
+List::Dynamic dynListToJson -> String = [
+  createArr = [
+    b = StringBuilder new
+    this forEachIndexed: [ i, it ->
+      b append: it toJson 
+      i + 1 != this count => b append: ", "
     ]
+    b toString
+  ]
 
-Int class ifInstance: 1 thenDo: [ "An int" echo ]
-
-
-// List::List::T unzip = [
-//     first::MutableList::T = {}
-//     second::MutableList::T = {}
-
-//     this forEach: [
-//         first add: (it at: 0)
-//         second add: (it at: 1)
-//     ]
-
-//     ^ { first second }
-// ]
+  ^createArr do surroundWith: "[ " and: " ]" 
+]
 
 
-// Bind package: "kotlin" content: [
-//     Char code -> Int
-// ]
-
-// "qwf" first code
-
-// input = (File path: "input.txt") readText split: "\n"
-
-// input map: [ it split: "" |> map: [it first code] ]
-
-
-
-// String code -> Int = 5
-// x = {"q" "w" "f"} toList
-// x map: [ it split: "" |> map: &String code ]
-
-// '1'..'9' forEach: [it digitToInt inc inc echo]
-
-// type Person name: String age: Int
-// p = Person name: "Alice" age: 32
-
-// p echo
-
-
-
-// i = (File path: "../input.txt") readText split: "\n"
-
-// i map: [ 
-//     digits = it filter: &Char isDigit |> map: [it toString] 
-//     (digits first) + (digits last) |> toInt
-// ] |> sum echo
-
-// type Lazy v: T? init: [ -> T] 
-// constructor Lazy init::T = Lazy v: null init: init
-// Lazy eval = [
-//   result = v unpackOrValue: init do
-//   v <- result
-//   ^ result
-// ]
-
-// x = Lazy init: [
-//   "computing!!!" echo
-//   1 + 1
-// ]
-
-// x eval echo
-// x eval echo
-// x eval echo
-
-
-        //  MutableList::MutableList::T unzip = [
-        //         first::MutableList::T = {}
-        //         second::MutableList::T = {}
-            
-        //         this forEach: [
-        //             first add: (it at: 0)
-        //             second add: (it at: 1)
-        //         ]
-            
-        //         ^ { first second }
-        //     ]
-            
-        //     {({1 2 3}) ({4 5 6}) ({7 8 9})} unzip echo
-
-// map = #{"param" 1 "param2" 2}
-// map values forEach: [it echo]
-
-
-/////
-
-// List::List::T unzip -> List::List::T = [
-//     first::MutableList::T = {}
-//     second::MutableList::T = {}
-
-//     this forEach: [
-//         first add: (it at: 0)
-//         second add: (it at: 1)
-//     ]
- 
-//     ^ { (first toList) (second toList) } toList
-// ]
-
-// q = {"1 2" "1 2" "1 2"} toList
-// lists = q map: [it  split: " " |> map: [it toInt]] 
-// unzipped = lists unzip
-
-
-////
-
-// MutableList second = this at: 1
-
-// MutableList sorted = this sortedBy: [ it ]
-
-// List::Int zipWith::List::Int = [
-//     result::MutableList::MutableList::Int = {}
-
-//     this forEachIndexed: [ index, it ->
-//         result add: { it, (zipWith at: index) }
-//     ]
-
-//     ^ result
-// ]
-
-//////////
-// List::List::Int unzip = [
-//     first::MutableList::Int = {}
-//     second::MutableList::Int = {}
-
-//     this forEach: [
-//         first add: (it at: 0)
-//         second add: (it at: 1)
-//     ]
-
-//     ^ { first, second }
-// ]
-
-// input = (File path: "../input.txt") readText split: "\n"
-
-// lists = input map: [ it split: "   " |> map: [ it toInt ] ] |> unzip
-
-
-// sorted = (lists first sorted) zipWith: (lists second sorted)
-// sorted echo
-
-// list = {1 2 3}
-// set = #(1 2 3)
-// map = #{1 2 3}
-
-// union MyList = 
-// | Nil
-// | Cons head: T tail: MyList
-
-// MyList count -> Int = |this
-// | Nil => 0
-// | Cons => 1 + .tail count
-
-// x = Cons head: 3 tail: 
-//     (Cons head: 5 tail: 
-//     (Cons head: 2 tail: Nil new))
-// x echo
-// x count echo
-
-x = [block::[] -> block do]
-
-x block: [1 echo]
-
+// type Wallet money: Int
+// type Person name: String age: Int wallet: Wallet
+// p1 = Person name: "Alice" age: 25 wallet: (Wallet money: 42)
+// Person toDynamic: p1, toJson echo

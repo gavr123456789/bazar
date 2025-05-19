@@ -1,0 +1,21 @@
+
+
+type Person2 id: Int age: Int
+
+table2 = {
+  (Person2 id: 1 age: 21)
+  (Person2 id: 2 age: 20)
+  (Person2 id: 3 age: 26)
+}
+
+type Person id: Int name: String
+
+table1 = {
+  (Person id: 1 name: "george")
+  (Person id: 2 name: "mike")
+  (Person id: 3 name: "donald")
+}
+
+up_case_name = [p::Person -> p name map: [it uppercaseChar], joinWith: ""]
+up_case_name p: (table1 at: 0), echo
+

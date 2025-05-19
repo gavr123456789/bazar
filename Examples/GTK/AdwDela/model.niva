@@ -16,9 +16,9 @@ type Model
 
 constructor Model 
   widgetConstructor: wc::[String -> ExpanderRow] = 
-    Model tasks: {} lastId: 0 widget: PreferencesGroup new widgetConstructor: wc
+    Model tasks: {}m lastId: 0 widget: PreferencesGroup new widgetConstructor: wc
 
-Model add: name::String = [
+mut Model add: name::String = [
   // create task
   taskWidget = widgetConstructor String: name
   id = lastId
@@ -28,7 +28,7 @@ Model add: name::String = [
     id: id 
     widget: taskWidget
     remove: [
-      q = tasks find: [it id == id] |> unpackOrError
+      q = tasks find: [it id == id], unpackOrPANIC
       "removing $q" echo
       tasks remove: q // remove from model 
       widget remove: q widget

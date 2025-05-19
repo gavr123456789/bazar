@@ -34,6 +34,7 @@ Sequence::T forEachBreak::[T -> Boolean] -> Unit = [
 union CombinatorResult = 
 | Success value: String rest: String captures: MutableMap(String, String)
 | Failure
+
 type ParserCombinator = [String -> CombinatorResult]
 
 type Parser 
@@ -59,21 +60,6 @@ Parser sequence: combinators::MutableList::ParserCombinator -> ParserCombinator 
   mut value = ""
   mut fail = false
   captures::MutableMap(String, String) = #{}
-  // x = combinators asSequence map: [it String: current] |>
-  //   firstOrNull: [
-  //     | it
-  //     | Success => [
-  //       current <- it rest
-  //       value <- value + it value
-  //       captures putAll: it captures
-  //       false
-  //     ]
-
-  //     | Failure => [
-  //       fail <- true // distinguish is x null because list is complete, or is it null because of early fail
-  //       true
-  //     ]
-  //   ]
 
   x = combinators asSequence map: [it String: current] |>
     forEachBreak: [
@@ -120,11 +106,11 @@ Parser n::Int orMore: combinator::ParserCombinator = ^ [str::String ->
     |=> Failure new
 ]
 
+// x = parser char: '1'
+// x String: "1qwf"
 
 parser = Parser new
 
-// x = parser char: '1'
-// x String: "1qwf"
 
 digitParsers = ('0'..'9') toList map: [parser char: it]
 digit = parser either: digitParsers

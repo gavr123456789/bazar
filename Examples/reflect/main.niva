@@ -1,0 +1,188 @@
+Bind package: "kotlin.reflect" content: [
+    @rename: "KClass"
+    type Class::T
+
+    @emit: "$0::class"
+    T class -> Class::T
+
+    Class::T cast::Any? -> T
+
+    Class::T isInstance::Any? -> Boolean
+
+    @emit: "$0::class"
+    constructor T class -> Class::T
+] fields: [
+    Class::T
+        simpleName: String
+        qualifiedName: String
+]
+
+Class::T ifInstance::Any? thenDo::[T -> R] -> R? =     
+    (.isInstance: ifInstance) ifTrue: [
+        thenDo T: (.cast: ifInstance)
+    ] ifFalse: [
+        null
+    ]
+
+Int class ifInstance: 1 thenDo: [ "An int" echo ]
+
+
+// List::List::T unzip = [
+//     first::MutableList::T = {}
+//     second::MutableList::T = {}
+
+//     this forEach: [
+//         first add: (it at: 0)
+//         second add: (it at: 1)
+//     ]
+
+//     ^ { first second }
+// ]
+
+
+// Bind package: "kotlin" content: [
+//     Char code -> Int
+// ]
+
+// "qwf" first code
+
+// input = (File path: "input.txt") readText split: "\n"
+
+// input map: [ it split: "" |> map: [it first code] ]
+
+
+
+// String code -> Int = 5
+// x = {"q" "w" "f"} toList
+// x map: [ it split: "" |> map: &String code ]
+
+// '1'..'9' forEach: [it digitToInt inc inc echo]
+
+// type Person name: String age: Int
+// p = Person name: "Alice" age: 32
+
+// p echo
+
+
+
+// i = (File path: "../input.txt") readText split: "\n"
+
+// i map: [ 
+//     digits = it filter: &Char isDigit |> map: [it toString] 
+//     (digits first) + (digits last) |> toInt
+// ] |> sum echo
+
+// type Lazy v: T? init: [ -> T] 
+// constructor Lazy init::T = Lazy v: null init: init
+// Lazy eval = [
+//   result = v unpackOrValue: init do
+//   v <- result
+//   ^ result
+// ]
+
+// x = Lazy init: [
+//   "computing!!!" echo
+//   1 + 1
+// ]
+
+// x eval echo
+// x eval echo
+// x eval echo
+
+
+        //  MutableList::MutableList::T unzip = [
+        //         first::MutableList::T = {}
+        //         second::MutableList::T = {}
+            
+        //         this forEach: [
+        //             first add: (it at: 0)
+        //             second add: (it at: 1)
+        //         ]
+            
+        //         ^ { first second }
+        //     ]
+            
+        //     {({1 2 3}) ({4 5 6}) ({7 8 9})} unzip echo
+
+// map = #{"param" 1 "param2" 2}
+// map values forEach: [it echo]
+
+
+/////
+
+// List::List::T unzip -> List::List::T = [
+//     first::MutableList::T = {}
+//     second::MutableList::T = {}
+
+//     this forEach: [
+//         first add: (it at: 0)
+//         second add: (it at: 1)
+//     ]
+ 
+//     ^ { (first toList) (second toList) } toList
+// ]
+
+// q = {"1 2" "1 2" "1 2"} toList
+// lists = q map: [it  split: " " |> map: [it toInt]] 
+// unzipped = lists unzip
+
+
+////
+
+// MutableList second = this at: 1
+
+// MutableList sorted = this sortedBy: [ it ]
+
+// List::Int zipWith::List::Int = [
+//     result::MutableList::MutableList::Int = {}
+
+//     this forEachIndexed: [ index, it ->
+//         result add: { it, (zipWith at: index) }
+//     ]
+
+//     ^ result
+// ]
+
+//////////
+// List::List::Int unzip = [
+//     first::MutableList::Int = {}
+//     second::MutableList::Int = {}
+
+//     this forEach: [
+//         first add: (it at: 0)
+//         second add: (it at: 1)
+//     ]
+
+//     ^ { first, second }
+// ]
+
+// input = (File path: "../input.txt") readText split: "\n"
+
+// lists = input map: [ it split: "   " |> map: [ it toInt ] ] |> unzip
+
+
+// sorted = (lists first sorted) zipWith: (lists second sorted)
+// sorted echo
+
+// list = {1 2 3}
+// set = #(1 2 3)
+// map = #{1 2 3}
+
+// union MyList = 
+// | Nil
+// | Cons head: T tail: MyList
+
+// MyList count -> Int = |this
+// | Nil => 0
+// | Cons => 1 + .tail count
+
+// x = Cons head: 3 tail: 
+//     (Cons head: 5 tail: 
+//     (Cons head: 2 tail: Nil new))
+// x echo
+// x count echo
+
+x = [block::[] -> block do]
+
+x block: [1 echo]
+

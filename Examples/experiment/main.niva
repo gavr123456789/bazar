@@ -1,4 +1,25 @@
 
+type Person name: String age: Int
+
+p = Person name: "Alice" age: 123
+
+Person toString = [
+  "Person: $name"
+]
+
+p toString echo
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Bind package: "kotlin.reflect" content: [
 //     @rename: "KClass"
@@ -40,16 +61,107 @@
 
 
 
-1..20, toList map: [it + 1], filter: [it % 2 == 1], echo
-1..20 |> toList map: [it + 1] |> filter: [it % 2 == 1] |> echo
+// 1..20, toList map: [it + 1], filter: [it % 2 == 1], echo
+// 1..20 |> toList map: [it + 1] |> filter: [it % 2 == 1] |> echo
 
-@Serializable
-type Person name: String age: Int
+// @Serializable
+// type Person name: String age: Int
 
-person = Person name: "Alice" age: 35
+// person = Person name: "Alice" age: 35
 
-str = Json encode: person
-str echo // {"name":"Alice","age":35}
+// str = Json encode: person
+// str echo // {"name":"Alice","age":35}
 
-personFromStr = Json::Person decode: str
-personFromStr echo // Person name: Alice age: 35
+// personFromStr = Json::Person decode: str
+// personFromStr echo // Person name: Alice age: 35
+
+
+// orig = {1 2}
+// a = orig + {3 4}
+// //> [1, 2, 3, 4]
+// > a
+
+// b = orig plus: 3, plus: 4
+// //> [1, 2, 3, 4]
+// > b
+
+// //> [1, 2]
+// > orig
+
+// type Person name: String
+// // Person name: "String", echo
+
+// T sas = [
+//   receiver = Compiler getName: 0
+//   "$receiver = $this" echo
+//   ^ this
+// ]
+
+// x = 256
+// x sas 
+
+
+
+// 7 echo
+// Process stackTrace echo
+
+// lambda = [
+//   stack = Process stackTrace
+//   Compiler debug
+// ]
+// lambda do
+
+// type Foo y: Int
+// Foo bar::Int = [
+//   StackTrace get echo
+//   Compiler debug
+//   "------" echo
+// ]
+// Foo baz = .bar: 42
+
+// foo = Foo y: 69
+// foo bar: -123
+// foo baz
+
+// Project use: "vehicles"
+// x = Plane new
+
+
+
+// union Shape =
+// | Rectangle width: Int height: Int
+// | Circle    radius: Double
+
+// constructor Double pi = 3.14
+// Double square = this * this
+
+// Shape getArea -> Double = | this 
+// | Rectangle => width * height, toDouble
+// | Circle => Double pi * radius square
+
+// Vehicle printSpeed = | this
+//   | Car =>   "medium" echo
+//   | Plane => "fast" echo
+//   | Ship =>  "slow" echo
+
+  
+
+// Vehicle printSpeed2 = | this
+//   | Plane => "fast" echo
+//   | Ship =>  "slow" echo
+//   | Car => [
+//     | this
+//     // | RaceCar => "fast" echo
+//     | Truck => "slow" echo
+//     | PassengerCar => "medium" echo
+//   ]
+
+
+// enum Color r: Int g: Int b: Int =
+// | RED    r: 255  g: 0   b: 0
+// | GREEN  r: 0    g: 255 b: 0
+// | PURPLE r: 128  g: 0   b: 128
+
+
+// rg = Color.RED r + Color.GREEN g
+// rg echo

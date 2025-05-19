@@ -1,8 +1,9 @@
 
-// @Serializable
-// type Person name: String age: Int
+@Serializable
+type Person name: String age: Int
 
-// person = Person name: "Alice" age: 35
+
+person = Person name: "Alice" age: 35
 
 // str = Json encode: person
 // str echo
