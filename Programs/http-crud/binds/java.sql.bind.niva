@@ -1,0 +1,93 @@
+Project loadPackages: {"org.xerial:sqlite-jdbc:3.42.0.0"}
+
+Bind package: "java.sql" content: [
+  errordomain SQLException = 
+  | SQLTimeoutException
+  | SQLFeatureNotSupportedException
+
+  union Connection
+  union Statement
+  union PreparedStatement
+  union ResultSet
+
+  extend ResultSet [
+    /// Moves the cursor forward one row from its current position. A ResultSet cursor is initially positioned before the first row; the first call to the method next makes the first row the current row; the second call makes the second row the current row, and so on.
+    /// When a call to the next method returns false, the cursor is positioned after the last row. Any invocation of a ResultSet method which requires a current row will result in a SQLException being thrown. If the result set type is TYPE_FORWARD_ONLY, it is vendor specified whether their JDBC driver implementation will return false or throw an SQLException on a subsequent call to next.
+    /// If an input stream is open for the current row, a call to the method next will implicitly close it. A ResultSet object's warning chain is cleared when a new row is read.
+    /// Returns: true if the new current row is valid; false if there are no more rows
+    on next -> Bool!SQLException
+    /// Retrieves the value of the designated column in the current row of this ResultSet object as an int
+    on getInt::String -> Int!SQLException
+    /// Retrieves the value of the designated column in the current row of this ResultSet object as a String
+    on getString::String -> String!SQLException
+    on getBoolean::String -> Bool!SQLException
+    on getFloat::String -> Float!SQLException
+    on getDouble::String -> Double!SQLException
+    
+    /// Retrieves whether the cursor is on the first row 
+    on isFirst -> Bool!SQLException
+    /// Retrieves whether the cursor is on the last row 
+    on isLast -> Bool!SQLException
+    /// Retrieves whether the cursor is after the last row
+    on isAfterLast -> Bool!SQLException
+
+    /// Moves the cursor to the front of this ResultSet object, just before the first row. This method has no effect if the result set contains no rows.
+    on beforeFirst -> Unit!SQLException
+    /// Moves the cursor to the end of this ResultSet object, just after the last row. This method has no effect if the result set contains no rows.
+    on afterLast -> Unit!SQLException
+    /// Retrieves the current row number. The first row is number 1, the second number 2, and so on.
+    on getRow -> Int!SQLException
+    /// Moves the cursor to the given row number in this ResultSet object.
+    /// If the row number is positive, the cursor moves to the given row number with respect to the beginning of the result set. The first row is row 1, the second is row 2, and so on.
+    /// calling the method absolute(-1) positions the cursor on the last row; calling the method absolute(-2) moves the cursor to the next-to-last row
+    /// If the row number specified is zero, the cursor is moved to before the first row.
+    on absolute: row::Int -> Bool!SQLException
+    /// Moves the cursor a relative number of rows, either positive or negative. Attempting to move beyond the first/ last row in the result set positions the cursor before/ after the the first/ last row. Calling relative(0) is valid, but does not change the cursor position.
+    /// Note: Calling the method relative(1) is identical to calling the method next() and calling the method relative(-1) is identical to calling the method previous().
+    on relative: rows::Int -> Bool!SQLException
+    /// Moves the cursor to the previous row in this ResultSet object.
+    /// When a call to the previous method returns false, the cursor is positioned before the first row. Any invocation of a ResultSet method which requires a current row will result in a SQLException being thrown.
+    /// If an input stream is open for the current row, a call to the method previous will implicitly close it. A ResultSet object's warning change is cleared when a new row is read.
+    /// false if the cursor is positioned before the first row
+    on previous: rows::Int -> Bool!SQLException
+
+
+  ]
+  extend PreparedStatement [
+    @rename: "setString"
+    on setString: parameterIndex::Int value::String -> Unit!SQLException
+    @rename: "setInt"
+    on setInt: parameterIndex::Int value::Int -> Unit!SQLException
+    @rename: "setBoolean"
+    on setBoolean: parameterIndex::Int value::Bool -> Unit!SQLException
+    @rename: "setDouble"
+    on setDouble: parameterIndex::Int value::Double -> Unit!SQLException
+    @rename: "setFloat"
+    on setFloat: parameterIndex::Int value::Float -> Unit!SQLException
+    @rename: "setNull"
+    on setNull: parameterIndex::Int sqlType::Int -> Unit!SQLException
+    /// Executes the SQL statement in this PreparedStatement object, which must be an SQL Data Manipulation Language (DML) statement, such as INSERT, UPDATE or DELETE; or an SQL statement that returns nothing, such as a DDL statement.
+    on executeUpdate -> Int!SQLException
+    /// Executes the SQL query in this PreparedStatement object and returns the ResultSet object generated by the query.
+    on executeQuery -> ResultSet!SQLException
+  ]
+  extend Statement [
+    /// Releases this Statement object's database and JDBC resources immediately instead of waiting for this to happen when it is automatically closed. It is generally good practice to release resources as soon as you are finished with them to avoid tying up database resources.
+    on close -> Unit!SQLException
+    /// The execute method executes an SQL statement and indicates the form of the first result.
+    on execute::String -> Bool!SQLException
+  ]
+  extend Connection [
+    /// Releases this Connection object's database and JDBC resources immediately instead of waiting for them to be automatically released.
+    on close -> Unit!SQLException
+    /// Creates a Statement object for sending SQL statements to the database. SQL statements without parameters are normally executed using Statement objects. If the same SQL statement is executed many times, it may be more efficient to use a PreparedStatement object.
+    on createStatement -> Statement
+    /// Creates a PreparedStatement object for sending parameterized SQL statements to the database.
+    /// A SQL statement with or without IN parameters can be pre-compiled and stored in a PreparedStatement object. This object can then be used to efficiently execute this statement multiple times.
+    on prepareStatement::String -> PreparedStatement
+  ]
+
+
+  type DriverManager
+  constructor DriverManager getConnection::String -> Connection!SQLException
+]

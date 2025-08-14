@@ -45,7 +45,7 @@ content: [
   // ]
 
   @emit: "items($0) $1"
-  MutableList::T lazyItems::[T -> Unit] -> Unit
+  List::T lazyItems::[T -> Unit] -> Unit
   // LazyListScope builder items items::List::T -> Unit = []
   // @rename: "items"
   // LazyListScope builder keyItems items::List::T key::[T -> Any?] -> Unit = []

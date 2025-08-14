@@ -1,0 +1,9 @@
+Bind package: "java.io" content: [
+  type File path: String
+  /// `File path: "main.niva" |> readText`
+  File readText -> String
+  /// `File path: "newFile.txt" |> writeText`
+  File writeText::String -> Unit
+  /// true if and only if the file or directory denoted by this abstract pathname exists
+  File exists -> Bool 
+]
