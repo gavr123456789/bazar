@@ -1,16 +1,10 @@
 // very simple text read write
 Bind package: "java.io" content: [
-  errordomain IOException = 
-  | FileNotFoundException
-  | AccessDeniedException
-  | FileAlreadyExistsException
-  | FileSystemException
-  
   type File path: String
   /// `File path: "main.niva" |> readText`
-  File readText -> String!FileNotFoundException
+  File readText -> String
   /// `File path: "newFile.txt" |> writeText`
-  File writeText::String -> Unit!FileNotFoundException
+  File writeText::String -> Unit
   /// true if and only if the file or directory denoted by this abstract pathname exists
-  File exists -> Boolean
+  File exists -> Bool
 ]

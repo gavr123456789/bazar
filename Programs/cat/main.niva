@@ -10,20 +10,18 @@ errordomain CatErrors =
 
 type Cat 
 
-Cat args::List::String -> Unit!{NoArg FileNotFoundException} = [
+Cat args::List::String -> Unit!{NoArg} = [
   | args count 
   | 1 => [
-    file = File path: (args at: 0) 
+    file = File path: (args at: 0)
     file readText echo
-
-    "" echo
   ]
   |=> NoArg new throw
 ]
 
-(Cat new args: args toList) ifError: [
+
+(Cat new args: Compiler cliArgs) ifError: [
   | it
-  | FileNotFoundException => "No such file found" echo
   | NoArg => "Missing file argument" echo
 ]
 
