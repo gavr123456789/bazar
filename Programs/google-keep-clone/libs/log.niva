@@ -1,0 +1,5 @@
+T log -> T = [
+  codePlace = Compiler getPlace
+  codePlace red + " " + this, echo
+  ^ this
+]

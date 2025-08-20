@@ -1,0 +1,111 @@
+// Project use: "kotlinx.serialization"
+
+// @Serializable
+// type Person 
+//     name: String 
+//     age: Int 
+
+// // simple ping
+// path = "/hi" bind: Method.GET
+// // bind path to handler
+// route = path to: [
+//     Response status: Status.OK,
+//              body: "Hello, from niva server!"
+// ]
+
+
+// // get all
+// pathGetAll = "/getPersons" bind: Method.GET
+// routeGetAllPersons = pathGetAll to: [
+//     "pathGetAll" log 
+//     result = (PersonsDB readTable)
+//     Response status: Status.OK, body: result
+// ]
+
+// // save person to db
+// pathSavePersonToDb = "/savePerson" bind: Method.POST
+// routeSavePersonToDb = pathSavePersonToDb to: [
+//     person = Json::Person decode: it body strPayload 
+//     person log
+//     PersonsDB savePerson: person
+//     Response status: Status.OK, body: "added $person"
+// ]
+
+// runServer = [
+//     PersonsDB createTable
+//     routes = Router routes: {route routeSavePersonToDb routeGetAllPersons}
+//     routes asServer: (SunHttp port: 9000), start
+    
+//     "hosting on http://localhost:9000" log
+//     "current routes:\n$routes" log
+// ] do
+
+// testDB = [
+//     PersonsDB createTable
+//     PersonsDB savePerson: (Person name: "Alice" age: 25)
+//     PersonsDB savePerson: (Person name: "Bob" age: 25)
+//     PersonsDB readTable log
+// ]
+Project use: "kotlinx.serialization"
+
+@Serializable
+type Note
+    id: Int?              // we dont know it when creating new one
+    created_at: Long      // timestamp 
+    updated_at: Long      // timestamp 
+    title: String
+    content: String
+    color: String
+    tags: List::String
+
+type IdToNode = Map(String, String)
+
+// simple ping
+path = "/hi" bind: Method.GET
+route = path to: [
+    Response status: Status.OK,
+             body: "Hello, from niva notes server!"
+]
+
+// get all notes
+pathGetAllNotes = "/getNotes" bind: Method.GET
+routeGetAllNotes = pathGetAllNotes to: [
+    "getNotes" log 
+    result = (NotesDB readNotes)
+    Response status: Status.OK, body: result
+]
+
+// save note
+pathSaveNote = "/saveNote" bind: Method.POST
+routeSaveNote = pathSaveNote to: [
+    payload = it body strPayload
+    ("save note " + payload) log  
+
+    note = Json::Note decode: it body strPayload
+    NotesDB saveNote: note
+    Response status: Status.OK, body: "added $note"
+]
+
+// delete note by id
+pathDeleteNote = "/deleteNote" bind: Method.POST
+routeDeleteNote = pathDeleteNote to: [
+    idMap = Json::IdToNode decode: it body strPayload
+    noteId = idMap at: "id", unpackOrPANIC toInt
+    NotesDB deleteNoteById: noteId
+    Response status: Status.OK, body: "deleted id=$noteId"
+]
+
+runServer = [
+    NotesDB createTables
+    routes = Router routes: {route routeGetAllNotes routeSaveNote routeDeleteNote}
+    routes asServer: (SunHttp port: 9000), start
+
+    "hosting on http://localhost:9000" log
+    "current routes:\n$routes" log
+] do
+
+// testt = [
+//     str = """{"title":"tt","content":"pp","color":"#FBBC04"}"""
+//     x = Json::Note decode: str
+//     x echo
+// ] do

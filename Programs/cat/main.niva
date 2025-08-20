@@ -10,11 +10,13 @@ errordomain CatErrors =
 
 type Cat 
 
-Cat args::List::String -> Unit!{NoArg} = [
+Cat args::List::String -> Unit!{NoArg Error} = [
   | args count 
   | 1 => [
     file = File path: (args at: 0)
-    file readText echo
+    content = file readText
+
+    content
   ]
   |=> NoArg new throw
 ]
@@ -23,5 +25,6 @@ Cat args::List::String -> Unit!{NoArg} = [
 (Cat new args: Compiler cliArgs) ifError: [
   | it
   | NoArg => "Missing file argument" echo
+  | Error => "qwf" echo
 ]
 

@@ -1,0 +1,282 @@
+// type PersonsDB 
+
+
+
+// constructor PersonsDB [
+//   on createTable -> Unit! = [
+//     databaseUrl = "jdbc:sqlite:people.db"
+//     createTableQuery = """
+//       CREATE TABLE IF NOT EXISTS persons (
+//           id INTEGER PRIMARY KEY AUTOINCREMENT,
+//           name TEXT NOT NULL,
+//           age INTEGER NOT NULL
+//       ); """ trimIndent
+
+//     connection = DriverManager getConnection: databaseUrl, orPANIC
+//     statement = connection createStatement
+//     statement execute: createTableQuery
+
+//     // insertQuery = "INSERT INTO persons (name, age) VALUES (?, ?)"
+//     // preparedStatement = connection prepareStatement: insertQuery
+//     // preparedStatement
+//     //   addPerson: (Person name: "Alice" age: 25);
+//     //   addPerson: (Person name: "Bob" age: 30);
+//     //   addPerson: (Person name: "Charlie" age: 35)
+//     connection close 
+//   ]
+
+//   on readTable -> String! = [
+//     // prepare request
+//     databaseUrl = "jdbc:sqlite:people.db"
+//     selectQuery = "SELECT id, name, age FROM persons"
+//     connection = DriverManager getConnection: databaseUrl, orPANIC
+//     prepared = connection prepareStatement: selectQuery
+
+//     // exec request
+//     resultSet = prepared executeQuery orPANIC
+//     persons = resultSet getPersons
+//     connection close
+//     ^ persons joinWith: "\n"
+//   ]
+
+//   on savePerson::Person -> Unit! = [
+//     databaseUrl = "jdbc:sqlite:people.db"
+//     insertQuery = "INSERT INTO persons (name, age) VALUES (?, ?)"
+    
+//     connection = DriverManager getConnection: databaseUrl, orPANIC
+//     insertStatement = connection prepareStatement: insertQuery
+//     insertStatement addPerson: savePerson
+    
+//     connection close 
+//   ]
+
+//   // on readTableFunny -> String! = 
+//   //   DriverManager 
+//   //     getConnection: "jdbc:sqlite:people.db", 
+//   //     prepareStatement: "SELECT id, name, age FROM persons WHERE age > ?", 
+//   //     executeQuery, 
+//   //     getPersons, 
+//   //     joinWith: "\n"
+
+// ]
+
+
+
+
+
+
+// PreparedStatement addPerson: p::Person -> Unit! = [
+//   .setString: 1 value: p name
+//   .setInt: 2 value: p age
+//   .executeUpdate
+//   "SQL: added $p" log
+// ]
+
+// ResultSet getPersons -> mut List::Person! = [
+//   result::mut List::Person = {}!
+//   [.next] whileTrue: [
+//     name = .getString: "name"
+//     age = .getInt: "age"
+//     result add: (Person name: name age: age)
+//   ]
+//   ^ result
+// ]
+
+
+type NotesDB
+
+constructor NotesDB [
+  on createTables -> Unit! = [
+    databaseUrl = "jdbc:sqlite:notes.db"
+    createNotesQuery = """
+      CREATE TABLE IF NOT EXISTS notes (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          created_at INTEGER NOT NULL,
+          updated_at INTEGER NOT NULL,
+          title TEXT,
+          content TEXT,
+          color TEXT
+      );
+    """ trimIndent
+
+    createTagsQuery = """
+      CREATE TABLE IF NOT EXISTS tags (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL UNIQUE
+      );
+    """ trimIndent
+
+    createNoteTagsQuery = """
+      CREATE TABLE IF NOT EXISTS note_tags (
+          note_id INTEGER NOT NULL,
+          tag_id INTEGER NOT NULL,
+          PRIMARY KEY (note_id, tag_id),
+          FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE,
+          FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+      );
+    """ trimIndent
+
+    connection = DriverManager getConnection: databaseUrl, orPANIC
+    statement = connection createStatement
+    statement execute: createNotesQuery
+    statement execute: createTagsQuery
+    statement execute: createNoteTagsQuery
+    connection close 
+  ]
+
+  on readNotes -> String! = [
+    databaseUrl = "jdbc:sqlite:notes.db"
+    selectQuery = "SELECT * FROM notes"
+    connection = DriverManager getConnection: databaseUrl, orPANIC
+    prepared = connection prepareStatement: selectQuery
+    resultSet = prepared executeQuery orPANIC
+    notes = resultSet getNotesWithTags
+    connection close
+
+    
+    ^ Json encode: notes
+  ]
+
+  on saveNote::Note -> Unit! = [
+    now = Time currentTimeMillis
+    noteCreated =  (saveNote created_at > 0) ifTrue: [saveNote created_at] ifFalse: [now]
+
+    databaseUrl = "jdbc:sqlite:notes.db"
+    insertNoteQuery = "INSERT INTO notes (created_at, updated_at, title, content, color) VALUES (?, ?, ?, ?, ?)"
+
+    connection = DriverManager getConnection: databaseUrl, orPANIC
+    insertStatement = connection prepareStatement: insertNoteQuery
+    insertStatement setLong: 1 value: noteCreated
+    insertStatement setLong: 2 value: now
+    insertStatement setString: 3 value: saveNote title
+    insertStatement setString: 4 value: saveNote content
+    insertStatement setString: 5 value: saveNote color
+    insertStatement executeUpdate
+
+    // Получаем id добавленной заметки
+    noteId = connection lastInsertRowId
+
+    // Сохраняем теги
+    saveNote tags forEach: [tagName ->
+      
+      tagId =  connection insertOrGetTagId: tagName
+      connection linkNoteAndTag: noteId tagId: tagId
+    ]
+
+    connection close
+    "SQL: added $saveNote" log
+  ]
+
+  on deleteNoteById::Int -> Unit! = [
+    databaseUrl = "jdbc:sqlite:notes.db"
+    deleteQuery = "DELETE FROM notes WHERE id = ?"
+    connection = DriverManager getConnection: databaseUrl, orPANIC
+    prepared = connection prepareStatement: deleteQuery
+    prepared setInt: 1 value: deleteNoteById
+    prepared executeUpdate
+    connection close
+    "SQL: deleted note id=$deleteNoteById" log
+  ]
+
+  on updateNote::Note -> Unit! = [
+    now = Time currentTimeMillis
+
+    noteID = updateNote id unpackOrPANIC
+
+    databaseUrl = "jdbc:sqlite:notes.db"
+    updateQuery = "UPDATE notes SET updated_at = ?, title = ?, content = ?, color = ? WHERE id = ?"
+
+    connection = DriverManager getConnection: databaseUrl, orPANIC
+    stmt = connection prepareStatement: updateQuery
+    stmt setLong: 1 value: now
+    stmt setString: 2 value: updateNote title
+    stmt setString: 3 value: updateNote content
+    stmt setString: 4 value: updateNote color
+    stmt setInt: 5 value: noteID
+    stmt executeUpdate
+
+    // Обновляем теги
+    // Сначала удаляем старые
+    deleteTagsQuery = "DELETE FROM note_tags WHERE note_id = ?"
+    delStmt = connection prepareStatement: deleteTagsQuery
+    delStmt setInt: 1 value: noteID
+    delStmt executeUpdate
+
+    // Добавляем новые
+    updateNote tags forEach: [tagName ->
+      tagId = connection insertOrGetTagId: tagName
+      connection linkNoteAndTag: noteID tagId: tagId
+    ]
+
+    connection close
+
+    "SQL: updated note id=$noteID" log
+  ]
+
+]
+
+// ===== Helpers =====
+
+Connection lastInsertRowId -> Int! = [
+  rs = .createStatement executeQuery: "SELECT last_insert_rowid()", orPANIC
+  rs next
+  ^ rs getInt: 1
+]
+
+Connection insertOrGetTagId: name::String -> Int! = [
+  // пробуем вставить тег
+  insertTagQuery = "INSERT OR IGNORE INTO tags (name) VALUES (?)"
+  stmt = .prepareStatement: insertTagQuery
+  stmt setString: 1 value: name
+  stmt executeUpdate
+
+  // получаем id тега
+  selectTagIdQuery = "SELECT id FROM tags WHERE name = ?"
+  stmt2 = .prepareStatement: selectTagIdQuery
+  stmt2 setString: 1 value: name
+  rs = stmt2 executeQuery orPANIC
+  rs next
+  ^ rs getIntColumnLabel: "id"
+]
+
+Connection linkNoteAndTag: noteId::Int tagId::Int -> Unit! = [
+  insertLinkQuery = "INSERT OR IGNORE INTO note_tags (note_id, tag_id) VALUES (?, ?)"
+  stmt = .prepareStatement: insertLinkQuery
+  stmt setInt: 1 value: noteId
+  stmt setInt: 2 value: tagId
+  stmt executeUpdate
+]
+
+ResultSet getNotesWithTags -> List::Note! = [
+  result::mut List::Note = {}!
+  databaseUrl = "jdbc:sqlite:notes.db"
+
+  [.next] whileTrue: [
+    noteId = .getIntColumnLabel: "id"
+    createdAt = .getLongColumnLabel: "created_at"
+    updatedAt = .getLongColumnLabel: "updated_at"
+    title = .getStringColumnLabel: "title"
+    content = .getStringColumnLabel: "content"
+    color = .getStringColumnLabel: "color"
+
+    // Получаем теги для этой заметки
+    connection2 = DriverManager getConnection: databaseUrl, orPANIC
+    tagQuery = """
+      SELECT t.name FROM tags t
+      JOIN note_tags nt ON t.id = nt.tag_id
+      WHERE nt.note_id = ?
+    """
+    tagStmt = connection2 prepareStatement: tagQuery
+    tagStmt setInt: 1 value: noteId
+    tagRs = tagStmt executeQuery orPANIC
+    tagsList::mut List::String = {}!
+    [tagRs next] whileTrue: [
+      tagsList add: (tagRs getStringColumnLabel: "name")
+    ]
+    connection2 close
+
+    result add: (Note id: noteId created_at: createdAt updated_at: updatedAt title: title content: content color: color tags: tagsList)
+  ]
+  ^ result
+]
+

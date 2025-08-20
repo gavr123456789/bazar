@@ -1,0 +1,6 @@
+Bind package: "java.lang" content: [
+  type Time
+  
+  @emit: "java.lang.System.currentTimeMillis()"
+  constructor Time currentTimeMillis -> Long
+]
