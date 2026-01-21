@@ -1,51 +1,3 @@
-// Project use: "kotlinx.serialization"
-
-// @Serializable
-// type Person 
-//     name: String 
-//     age: Int 
-
-// // simple ping
-// path = "/hi" bind: Method.GET
-// // bind path to handler
-// route = path to: [
-//     Response status: Status.OK,
-//              body: "Hello, from niva server!"
-// ]
-
-
-// // get all
-// pathGetAll = "/getPersons" bind: Method.GET
-// routeGetAllPersons = pathGetAll to: [
-//     "pathGetAll" log 
-//     result = (PersonsDB readTable)
-//     Response status: Status.OK, body: result
-// ]
-
-// // save person to db
-// pathSavePersonToDb = "/savePerson" bind: Method.POST
-// routeSavePersonToDb = pathSavePersonToDb to: [
-//     person = Json::Person decode: it body strPayload 
-//     person log
-//     PersonsDB savePerson: person
-//     Response status: Status.OK, body: "added $person"
-// ]
-
-// runServer = [
-//     PersonsDB createTable
-//     routes = Router routes: {route routeSavePersonToDb routeGetAllPersons}
-//     routes asServer: (SunHttp port: 9000), start
-    
-//     "hosting on http://localhost:9000" log
-//     "current routes:\n$routes" log
-// ] do
-
-// testDB = [
-//     PersonsDB createTable
-//     PersonsDB savePerson: (Person name: "Alice" age: 25)
-//     PersonsDB savePerson: (Person name: "Bob" age: 25)
-//     PersonsDB readTable log
-// ]
 Project use: "kotlinx.serialization"
 
 @Serializable
@@ -102,7 +54,8 @@ runServer = [
 
     "hosting on http://localhost:9000" log
     "current routes:\n$routes" log
-] do
+] 
+
 
 // testt = [
 //     str = """{"title":"tt","content":"pp","color":"#FBBC04"}"""

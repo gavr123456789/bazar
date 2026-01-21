@@ -1,0 +1,20 @@
+// create json
+jsonNum = JNumber value: 5.0
+jsonStr = JString value: "t'e'x't"
+jObject = JObject map: #{"a\ng'e" jsonNum}
+
+list = JArray list: {jsonNum jsonNum jsonStr jObject}
+list atIndex: 3, atKey: "a\ng'e", getNum echo
+
+
+// parse json
+jsonText = """
+{
+  "name": "Niva",
+  "isSimple": true,
+  "version": 0.1,
+  "tags": ["language", "smalltalk"]
+}
+"""
+
+kekeke = jsonText toJson

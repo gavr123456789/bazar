@@ -1,88 +1,3 @@
-// type PersonsDB 
-
-
-
-// constructor PersonsDB [
-//   on createTable -> Unit! = [
-//     databaseUrl = "jdbc:sqlite:people.db"
-//     createTableQuery = """
-//       CREATE TABLE IF NOT EXISTS persons (
-//           id INTEGER PRIMARY KEY AUTOINCREMENT,
-//           name TEXT NOT NULL,
-//           age INTEGER NOT NULL
-//       ); """ trimIndent
-
-//     connection = DriverManager getConnection: databaseUrl, orPANIC
-//     statement = connection createStatement
-//     statement execute: createTableQuery
-
-//     // insertQuery = "INSERT INTO persons (name, age) VALUES (?, ?)"
-//     // preparedStatement = connection prepareStatement: insertQuery
-//     // preparedStatement
-//     //   addPerson: (Person name: "Alice" age: 25);
-//     //   addPerson: (Person name: "Bob" age: 30);
-//     //   addPerson: (Person name: "Charlie" age: 35)
-//     connection close 
-//   ]
-
-//   on readTable -> String! = [
-//     // prepare request
-//     databaseUrl = "jdbc:sqlite:people.db"
-//     selectQuery = "SELECT id, name, age FROM persons"
-//     connection = DriverManager getConnection: databaseUrl, orPANIC
-//     prepared = connection prepareStatement: selectQuery
-
-//     // exec request
-//     resultSet = prepared executeQuery orPANIC
-//     persons = resultSet getPersons
-//     connection close
-//     ^ persons joinWith: "\n"
-//   ]
-
-//   on savePerson::Person -> Unit! = [
-//     databaseUrl = "jdbc:sqlite:people.db"
-//     insertQuery = "INSERT INTO persons (name, age) VALUES (?, ?)"
-    
-//     connection = DriverManager getConnection: databaseUrl, orPANIC
-//     insertStatement = connection prepareStatement: insertQuery
-//     insertStatement addPerson: savePerson
-    
-//     connection close 
-//   ]
-
-//   // on readTableFunny -> String! = 
-//   //   DriverManager 
-//   //     getConnection: "jdbc:sqlite:people.db", 
-//   //     prepareStatement: "SELECT id, name, age FROM persons WHERE age > ?", 
-//   //     executeQuery, 
-//   //     getPersons, 
-//   //     joinWith: "\n"
-
-// ]
-
-
-
-
-
-
-// PreparedStatement addPerson: p::Person -> Unit! = [
-//   .setString: 1 value: p name
-//   .setInt: 2 value: p age
-//   .executeUpdate
-//   "SQL: added $p" log
-// ]
-
-// ResultSet getPersons -> mut List::Person! = [
-//   result::mut List::Person = {}!
-//   [.next] whileTrue: [
-//     name = .getString: "name"
-//     age = .getInt: "age"
-//     result add: (Person name: name age: age)
-//   ]
-//   ^ result
-// ]
-
-
 type NotesDB
 
 constructor NotesDB [
@@ -259,7 +174,7 @@ ResultSet getNotesWithTags -> List::Note! = [
     content = .getStringColumnLabel: "content"
     color = .getStringColumnLabel: "color"
 
-    // Получаем теги для этой заметки
+    // getting tags
     connection2 = DriverManager getConnection: databaseUrl, orPANIC
     tagQuery = """
       SELECT t.name FROM tags t
