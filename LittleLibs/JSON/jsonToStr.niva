@@ -4,7 +4,7 @@ JsonValue toJsonStr -> String = | this
 | JBool => value toString
 | JNull =>  "null"
 | JArray => this arrToJson
-| JObject => this fieldToJson
+| JObject => this objectToJson
 
 
 
@@ -22,7 +22,7 @@ JArray arrToJson -> String = [
   ^createArr do surroundWith: "[ " and: " ]"
 ]
 
-JObject fieldToJson -> String = [
+JObject objectToJson -> String = [
 
   createObj = [
     b = StringBuilder new
