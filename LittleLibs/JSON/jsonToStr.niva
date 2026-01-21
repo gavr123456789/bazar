@@ -1,3 +1,11 @@
+union JsonValue =
+| JObject map: Map(String, JsonValue)
+| JArray  list: {JsonValue}
+| JString value: String
+| JNumber value: Double
+| JBool   value: Bool
+| JNull
+
 JsonValue toJsonStr -> String = | this
 | JString => value packForJson
 | JNumber => value toString

@@ -1,14 +1,3 @@
-union JsonValue =
-    | JObject map: Map(String, JsonValue)
-    | JArray  list: {JsonValue}
-    | JString value: String
-    | JNumber value: Double
-    | JBool   value: Bool
-    | JNull
-
-
-
-
 // unsafe helper getters
 JsonValue atKey::String -> JsonValue = [
   | this
