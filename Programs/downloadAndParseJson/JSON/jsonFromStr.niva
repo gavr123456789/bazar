@@ -1,11 +1,3 @@
-union JsonValue =
-    | JObject map: Map(String, JsonValue)
-    | JArray  list: {JsonValue}
-    | JString value: String
-    | JNumber value: Double
-    | JBool   value: Bool
-    | JNull
-
 type JsonParser
     input: String
     pos: Int
@@ -59,20 +51,30 @@ mut JsonParser parseValue -> JsonValue = [
 
 mut JsonParser parseString -> String = [
     this consume: '"'
-    start = pos
-    [ (this peek) != '"' ] whileTrue: [ pos <- pos inc ]
-    str = input substringFrom: start to: pos
+    sb = StringBuilder new
+    [ (pos < input count) && (this peek != '"') ] whileTrue: [
+        c = this peek
+        this advance
+        sb append: c toString
+
+        c == '\\' ifTrue: [
+            pos < input count ifTrue: [
+                sb append: this peek toString
+                this advance
+            ]
+        ]
+    ]
     this consume: '"'
-    ^ str
+    ^ sb toString unescape
 ]
 
 mut JsonParser parseArray -> JArray = [
     .consume: '['
     list::mut List(JsonValue) = {}
-    [ (.peek) != ']' ] whileTrue: [
+    [ .peek != ']' ] whileTrue: [
         list add: .parseValue
         .skipWhitespace
-        (.peek == ',') ifTrue: [ .consume: ',' ]
+        .peek == ',' ifTrue: [ .consume: ',' ]
     ]
     .consume: ']'
     ^ JArray list: list
@@ -81,34 +83,21 @@ mut JsonParser parseArray -> JArray = [
 mut JsonParser parseObject -> JObject = [
     .consume: '{'
     map::mut Map(String, JsonValue) = #{}
-    [ (.peek) != '}' ] whileTrue: [
+    [ .peek != '}' ] whileTrue: [
         .skipWhitespace
         key = .parseString
         .skipWhitespace
         .consume: ':'
         map at: key put: .parseValue
         .skipWhitespace
-        (.peek == ',') ifTrue: [ .consume: ',' ]
+        .peek == ',' ifTrue: [ .consume: ',' ]
     ]
     .consume: '}'
     ^ JObject map: map
 ]
 
-jsonText = """
-{
-  "name": "Niva",
-  "isSimple": true,
-  "version": 0.1,
-  "tags": ["language", "smalltalk"]
-}
-"""
-
-parser::mut JsonParser = JsonParser input: jsonText pos: 0
-result = parser parseValue
-
-| result
-| JObject => [
-  "Parsed object with " + result map count toString + " keys", echo
-  "name is: " + (result map at: "name") toString, echo
+/// simple way to get json from str
+String toJson -> JsonValue = [
+  parser::mut JsonParser = JsonParser input: this pos: 0
+  ^ parser parseValue
 ]
-|=> "Parsed something else" echo

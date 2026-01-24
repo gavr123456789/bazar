@@ -51,11 +51,21 @@ mut JsonParser parseValue -> JsonValue = [
 
 mut JsonParser parseString -> String = [
     this consume: '"'
-    start = pos
-    [ (this peek) != '"' ] whileTrue: [ pos <- pos inc ]
-    str = input substringFrom: start to: pos
+    sb = StringBuilder new
+    [ (pos < input count) && (this peek != '"') ] whileTrue: [
+        c = this peek
+        this advance
+        sb append: c toString
+
+        c == '\\' ifTrue: [
+            pos < input count ifTrue: [
+                sb append: this peek toString
+                this advance
+            ]
+        ]
+    ]
     this consume: '"'
-    ^ str
+    ^ sb toString unescape
 ]
 
 mut JsonParser parseArray -> JArray = [
