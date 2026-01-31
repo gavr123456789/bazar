@@ -1,8 +1,0 @@
-// very simple text read write
-Bind package: "java.io" content: [
-  type File path: String
-  /// `File path: "main.niva" |> readText`
-  File readText -> String
-  /// `File path: "newFile.txt" |> writeText`
-  File writeText::String -> Unit
-]

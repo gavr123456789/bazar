@@ -1,22 +1,22 @@
-String surroundWith::String and::String = 
+String surroundWith::String and::String =
   surroundWith + this + and
 
-String surroundWith: x::String = 
+String surroundWith: x::String =
   x + this + x
 
-String packForJson -> String = 
+String packForJson -> String =
    this escape surroundWith: "\""
 
-String escape = 
+String escape =
   this replace: "\\" with: "\\\\",
   replace: "\"" with: "\\\"",
   replace: "\n" with: "\\n",
   replace: "\r" with: "\\r",
   replace: "\t" with: "\\t",
-  replace: "\'" with: "\\'" 
+  replace: "\'" with: "\\'"
 
-Dynamic toJson -> String = | this 
-| DynamicStr => value packForJson 
+Dynamic toJson -> String = | this
+| DynamicStr => value packForJson
 | DynamicInt => value toString
 | DynamicDouble => value toString
 | DynamicBoolean => value toString
@@ -34,7 +34,7 @@ c2 echo
 
 
 
-MutableMap(String, Dynamic) dynObjectToJson -> String = [
+mut Map(String, Dynamic) dynObjectToJson -> String = [
   createObj = [
     b = StringBuilder new
     mut i = 0
@@ -42,7 +42,7 @@ MutableMap(String, Dynamic) dynObjectToJson -> String = [
 
       b append: k packForJson |>
         append: ": " |>
-        append: v toJson 
+        append: v toJson
       i + 1 != this count => b append: ", "
 
       i <- i inc
@@ -50,7 +50,7 @@ MutableMap(String, Dynamic) dynObjectToJson -> String = [
     b toString
   ]
 
-  ^createObj do surroundWith: "{ " and: " }" 
+  ^createObj do surroundWith: "{ " and: " }"
 ]
 
 
@@ -58,13 +58,13 @@ List::Dynamic dynListToJson -> String = [
   createArr = [
     b = StringBuilder new
     this forEachIndexed: [ i, it ->
-      b append: it toJson 
+      b append: it toJson
       i + 1 != this count => b append: ", "
     ]
     b toString
   ]
 
-  ^createArr do surroundWith: "[ " and: " ]" 
+  ^createArr do surroundWith: "[ " and: " ]"
 ]
 
 

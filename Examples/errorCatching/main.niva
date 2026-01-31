@@ -4,7 +4,7 @@ errordomain MyError =
 | Error2 code: Int
 
 
-type Person 
+type Person
     name: String
 
 Int personOrError -> Person!Error1 = [
@@ -14,12 +14,13 @@ Int personOrError -> Person!Error1 = [
 
 Int sus  = [
     x = 1 personOrError orPANIC
-    // x = 1 personOrError ifError: [
-    //     | it
-    //     | Error1 => [Person name: "-"]
-    // ]
-    // x = 1 personOrError 
-    //     orValue: (Person name: "Alice")
-    // x echo
-
+    x = 1 personOrError ifError: [
+        | it
+        | Error1 => [Person name: "-"]
+    ]
+    x = 1 personOrError
+        orValue: (Person name: "Alice")
+    x echo
 ]
+
+1 sus

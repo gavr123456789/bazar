@@ -12,7 +12,7 @@ constructor LinkedList empty =
 LinkedList isEmpty = size == 0
 LinkedList incSize = size <- size inc
 
-LinkedList str = this isEmpty => "Empty!" |=> head unpackOrError str
+LinkedList str = this isEmpty ifTrue: ["Empty!"] ifFalse: [head unpackOrError str]
 
 LinkedList push: v::Int -> LinkedList = [
     head <- Node v: v next: head

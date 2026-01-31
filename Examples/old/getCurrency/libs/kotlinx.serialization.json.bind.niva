@@ -1,9 +1,9 @@
 Bind package: "kotlinx.serialization.json" imports: {"kotlinx.serialization.*"}  content: [
-  type Json 
+  type Json
   @rename: "decodeFromString"
   constructor Json::T decode::String -> T
   @rename: "encodeToString"
-  constructor Json encode::T -> String
+  constructor Json::T encode::T -> String
 ]
 
 

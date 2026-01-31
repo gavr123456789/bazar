@@ -1,3 +1,5 @@
+This is an example of a server that gets requests and store data in to sqlite.
+
 # Run
 
 main has 2 codeblocks 

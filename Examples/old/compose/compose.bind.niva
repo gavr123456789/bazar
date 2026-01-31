@@ -8,21 +8,21 @@ Bind package: "androidx.compose.ui.window" content: [
 
   builder ApplicationScope Window onCloseRequest::[] -> Unit = []
 
-  
+
 ]
 Bind package: "androidx.compose.ui.unit" content: [
   type Dp value: Float
 ]
 Bind package: "androidx.compose.runtime" content: [
   type MutableState value: T //setValue: [T -> Unit]
-  MutableState component1 -> T
-  MutableState component2 -> [T -> Unit]
+  MutableState::T component1 -> T
+  MutableState::T component2 -> [T -> Unit]
 
   // not possible for now
   // builder T remember -> T = []
 
   @emit: "remember { mutableStateOf($1) }"
-  constructor MutableState remember::T -> MutableState
+  constructor MutableState::T remember::T -> MutableState::T
 ]
 MutableState::T get = .component1
 MutableState::T set::T = .component2 T: set
@@ -37,7 +37,7 @@ Bind package: "androidx.compose.ui" content: [
     on padding::Dp -> Modifier
   ]
 ]
-Bind package: "androidx.compose.foundation.lazy" imports: {"androidx.compose.ui.Modifier"} 
+Bind package: "androidx.compose.foundation.lazy" imports: {"androidx.compose.ui.Modifier"}
 content: [
   type LazyListScope
   // extend LazyListScope [
@@ -53,7 +53,7 @@ content: [
   builder LazyListScope LazyRow -> Unit = []
 ]
 
-Bind package: "androidx.compose.foundation.layout" imports: {"androidx.compose.ui.Modifier"} 
+Bind package: "androidx.compose.foundation.layout" imports: {"androidx.compose.ui.Modifier"}
 content: [
   type ColumnScope
   type RowScope
@@ -63,16 +63,16 @@ content: [
 
   // temp solution, while builder with and without args is not supported
   @rename: "Modifier"
-  type SpacerModifier 
+  type SpacerModifier
   @emit: "Modifier.height($1)"
   constructor SpacerModifier height::Dp -> SpacerModifier
   @emit: "Modifier.width($1)"
   constructor SpacerModifier width::Dp -> SpacerModifier
 
   type Spacer modifier: SpacerModifier
-  // constructor Spacer modifier::SpacerModifier -> Spacer 
-  
-  type Row 
+  // constructor Spacer modifier::SpacerModifier -> Spacer
+
+  type Row
   constructor Row modifier::Modifier -> Row
 ]
 
@@ -86,16 +86,16 @@ Bind package: "androidx.compose.material" content: [
   type MaterialTheme
   constructor MaterialTheme [
     @emit: "MaterialTheme.colors"
-    on colors -> Colors 
+    on colors -> Colors
     @emit: "MaterialTheme.typography"
-    on typography -> Typography 
+    on typography -> Typography
 
   ]
 
   builder MaterialTheme MaterialTheme -> Unit = []
   builder RowScope Button onClick::[-> Unit] -> Unit = []
   // Typography
-  type Typography 
+  type Typography
   // COLOR
   type Color value: Long
   extend Color [
@@ -139,9 +139,9 @@ Bind package: "androidx.compose.material" content: [
     onBackground: Color
     onSurface: Color
     onError: Color
-    isLight: Boolean
+    isLight: Bool
 
-  Typography 
+  Typography
     h1: TextStyle
     h2: TextStyle
     h3: TextStyle

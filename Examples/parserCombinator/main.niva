@@ -1,25 +1,29 @@
-type Cond = [ -> Boolean] 
-Cond whileLoop: block::[ -> Boolean] -> Unit = 
-  this do => [
-    block do => [this whileLoop: block]
-  ] |=> Unit
+type Cond = [ -> Bool]
+Cond whileLoop: block::[ -> Bool] -> Unit =
+  this do ifTrue: [
+    block do ifTrue: [this whileLoop: block]
+  ] ifFalse: [Unit]
 
-MutableList::T forEachBreak::[T -> Boolean] -> Unit = [
+mut List::T forEachBreak::[T -> Bool] -> Unit = [
   this forEach: [
-    forEachBreak T: it |> not => ^
+    forEachBreak T: it, ifFalse: [
+      ^
+    ]
   ]
 ]
 
-Sequence::T forEachBreak::[T -> Boolean] -> Unit = [
+Sequence::T forEachBreak::[T -> Bool] -> Unit = [
   this forEach: [
-    forEachBreak T: it |> not => ^
+    forEachBreak T: it, ifFalse: [
+      ^
+    ]
   ]
 ]
 
 
-{1 2 3} forEachBreak: [ 
+{1 2 3} forEachBreak: [
   it echo
-  
+
   false
 ]
 
@@ -31,23 +35,23 @@ Sequence::T forEachBreak::[T -> Boolean] -> Unit = [
 // ]
 
 
-union CombinatorResult = 
-| Success value: String rest: String captures: MutableMap(String, String)
+union CombinatorResult =
+| Success value: String rest: String captures: mut Map(String, String)
 | Failure
 
 type ParserCombinator = [String -> CombinatorResult]
 
-type Parser 
+type Parser
 
 Parser char::Char -> ParserCombinator = ^ [ text::String ->
-  text isNotEmpty && (text first == char) 
-    ifTrue: [Success value: "$char" rest: (text substring: 1) captures: #{}]
+  text isNotEmpty && (text first == char)
+    ifTrue: [Success value: "$char" rest: (text substring: 1) captures: #{}!]
     ifFalse: [Failure new]
 ]
 
 Parser either: combinators::List::ParserCombinator -> ParserCombinator =  ^ [str::String ->
   // lazily found first success in list
-  combinators asSequence map: [it String: str] |>
+  combinators asSequence map: [it String: str],
     firstOrNull: [
       | it
       | Success => true
@@ -55,13 +59,13 @@ Parser either: combinators::List::ParserCombinator -> ParserCombinator =  ^ [str
     ] |> unpackOrValue: Failure new
 ]
 
-Parser sequence: combinators::MutableList::ParserCombinator -> ParserCombinator =  ^ [str::String ->
+Parser sequence: combinators::List::ParserCombinator -> ParserCombinator =  ^ [str::String ->
   mut current = str
   mut value = ""
   mut fail = false
-  captures::MutableMap(String, String) = #{}
+  captures::mut Map(String, String) = #{}
 
-  x = combinators asSequence map: [it String: current] |>
+  x = combinators asSequence map: [it String: current],
     forEachBreak: [
       | it
       | Success => [
@@ -77,7 +81,7 @@ Parser sequence: combinators::MutableList::ParserCombinator -> ParserCombinator 
       ]
     ]
 
-  | fail 
+  | fail
   | true => Failure new
   |=> Success value: value rest: current captures: captures
 ]
@@ -87,10 +91,10 @@ Parser n::Int orMore: combinator::ParserCombinator = ^ [str::String ->
   mut rest = str
   mut value = ""
   mut isFailure = false
-  captures ::MutableMap(String, String) = #{}
+  captures ::mut Map(String, String) = #{}
 
   [isFailure] whileFalse: [
-    result = combinator String: rest 
+    result = combinator String: rest
     | result
     | Success => [
       matches <- matches inc
@@ -101,9 +105,9 @@ Parser n::Int orMore: combinator::ParserCombinator = ^ [str::String ->
     | Failure => isFailure <- true
   ]
 
-  matches >= n 
-    =>  Success value: value rest: rest captures: captures
-    |=> Failure new
+  matches >= n
+    ifTrue:  [Success value: value rest: rest captures: captures]
+    ifFalse: [Failure new]
 ]
 
 // x = parser char: '1'
@@ -117,13 +121,10 @@ digit = parser either: digitParsers
 integer = parser n: 1 orMore: digit
 
 //> Success value: 123456 rest: aaa captures: {}
->integer str: "123456aaa" 
+>integer str: "123456aaa"
 //> Success value: 123456 rest:  captures: {}
->integer str: "123456" 
+>integer str: "123456"
 
 float = parser sequence: {integer (parser char: '.') integer}
 
-//> Success value: 42.21 rest:  captures: {}
->float String: "42.21"
-
-
+float String: "42.21", echo

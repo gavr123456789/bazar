@@ -1,0 +1,13 @@
+List::T forEachBreak::[T -> Bool] -> Unit = [
+    this forEach: [
+        forEachBreak T: it,
+          ifFalse: [
+            ^
+          ]
+    ]
+]
+
+{1 2 3} forEachBreak: [
+    it echo
+    it != 2 // ouptupts only 1 2
+]
