@@ -1,0 +1,81 @@
+Project loadPackages: {"io.github.spair:imgui-java-app:1.90.0"}
+
+Bind package: "imgui.flag" content: [
+  enum ImGuiInputTextFlags = CallbackResize
+]
+Bind package: "imgui.type" content: [
+  type ImString value: String
+  ImString get -> String
+
+  type ImInt value: Int
+  ImInt get -> String
+
+  type ImFloat value: Float
+  ImFloat get -> String
+
+  type ImBoolean value: Bool
+  ImBoolean get -> String
+
+]
+
+Bind package: "imgui" imports: {"imgui.ImGui"} content: [
+
+
+
+  type ImGui
+  constructor ImGui [
+    // text
+    on text::String -> Unit
+
+    on separator -> Unit
+    on sameLine -> Unit
+    on newLine -> Unit
+
+
+    // buttons
+    on button::String -> Bool
+    on smallButton::String -> Bool
+
+    @rename:"checkbox"
+    on checkbox::String value::ImBoolean -> Bool
+
+    // inputs
+    @rename:"inputText"
+    on inputText::String value::ImString flag::ImGuiInputTextFlags -> Bool
+    @rename:"checkbox"
+    on inputInt::String label::String value::ImInt -> Bool
+    @rename:"checkbox"
+    on inputFloat::String label::String value::ImFloat -> Bool
+
+    // sliders
+    @rename:""
+    on sliderInt::String label::String value::Int min::Int max::Int -> Bool
+    on sliderFloat::String label::String value::Float min::Float max::Float -> Bool
+
+
+  ]
+]
+
+Bind package: "imgui.app" content: [
+  type Configuration
+  extend Configuration [
+    on setTitle::String -> Unit
+    on setWidth::Int -> Unit
+    on setHeight::Int -> Unit
+    on isFullScreen -> Bool
+    on setFullScreen::Bool -> Unit
+  ]
+
+  @emit: """
+  object : Application() {
+        override fun configure(it: Configuration) = $1()
+        override fun process() $2
+    }
+  """
+  constructor ImGui configure::[Configuration ->] process::[-> Unit] -> ImGui
+
+
+  type Application
+  constructor Application launch::ImGui -> Unit
+
+]

@@ -4,7 +4,9 @@ JsonValue atKey::String -> JsonValue = [
   | JObject => [
       value = map at: atKey
       | value
-      | null => Error throwWithMessage: "no such key `$atKey`", orPANIC
+      | null => [
+        keys = map keys toString
+        Error throwWithMessage: "no such key `$atKey`,\nvalid keys: " + keys, orPANIC]
       |=> [ ^ value ]
   ]
   |=> Error throwWithMessage: "thats not an object, thats $this", orPANIC

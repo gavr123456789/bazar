@@ -45,3 +45,66 @@ app onActivate: [
 
 app run: args
 ```
+
+## ImGui
+
+Simple:  
+```Scala
+mut c = 0
+app = ImGui
+        configure: [
+          it setTitle: "niva imgui"
+        ]
+        process: [
+          ImGui text: "Hello from niva ^_^"
+          ImGui button: "halloo", ifTrue: [c <- c inc]
+          ImGui text: c toString
+        ]
+
+Application launch: app
+```
+
+Component with state:  
+```Scala
+mut c = 0
+str = ImString value: "input here"
+bool = ImBoolean value: false
+
+// example of component with state
+type TextComponent state: ImString
+
+constructor TextComponent text::String = [
+  tc = TextComponent state: (ImString value: text)
+
+  ImGui inputText: "name"
+        value: tc state
+        flag: ImGuiInputTextFlags.CallbackResize
+
+  ^ tc
+]
+
+// main app
+app = ImGui
+        configure: [
+          it setTitle: "niva imgui"
+          it setHeight: 350
+          it setWidth: 350
+        ]
+        process: [
+          TextComponent text: "hallo"
+          //ImGui inputText: "name"
+          //      value: str
+          //      flag: ImGuiInputTextFlags.CallbackResize
+
+
+          ImGui text: "Hello from niva ^_^"
+          ImGui button: "halloo", ifTrue: [c <- c inc]
+          ImGui text: c toString
+          str get echo
+
+          ImGui checkbox: "checkbox" value: bool
+
+        ]
+
+Application launch: app
+```
