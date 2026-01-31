@@ -2,8 +2,8 @@ Bind package: "kotlin" content: [
   type IntArray ofSize: Int
   extend IntArray [
     on toList -> List::Int
-    on toMutableLIst -> MutableList::Int
-    on toMutableSet -> MutableSet::Int
+    on toMutableList -> mut List::Int
+    on toMutableSet -> mut Set::Int
 
     on count -> Int
 
@@ -20,7 +20,7 @@ Bind package: "kotlin" content: [
     on map::[Int -> T] -> List::T
   ]
 
-  MutableList::Int toIntArray -> IntArray
+  mut List::Int toIntArray -> IntArray
 ]
 
 // create array and put 42 as first element
