@@ -11,7 +11,7 @@ Bind package: "org.gnome.gtk" content: [
     on run::List::String -> Unit
   ]
 
-  enum Orientation = HORIZONTAL | VERTICAL // TODO не находит если поставитьь после
+  enum Orientation = HORIZONTAL | VERTICAL 
   /// WIDGETS
   union Widget = 
   | ApplicationWindow app: Application
@@ -39,13 +39,13 @@ Bind package: "org.gnome.gtk" content: [
   union EventController = 
   | EventControllerKey
 
-  EventControllerKey onKeyPressed::[Int, Int, ModifierType? -> Boolean] -> Unit
+  EventControllerKey onKeyPressed::[Int, Int, ModifierType? -> Bool] -> Unit
 
 
 
 
   // Widget
-  Widget grabFocus -> Boolean
+  Widget grabFocus -> Bool
   Widget addCssClass::String -> Unit
 
   // ApplicationWindow
@@ -75,8 +75,8 @@ Bind package: "org.gnome.gtk" content: [
   Widget
     halign: Align
     valign: Align
-    vexpand: Boolean
-    hexpand: Boolean 
+    vexpand: Bool
+    hexpand: Bool 
     // heightRequest: Int // https://github.com/jwharm/java-gi/issues/97
     tooltipText: String
     // cssNames: Array::String // arrays needed, add when get static builders
@@ -91,8 +91,8 @@ Bind package: "org.gnome.gtk" content: [
     text: String 
     textLength: Int 
     placeholderText: String 
-    editable: Boolean
-    wrap: Boolean
+    editable: Bool
+    wrap: Bool
     alignment: Float
     maxWidthChars: Int
   
@@ -106,9 +106,9 @@ Bind package: "org.gnome.gtk" content: [
 
   Grid 
     columnSpacing: Int
-    columnHomogeneous: Boolean
+    columnHomogeneous: Bool
     rowSpacing: Int
-    rowHomogeneous: Boolean
+    rowHomogeneous: Bool
 ] 
 
 
@@ -204,7 +204,7 @@ Bind package: "org.gnome.adw" content: [
     on closePage::TabPage -> Unit
 
     @rename: "closePageFinish"
-    on closeFinish::TabPage confirm::Boolean -> Unit
+    on closeFinish::TabPage confirm::Bool -> Unit
 
     on getNPages::TabView -> Int
     on getNPinnedPages::TabView -> Int
@@ -212,7 +212,7 @@ Bind package: "org.gnome.adw" content: [
     on getPage::Widget -> TabPage
 
     // signls
-    on onClosePage::[TabPage -> Boolean] -> Unit
+    on onClosePage::[TabPage -> Bool] -> Unit
     on onCreateWindow::[ -> TabView] -> Unit
 
     on onPageAttached::[ TabPage, Int -> ] -> Unit
@@ -239,15 +239,15 @@ Bind package: "org.gnome.adw" content: [
 
   AdwRow // PreferencesRow
     child: Widget
-    selectable: Boolean
+    selectable: Bool
     title: String
   EntryRow
-    showApplyButton: Boolean
+    showApplyButton: Bool
     textLength: Int
     text: String
     widthChars: Int
     maxWidthChars: Int
-    activatesDefault: Boolean // Whether activating the embedded entry can activate the default widget
+    activatesDefault: Bool // Whether activating the embedded entry can activate the default widget
     // inputHints: InputHints // TODO
     // inputPurpose: InputPurpose // TODO
   ActionRow
@@ -255,8 +255,8 @@ Bind package: "org.gnome.adw" content: [
     titleLines: Int
 
   ExpanderRow
-    expanded: Boolean
-    enableExpansion: Boolean
+    expanded: Bool
+    enableExpansion: Bool
 
   PreferencesPage
     description: String
@@ -267,33 +267,33 @@ Bind package: "org.gnome.adw" content: [
 
   TabOverview
     child: Widget
-    enableNewTab: Boolean
-    enableSearch: Boolean
-    extraDragPreload: Boolean
-    searchActive: Boolean
+    enableNewTab: Bool
+    enableSearch: Bool
+    extraDragPreload: Bool
+    searchActive: Bool
     view: TabView
-    open: Boolean
+    open: Bool
 
 
   // Tabs
   TabView
-    altohide: Boolean
+    altohide: Bool
     pages: SelectionModel
     nPages: Int
     nPinnedPages: Int
-    tabsRevealed: Boolean // getter
-    expandTabs: Boolean
+    tabsRevealed: Bool // getter
+    expandTabs: Bool
     
   TabPage 
     parent: Widget
-    selected: Boolean
-    loading: Boolean
+    selected: Bool
+    loading: Bool
     keyword: String // for search
-    liveThumbnail: Boolean // in odverview
+    liveThumbnail: Bool // in odverview
     title: String
 
   TabBar
-    autohide: Boolean
+    autohide: Bool
     view: TabView
 
   // ActionRow
