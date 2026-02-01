@@ -21,6 +21,7 @@ JsonValue atIndex::Int -> JsonValue = [
   |=> Error throwWithMessage: "thats not an array, thats $this", orPANIC
 ]
 
+
 JsonValue first -> JsonValue =
   | this
   | JArray => list first

@@ -4,7 +4,7 @@
 ```Scala
 client = HttpClient newHttpClient
 request = HttpRequest newBuilder 
-    uri: (URI create: "https://postman-echo.com/get") |> 
+    uri: (URI create: "https://postman-echo.com/get"),
     build
 response = client send: request handler: (HttpResponse ofString)
 response body echo
@@ -14,7 +14,7 @@ response body echo
 ```Scala
 // creating printingClient
 client = JavaHttpClient new
-printingClient::HttpHandler = PrintResponse new |> then: client
+printingClient::HttpHandler = PrintResponse new, then: client
 // create request and send it
 request = Request method: Method.GET uri: "http://localhost:9000"
 responce = printingClient Request: request

@@ -1,0 +1,48 @@
+type WeatherData
+    area: String
+    tempC: Int
+    region: String
+    country: String
+
+getWeather = [
+  j = EzClient get: "https://wttr.in/cork?format=j1", toJson
+  tempC = j atKey: "current_condition", first atKey: "temp_C", getStr toInt
+  nreaO = j atKey: "nearest_area", first
+
+  getFromNrea = [key::String -> nreaO atKey: key, first, atKey: "value", getStr]
+  area =    getFromNrea key: "areaName"
+  region =  getFromNrea key: "region"
+  country = getFromNrea key: "country"
+
+  WeatherData :area :tempC :region :country
+]
+
+mut weather = getWeather do
+mut lastTime = 0.0
+
+app = ImGui
+    configure: [
+        it setTitle: "Weather Widget"
+    ]
+    process: [
+        ImGui text: "area: " + weather area
+        ImGui separator
+        ImGui text: "Temperature: " + weather tempC toString + " °C"
+        ImGui text: "Country: " + weather country toString
+        ImGui text: "Region: " + weather region toString
+        ImGui separator
+        ImGui treeNode: "hallo1", ifTrue: [
+          ImGui treeNode: "hallo2"
+          ImGui treeNode: "hallo3"
+          ImGui treePop
+        ]
+        ImGui treeNode: "hallo2"
+        ImGui treeNode: "hallo3"
+        //now = ImGui getTime
+        //now - lastTime >= 10.0 ifTrue: [
+        //    weather <- getWeather do
+        //    lastTime <- now
+        //]
+    ]
+
+Application launch: app
