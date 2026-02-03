@@ -1,0 +1,62 @@
+
+
+mut lastTime = 0.0
+mut c = 0
+
+mut squarePos = ImVec2 x: 200.0f y: 200.0f
+mut speed = 4.0f
+RED = -16776961
+WHITE = -1
+BLACK = -16777216
+BLUE = -65536 // 0xFFFF0000
+YELLOW = -16711681 // 0xFF00FFFF
+GREEN = -16711936 // 0xFF00FF00
+ORANGE = -5901825 // 0xFFA500FF
+
+app = ImGui
+    configure: [
+        it setTitle: "Weather Widget"
+        it setHeight: 500
+        it setWidth: 500
+    ]
+    process: [
+        // basic widgets
+        ImGui text: "Text example, counter = " + c toString
+        ImGui separator
+        ImGui treeNode: "hallo1", ifTrue: [
+          ImGui treeNode: "hallo2", ifTrue: [
+            ImGui text: "Text example, counter = " + c toString
+            ImGui treePop
+          ]
+          ImGui treePop
+        ]
+        ImGui separator
+        ImGui button: "counter - 1", ifTrue: [c <- c dec]
+        ImGui separator
+        ImGui text: "position x: " + squarePos x toString + " y: " + squarePos y toString
+        ImGui separator
+
+        // keyboard
+        ImGui isKeyPressed: ImGuiKey W, ifTrue: [squarePos y: squarePos y - speed]
+        ImGui isKeyPressed: ImGuiKey S, ifTrue: [squarePos y: squarePos y + speed]
+        ImGui isKeyPressed: ImGuiKey A, ifTrue: [squarePos x: squarePos x - speed]
+        ImGui isKeyPressed: ImGuiKey D, ifTrue: [squarePos x: squarePos x + speed]
+
+        // red square
+        draw = ImGui getForegroundDrawList
+        draw addRectFilledMin: squarePos
+             max: (ImVec2 x: squarePos x + 50f y: squarePos y + 50f)
+             col: YELLOW
+
+
+
+
+        // update timer
+        now = ImGui getTime
+        now - lastTime >= 1.0 ifTrue: [
+            c <- c inc
+            lastTime <- now
+        ]
+    ]
+
+Application launch: app

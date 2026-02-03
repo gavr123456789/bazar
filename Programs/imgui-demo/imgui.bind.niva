@@ -3,7 +3,7 @@ Project loadPackages: {"io.github.spair:imgui-java-app:1.90.0"}
 Bind package: "imgui.flag" content: [
   enum ImGuiInputTextFlags = CallbackResize
 ]
-Bind package: "imgui.type" content: [
+Bind package: "imgui.type" imports: {"imgui.flag.ImGuiKey"} content: [
   type ImString value: String
   ImString get -> String
 
@@ -20,6 +20,13 @@ Bind package: "imgui.type" content: [
 
 ] fields: [
   ImGuiKey
+
+    // mouse
+    MouseLeft: Int   MouseRight: Int MouseMiddle: Int
+    MouseWheelX: Int MouseWheelY: Int
+    MouseX1: Int     MouseX2: Int
+
+
     Escape: Int  F1: Int  F2: Int  F3: Int
     F4: Int      F5: Int  F6: Int  F7: Int
     F8: Int      F9: Int  F10: Int F11: Int
@@ -60,17 +67,31 @@ Bind package: "imgui.type" content: [
 ]
 
 Bind package: "imgui" imports: {"imgui.ImGui"} content: [
-  //type ImGuiIO
 
   type ImGui
   constructor ImGui [
 
+    // drawing
+    on getBackgroundDrawList -> ImDrawList
+    on getForegroundDrawList -> ImDrawList
+
+    /// create window
+    on begin::String -> Unit
+    /// end of window
+    on end -> Unit
 
     // keyboard controls
     on isKeyDown::Int -> Bool
     on isKeyPressed::Int -> Bool
     on isKeyReleased::Int -> Bool
-    //on getIO -> ImGuiIO
+    // mouse
+    on isMouseClicked::Int -> Bool
+    on isMouseDown::Int -> Bool
+    on isMouseDown::Int -> Bool
+    on isMouseDragging::Int -> Bool
+    on isMouseDoubleClicked::Int -> Bool
+
+    on getIO -> ImGuiIO
 
     // text
     on text::String -> Unit
@@ -103,6 +124,51 @@ Bind package: "imgui" imports: {"imgui.ImGui"} content: [
     on getTime -> Double
 
   ]
+//
+  type ImVec2
+  // stupid hack to prevent named args generation that is forbidden for java api calls from kt
+  @emit: "ImVec2($1, $2)"
+  constructor ImVec2
+    x::Float
+    y::Float -> ImVec2
+
+  extend ImVec2 [
+    on clone -> ImVec2
+
+    @emit: "$0.x = $1"
+    on x::Float -> Unit
+    @emit: "$0.y = $1"
+    on y::Float -> Unit
+
+    @rename: "set"
+    on setX::Float y::Float -> ImVec2
+    on setFromVector::ImVec2 -> ImVec2
+
+    on + x::ImVec2 -> ImVec2
+    on - x::ImVec2 -> ImVec2
+    on * x::ImVec2 -> ImVec2
+    on / x::ImVec2 -> ImVec2
+  ]
+//
+  type ImGuiIO
+  extend ImGuiIO [
+    on getMousePos -> ImVec2
+  ]
+//
+  type ImDrawList
+  extend ImDrawList [
+    @rename: "addLine"
+    on addLineFromVec1::ImVec2 vec2::ImVec2 col::Int -> Unit
+    @rename: "addRectFilled"
+    on addRectFilledMin::ImVec2 max::ImVec2 col::Int -> Unit
+    @rename: "addRect"
+    on addRectMin::ImVec2 max::ImVec2 col::Int -> Unit
+  ]
+
+] fields: [
+  ImVec2
+    x: Float
+    y: Float
 ]
 
 Bind package: "imgui.app" content: [
