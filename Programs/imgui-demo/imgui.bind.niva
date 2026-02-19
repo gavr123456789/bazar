@@ -76,49 +76,49 @@ Bind package: "imgui" imports: {"imgui.ImGui"} content: [
     on getForegroundDrawList -> ImDrawList
 
     /// create window
-    on begin::String -> Unit
+    on begin: String -> Unit
     /// end of window
     on end -> Unit
 
     // keyboard controls
-    on isKeyDown::Int -> Bool
-    on isKeyPressed::Int -> Bool
-    on isKeyReleased::Int -> Bool
+    on isKeyDown: Int -> Bool
+    on isKeyPressed: Int -> Bool
+    on isKeyReleased: Int -> Bool
     // mouse
-    on isMouseClicked::Int -> Bool
-    on isMouseDown::Int -> Bool
-    on isMouseDown::Int -> Bool
-    on isMouseDragging::Int -> Bool
-    on isMouseDoubleClicked::Int -> Bool
+    on isMouseClicked: Int -> Bool
+    on isMouseDown: Int -> Bool
+    on isMouseDown: Int -> Bool
+    on isMouseDragging: Int -> Bool
+    on isMouseDoubleClicked: Int -> Bool
 
     on getIO -> ImGuiIO
 
     // text
-    on text::String -> Unit
+    on text: String -> Unit
 
     on separator -> Unit
     on sameLine -> Unit
     on newLine -> Unit
 
     // tree nodes
-    on treeNode::String -> Bool
+    on treeNode: String -> Bool
     on treePop -> Unit
 
     // buttons
-    on button::String -> Bool
-    on smallButton::String -> Bool
+    on button: String -> Bool
+    on smallButton: String -> Bool
 
-    on checkbox::String value::ImBoolean -> Bool
+    on checkbox: String value: ImBoolean -> Bool
 
     // inputs
-    on inputText::String value::ImString flag::ImGuiInputTextFlags -> Bool
-    on inputInt::String label::String value::ImInt -> Bool
-    on inputFloat::String label::String value::ImFloat -> Bool
+    on inputText: String value: ImString flag: ImGuiInputTextFlags -> Bool
+    on inputInt: String label: String value: ImInt -> Bool
+    on inputFloat: String label: String value: ImFloat -> Bool
 
     // sliders
     @rename:""
-    on sliderInt::String label::String value::Int min::Int max::Int -> Bool
-    on sliderFloat::String label::String value::Float min::Float max::Float -> Bool
+    on sliderInt: String label: String value: Int min: Int max: Int -> Bool
+    on sliderFloat: String label: String value: Float min: Float max: Float -> Bool
 
     // utils
     on getTime -> Double
@@ -129,25 +129,25 @@ Bind package: "imgui" imports: {"imgui.ImGui"} content: [
   // stupid hack to prevent named args generation that is forbidden for java api calls from kt
   @emit: "ImVec2($1, $2)"
   constructor ImVec2
-    x::Float
-    y::Float -> ImVec2
+    x: Float
+    y: Float -> ImVec2
 
   extend ImVec2 [
     on clone -> ImVec2
 
     @emit: "$0.x = $1"
-    on x::Float -> Unit
+    on x: Float -> Unit
     @emit: "$0.y = $1"
-    on y::Float -> Unit
+    on y: Float -> Unit
 
     @rename: "set"
-    on setX::Float y::Float -> ImVec2
-    on setFromVector::ImVec2 -> ImVec2
+    on setX: Float y: Float -> ImVec2
+    on setFromVector: ImVec2 -> ImVec2
 
-    on + x::ImVec2 -> ImVec2
-    on - x::ImVec2 -> ImVec2
-    on * x::ImVec2 -> ImVec2
-    on / x::ImVec2 -> ImVec2
+    on + x: ImVec2 -> ImVec2
+    on - x: ImVec2 -> ImVec2
+    on * x: ImVec2 -> ImVec2
+    on / x: ImVec2 -> ImVec2
   ]
 //
   type ImGuiIO
@@ -158,11 +158,11 @@ Bind package: "imgui" imports: {"imgui.ImGui"} content: [
   type ImDrawList
   extend ImDrawList [
     @rename: "addLine"
-    on addLineFromVec1::ImVec2 vec2::ImVec2 col::Int -> Unit
+    on addLineFromVec1: ImVec2 vec2: ImVec2 col: Int -> Unit
     @rename: "addRectFilled"
-    on addRectFilledMin::ImVec2 max::ImVec2 col::Int -> Unit
+    on addRectFilledMin: ImVec2 max: ImVec2 col: Int -> Unit
     @rename: "addRect"
-    on addRectMin::ImVec2 max::ImVec2 col::Int -> Unit
+    on addRectMin: ImVec2 max: ImVec2 col: Int -> Unit
   ]
 
 ] fields: [
@@ -174,11 +174,11 @@ Bind package: "imgui" imports: {"imgui.ImGui"} content: [
 Bind package: "imgui.app" content: [
   type Configuration
   extend Configuration [
-    on setTitle::String -> Unit
-    on setWidth::Int -> Unit
-    on setHeight::Int -> Unit
+    on setTitle: String -> Unit
+    on setWidth: Int -> Unit
+    on setHeight: Int -> Unit
     on isFullScreen -> Bool
-    on setFullScreen::Bool -> Unit
+    on setFullScreen: Bool -> Unit
   ]
 
   @emit: """
@@ -187,10 +187,10 @@ Bind package: "imgui.app" content: [
         override fun process() $2
     }
   """
-  constructor ImGui configure::[Configuration ->] process::[-> Unit] -> ImGui
+  constructor ImGui configure: [Configuration ->] process: [-> Unit] -> ImGui
 
 
   type Application
-  constructor Application launch::ImGui -> Unit
+  constructor Application launch: ImGui -> Unit
 
 ]

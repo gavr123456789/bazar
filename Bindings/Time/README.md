@@ -1,4 +1,14 @@
 # How to use
+## simpleTime
+
+```Scala
+System currentTimeMillis echo
+
+x = System currentTimeMillis
+...
+diff = System currentTimeMillis - x
+````
+
 ## kotlin.time.measureTime
 
 ```Scala
