@@ -1,29 +1,29 @@
-String surroundWith::String and::String = 
+String surroundWith: String and: String =
   surroundWith + this + and
 
-String surroundWith: x::String = 
+String surroundWith(x): String =
   x + this + x
 
-String packForJson -> String = 
+String packForJson -> String =
    this escape surroundWith: "\""
 
-String escape = 
+String escape =
   this replace: "\\" with: "\\\\" |>
   replace: "\"" with: "\\\"" |>
   replace: "\n" with: "\\n" |>
   replace: "\r" with: "\\r" |>
   replace: "\t" with: "\\t" |>
-  replace: "\'" with: "\\'" 
+  replace: "\'" with: "\\'"
 
 String unescape -> String = [
   sb = StringBuilder new
   mut i = 0
   [ i < this count ] whileTrue: [
     c = this at: i
-    
+
     c == '\\' ifTrue: [
       i <- i inc
-      (i < this count) ifTrue: [
+      i < this count ifTrue: [
         esc = this at: i
         str = | esc
         | '\\' => "\\"

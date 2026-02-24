@@ -1,8 +1,8 @@
 Bind package: "java.lang" content: [
-  type ProcessBuilder command: List(String)
+  type ProcessBuilder command: List::String
 
   @emit: "ProcessBuilder($1).directory(java.io.File($2))"
-  constructor ProcessBuilder command: List(String) dir: String -> ProcessBuilder
+  constructor ProcessBuilder command::List::String dir::String -> ProcessBuilder
 
   type Process
 
@@ -20,5 +20,5 @@ Bind package: "java.lang" content: [
   constructor Process currentDir -> String
 
   @emit: """System.getenv($1)"""
-  constructor Process getEnv: String -> String
+  constructor Process getEnv::String -> String
 ]

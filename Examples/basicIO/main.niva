@@ -1,0 +1,80 @@
+type FilePath = String
+type FileContent = String
+type IO_Files
+  isExists: [FilePath -> Bool]
+  readFile:   [FilePath -> String]
+  writeFile:  [FilePath, FileContent -> Unit]
+  walkDir:    [FilePath -> List::Path]
+  getParent:  [String -> String]
+
+constructor IO_Files new -> IO_Files = [
+  readFile = [path: String ->
+    FileSystem read: (path toPath)
+  ]
+
+  writeFile = [path: String , fileContent: FileContent ->
+    FileSystem write: path toPath
+               content: fileContent
+    ()
+  ]
+
+  walkDir = [path: String ->
+    FileSystem listRecursively: path toPath
+  ]
+  isExists = [path: String ->
+    FileSystem exists: path toPath
+  ]
+
+  getParent = [path: String -> path toPath parent unpackOrPANIC toString]
+
+  ^ IO_Files :isExists :readFile :writeFile :walkDir :getParent
+]
+
+type IO_Process
+  run: [List::String -> String]
+
+constructor IO_Process new -> IO_Process = [
+  run = [args::List::String ->
+    processBuilder = ProcessBuilder command: args
+    processBuilder start redirectToString
+  ]
+
+  ^ IO_Process :run
+]
+
+type IO_Client
+  get: [String -> String]
+  post: [String, String -> String]
+  // todo get-with-headers
+
+constructor IO_Client new -> IO_Client = [
+  get = [path: String ->
+    EzClient get: path
+  ]
+  post = [path: String body: String ->
+    EzClient post: path body: body
+  ]
+  ^ IO_Client :get :post
+]
+
+io = IO_Files new
+io isExists path: ".", echo
+io walkDir path: ".", echo
+io readFile path: "file.txt", echo
+
+hi = "/hi" bind: Method.GET, to: [
+  Response status: Status.OK, body: "Hello!"
+]
+sas = "/sas" bind: Method.GET, to: [
+  Response status: Status.OK, body: "sыs!"
+]
+
+
+routes = Router routes: {hi sas}
+routes asServer: (SunHttp port: 9000), start
+
+http = IO_Client new
+http get path: "http://localhost:9000/hi", echo
+
+process = IO_Process new
+process run command: {"curl" "-X" "GET" "http://localhost:9000/sas"}, echo

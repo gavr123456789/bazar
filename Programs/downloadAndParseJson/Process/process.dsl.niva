@@ -4,33 +4,21 @@ ProcessBuilder redirectToOutAndStart =
 ProcessBuilder redirectToStringAndStart -> String =
   this start redirectToString
 
-List::String run =
-  ProcessBuilder command: this,
-  redirectToOutAndStart
 
-List::String runToString -> String =
+List::String run -> String =
   ProcessBuilder command: this,
   redirectToStringAndStart
 
-List::String runInDir: dir::String =
+List::String runInDir(dir): String =
   ProcessBuilder command: this dir: dir,
-  redirectToOutAndStart
-
-// run cmd and put the output of it to console
-String run =
-  ProcessBuilder command: {this},
-  redirectToOutAndStart
+  redirectToStringAndStart
 
 // run cmd and put the output of it to string
-String runToString -> String =
+String run -> String =
   ProcessBuilder command: {this},
   redirectToStringAndStart
 
-String runInDir: dir::String =
-  ProcessBuilder command: {this} dir: dir,
-  redirectToOutAndStart
-
 // run cmd and put the output of it to string
-String runInDirToString: dir::String -> String =
+String runInDirToString(dir): String -> String =
   ProcessBuilder command: {this} dir: dir,
   redirectToStringAndStart

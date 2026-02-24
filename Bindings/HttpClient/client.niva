@@ -1,0 +1,19 @@
+type EzClient
+
+
+constructor EzClient [
+  on helper: uri::String method::Method postBody::String? -> String = [
+    client = JavaHttpClient new
+    printingClient::HttpHandler = PrintResponse new, then: client
+    request = Request method: method uri: uri
+    requestWithBody = postBody unpack: [request setBody: it] or: request
+    responce = printingClient Request: requestWithBody
+    ^ responce bodyString
+  ]
+  on get: uri::String =
+    EzClient helper: uri method: Method.GET postBody: null
+
+  on post: uri::String body::String =
+    EzClient helper: uri method: Method.POST postBody: body
+
+]

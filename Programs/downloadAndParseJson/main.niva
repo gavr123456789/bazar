@@ -1,2 +1,2 @@
-x = {"curl" "https://api.github.com/repos/babashka/babashka/tags"} runToString
+x = {"curl" "https://api.github.com/repos/babashka/babashka/tags"} run
 x toJson first atKey: "name", echo

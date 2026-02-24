@@ -1,0 +1,78 @@
+Project loadPackages: {
+    "org.http4k:http4k-bom:5.26.1.0"
+    "org.http4k:http4k-core:5.26.1.0"
+    "org.http4k:http4k-format-jackson:5.26.1.0"
+    "org.http4k:http4k-client-okhttp:5.26.1.0"
+}
+
+Bind package: "org.http4k.server"
+content: [
+    union ServerConfig port: Int =
+    | SunHttp
+
+    type Http4kServer
+    Http4kServer start -> Http4kServer
+]
+
+Bind package: "org.http4k.core" imports: {"org.http4k.asString"} content: [
+    enum Status = OK | CREATED | ACCEPTED | NO_CONTENT | FOUND | BAD_REQUEST | NOT_FOUND
+    enum Method = GET | POST | PUT | DELETE | OPTIONS | TRACE | PATCH | PURGE | HEAD
+
+    type Request method: Method uri: String
+    type Body
+    // type ByteBuffer
+
+    @emit: "$0.payload.asString()"
+    Body strPayload -> String
+
+    Request query: String -> String
+    @rename: "body"
+    Request setBody: String -> Request
+    Request query: String value: String -> String
+
+    type Response status: Status
+    /// set body for responce from server
+    Response body: String -> Response
+    Response bodyString -> String
+
+
+    type HttpHandler = [Request -> Response]
+    HttpHandler asServer(config): ServerConfig -> Http4kServer
+] fields: [
+    Request
+        body: Body
+]
+
+Bind package: "org.http4k.routing" content: [
+    type RoutingHttpHandler = HttpHandler
+
+    type PathMethod
+    PathMethod to: HttpHandler -> RoutingHttpHandler
+    String bind: Method -> PathMethod
+
+
+    type Router
+    @emit: "org.http4k.routing.routes($1)"
+    constructor Router routes: List(RoutingHttpHandler) -> RoutingHttpHandler
+]
+
+Bind package: "org.http4k.client" content: [
+    type JavaHttpClient = HttpHandler // strange but it is
+    @emit: "JavaHttpClient()"
+    constructor JavaHttpClient new -> HttpHandler
+]
+
+Bind package: "org.http4k.filter"
+imports: {"org.http4k.filter.DebuggingFilters.PrintResponse" "org.http4k.filter.DebuggingFilters.PrintRequestAndResponse" "org.http4k.filter.DebuggingFilters.PrintRequest"}
+content: [
+    type Filter = [HttpHandler -> HttpHandler]
+    Filter then(next): HttpHandler -> HttpHandler
+
+    union DebuggingFilters =
+    | PrintRequest
+    | PrintResponse
+    | PrintRequestAndResponse
+
+    // its because PrintResponse is object with invoke op that returns Filter
+    constructor DebuggingFilters new -> Filter
+]
