@@ -1,0 +1,220 @@
+Project loadPackages: {"io.github.spair:imgui-java-app:1.90.0"}
+
+Bind package: "imgui.flag" content: [
+  enum ImGuiInputTextFlags = CallbackResize
+]
+Bind package: "imgui.type" imports: {"imgui.flag.ImGuiKey"} content: [
+  type ImString value: String
+  ImString get -> String
+
+  type ImInt value: Int
+  ImInt get -> String
+
+  type ImFloat value: Float
+  ImFloat get -> String
+
+  type ImBoolean value: Bool
+  ImBoolean get -> String
+
+  type ImGuiKey
+
+] fields: [
+  ImGuiKey
+
+    // mouse
+    MouseLeft: Int   MouseRight: Int MouseMiddle: Int
+    MouseWheelX: Int MouseWheelY: Int
+    MouseX1: Int     MouseX2: Int
+
+
+    Escape: Int  F1: Int  F2: Int  F3: Int
+    F4: Int      F5: Int  F6: Int  F7: Int
+    F8: Int      F9: Int  F10: Int F11: Int
+    F12: Int     F13: Int F14: Int F15: Int
+    F16: Int     F17: Int F18: Int F19: Int
+    F20: Int     F21: Int F22: Int F23: Int
+    F24: Int
+
+    //_0: Int  _1: Int  _2: Int  _3: Int
+    //_4: Int  _5: Int  _6: Int  _7: Int
+    //_8: Int  _9: Int
+
+    Minus: Int Equal: Int
+    Backspace: Int
+
+    Tab: Int  Q: Int  W: Int  E: Int
+    R: Int    T: Int  Y: Int  U: Int
+    I: Int    O: Int  P: Int  LeftBracket: Int
+    RightBracket: Int Backslash: Int
+
+    A: Int  S: Int  D: Int  F: Int
+    G: Int  H: Int  J: Int  K: Int
+    L: Int  Semicolon: Int Apostrophe: Int
+    Enter: Int
+
+    Z: Int  X: Int  C: Int  V: Int
+    B: Int  N: Int  M: Int  Comma: Int
+    Period: Int Slash: Int
+    LeftShift: Int RightShift: Int
+
+    LeftCtrl: Int  LeftAlt: Int  LeftSuper: Int Space: Int
+    RightSuper: Int RightAlt: Int RightCtrl: Int Menu: Int
+
+    Insert: Int  Delete: Int  Home: Int  End: Int
+    PageUp: Int  PageDown: Int
+
+    UpArrow: Int  DownArrow: Int  LeftArrow: Int  RightArrow: Int
+]
+
+Bind package: "imgui" imports: {"imgui.ImGui"} content: [
+
+
+  //type ImFontConfig
+
+  //type ImFontGlyphRangesBuilder
+  //constructor ImFontGlyphRangesBuilder [
+  //  on
+  //]
+
+  type ImGui
+  constructor ImGui [
+
+    @emit: "super.initImGui($1)"
+    on superInitImGuiFromConfig: Configuration -> Unit
+    // "/System/Library/Fonts/Supplemental/Arial.ttf"
+    @emit: """
+    val fontPath = $1
+    if (java.io.File(fontPath).exists()) {
+        val io = ImGui.getIO()
+        val rangesBuilder = ImFontGlyphRangesBuilder()
+        rangesBuilder.addRanges(io.fonts.glyphRangesCyrillic)
+        rangesBuilder.addRanges(io.fonts.glyphRangesGreek)
+
+        io.fonts.addFontFromFileTTF(fontPath, 16f, ImFontConfig(), rangesBuilder.buildRanges())
+    }
+    """
+    on addFont: String -> Unit
+    // drawing
+    on getBackgroundDrawList -> ImDrawList
+    on getForegroundDrawList -> ImDrawList
+
+    /// create window
+    on begin: String -> Unit
+    /// end of window
+    on end -> Unit
+
+    // keyboard controls
+    on isKeyDown: Int -> Bool
+    on isKeyPressed: Int -> Bool
+    on isKeyReleased: Int -> Bool
+    // mouse
+    on isMouseClicked: Int -> Bool
+    on isMouseDown: Int -> Bool
+    on isMouseDown: Int -> Bool
+    on isMouseDragging: Int -> Bool
+    on isMouseDoubleClicked: Int -> Bool
+
+    on getIO -> ImGuiIO
+
+    // text
+    on text: String -> Unit
+
+    on separator -> Unit
+    on sameLine -> Unit
+    on newLine -> Unit
+
+    // tree nodes
+    on treeNode: String -> Bool
+    on treePop -> Unit
+
+    // buttons
+    on button: String -> Bool
+    on smallButton: String -> Bool
+
+    on checkbox: String value: ImBoolean -> Bool
+
+    // inputs
+    on inputText: String value: ImString flag: ImGuiInputTextFlags -> Bool
+    on inputInt: String label: String value: ImInt -> Bool
+    on inputFloat: String label: String value: ImFloat -> Bool
+
+    // sliders
+    @rename:""
+    on sliderInt: String label: String value: Int min: Int max: Int -> Bool
+    on sliderFloat: String label: String value: Float min: Float max: Float -> Bool
+
+    // utils
+    on getTime -> Double
+
+  ]
+
+  type ImVec2
+  // stupid hack to prevent named args generation that is forbidden for java api calls from kt
+  @emit: "ImVec2($1, $2)"
+  constructor ImVec2
+    x: Float
+    y: Float -> ImVec2
+
+  extend ImVec2 [
+    on clone -> ImVec2
+
+    @emit: "$0.x = $1"
+    on x: Float -> Unit
+    @emit: "$0.y = $1"
+    on y: Float -> Unit
+
+    @rename: "set"
+    on setX: Float y: Float -> ImVec2
+    on setFromVector: ImVec2 -> ImVec2
+
+    on + x: ImVec2 -> ImVec2
+    on - x: ImVec2 -> ImVec2
+    on * x: ImVec2 -> ImVec2
+    on / x: ImVec2 -> ImVec2
+  ]
+//
+  type ImGuiIO
+  extend ImGuiIO [
+    on getMousePos -> ImVec2
+  ]
+//
+  type ImDrawList
+  extend ImDrawList [
+    @rename: "addLine"
+    on addLineFromVec1: ImVec2 vec2: ImVec2 col: Int -> Unit
+    @rename: "addRectFilled"
+    on addRectFilledMin: ImVec2 max: ImVec2 col: Int -> Unit
+    @rename: "addRect"
+    on addRectMin: ImVec2 max: ImVec2 col: Int -> Unit
+  ]
+
+] fields: [
+  ImVec2
+    x: Float
+    y: Float
+]
+
+Bind package: "imgui.app" content: [
+  type Configuration
+  extend Configuration [
+    on setTitle: String -> Unit
+    on setWidth: Int -> Unit
+    on setHeight: Int -> Unit
+    on isFullScreen -> Bool
+    on setFullScreen: Bool -> Unit
+  ]
+
+  @emit: """
+  object : Application() {
+        override fun configure(it: Configuration) = $1()
+        override fun initImGui(it: Configuration) = $2()
+        override fun process() $3
+    }
+  """
+  constructor ImGui configure: [Configuration ->] initImGui: [Configuration ->] process: [-> Unit] -> ImGui
+
+
+  type Application
+  constructor Application launch: ImGui -> Unit
+
+]

@@ -1,0 +1,52 @@
+Project loadPackages: {"org.jetbrains.kotlinx:kotlinx-io-core:0.8.2"}
+
+Bind package: "kotlinx.io.files" imports: {"kotlinx.io.files.Path"} content: [
+  type Path
+    name: String
+    parent: Path?
+    isAbsolute: Bool
+
+  Path toString -> String
+  Path == x: Path -> Bool
+  Path != x: Path -> Bool
+]
+
+Bind package: "kotlinx.io.files" imports: {"kotlinx.io.files.SystemFileSystem"} content: [
+  type FileSystem
+  type FileMetadata
+    isRegularFile: Bool
+    isDirectory: Bool
+    size: Long
+
+  // atomicMove
+  @emit: "SystemFileSystem.atomicMove($1, $2)"
+  constructor FileSystem atomicMove: Path destination: Path -> Unit
+
+  // createDirectories
+  @emit: "SystemFileSystem.createDirectories($1)"
+  constructor FileSystem createDirectories: Path -> Unit
+  @emit: "SystemFileSystem.createDirectories($1, $2)"
+  constructor FileSystem createDirectories: Path mustCreate: Bool -> Unit
+
+  // delete
+  @emit: "SystemFileSystem.delete($1)"
+  constructor FileSystem delete: Path -> Unit
+  @emit: "SystemFileSystem.delete($1, $2)"
+  constructor FileSystem delete: Path mustExist: Bool -> Unit
+
+  // exists
+  @emit: "SystemFileSystem.exists($1)"
+  constructor FileSystem exists: Path -> Bool
+
+  // list
+  @emit: "SystemFileSystem.list($1)"
+  constructor FileSystem list: Path -> List(Path)
+
+  // metadataOrNull
+  @emit: "SystemFileSystem.metadataOrNull($1)"
+  constructor FileSystem metadataOrNull: Path -> FileMetadata?
+
+  // resolve
+  @emit: "SystemFileSystem.resolve($1)"
+  constructor FileSystem resolve: Path -> Path
+]

@@ -1,0 +1,251 @@
+// Selector (multiple choice) mode for word pairs: "question - answer"
+
+type WordPair original: String translation: String
+
+
+// app state
+mut inGame = false
+mut isCompleted = false
+
+mut filePath = ImString value: ""
+mut statusMsg = ""
+
+mut pairs::List::WordPair = {}
+mut allTranslations::List::String = {}
+mut queue::mut List::WordPair = {}
+mut pendingPairs::List::WordPair = {}
+
+mut initialTotal = 0
+mut currentIdx = 0
+mut wordsDone = 0
+
+mut totalCorrect = 0
+mut totalErrors = 0
+mut hasErrorInCurrentWord = false
+
+mut options::List::String = {}
+mut optionsForWordDone = -1
+mut disabledOptionIdx::List::Int = {}
+
+mut currentPair = WordPair original: "" translation: ""
+mut hasCurrentPair = false
+
+// helpers
+resetGame = [
+  pairs <- pendingPairs
+  allTranslations <- (pairs map: [it translation]) toSet toList
+  queue <- pairs toMutableList
+
+  initialTotal <- pairs count
+  currentIdx <- 0
+  wordsDone <- 0
+
+  totalCorrect <- 0
+  totalErrors <- 0
+  hasErrorInCurrentWord <- false
+
+  options <- {}
+  optionsForWordDone <- -1
+  disabledOptionIdx <- {}
+
+  isCompleted <- false
+  inGame <- true
+]
+
+goNext = [
+  hasCurrentPair ifTrue: [
+    hasErrorInCurrentWord ifTrue: [
+      queue add: currentPair
+    ]
+
+    queue removeAt: currentIdx
+
+    wordsDone <- wordsDone + 1
+    hasErrorInCurrentWord <- false
+    disabledOptionIdx <- {}
+    optionsForWordDone <- -1
+
+    queue isEmpty
+      ifTrue: [
+        isCompleted <- true
+      ]
+      ifFalse: [
+        currentIdx >= queue count ifTrue: [currentIdx <- 0]
+      ]
+  ]
+]
+
+// main app
+app = ImGui
+        configure: [
+          it setTitle: "niva imgui - selector"
+          it setHeight: 600
+          it setWidth: 600
+
+        ]
+        initImGui: [
+          ImGui superInitImGuiFromConfig: it
+          ImGui addFont: "/System/Library/Fonts/Supplemental/Arial.ttf"
+          ()
+        ]
+        process: [
+          ImGui text: "Selector mode (4 options)"
+          ImGui separator
+
+          inGame ifFalse: [
+            ImGui text: "Format: question - answer (or question answer)"
+            ImGui inputText: "File path"
+                  value: filePath
+                  flag: ImGuiInputTextFlags.CallbackResize
+
+            ImGui button: "Load and start", ifTrue: [
+              path = filePath get trim
+              path isEmpty
+                ifTrue: [statusMsg <- "Please provide a file path"]
+                ifFalse: [
+                  file = File path: path
+                  file exists
+                    ifTrue: [
+                      mut parsed::mut List::WordPair = {}
+                      lines = file readLines
+                      lines forEach: [line ->
+                        trimmed = line trim
+                        trimmed isEmpty
+                          ifTrue: []
+                          ifFalse: [
+                            (trimmed contains: "-")
+                              ifTrue: [
+                                parts = trimmed split: "-"
+                                parts count > 1 ifTrue: [
+                                  original = parts first trim
+                                  translation = (parts drop: 1) joinWith: "-" trim
+                                  original isNotEmpty && translation isNotEmpty ifTrue: [
+                                    parsed add: (WordPair original: original translation: translation)
+                                  ]
+                                ]
+                              ]
+                              ifFalse: [
+                                parts = trimmed split: " "
+                                parts count > 1 ifTrue: [
+                                  original = parts first trim
+                                  translation = (parts drop: 1) joinWith: " " trim
+                                  original isNotEmpty && translation isNotEmpty ifTrue: [
+                                    parsed add: (WordPair original: original translation: translation)
+                                  ]
+                                ]
+                              ]
+                          ]
+                      ]
+
+                      parsed isEmpty
+                        ifTrue: [statusMsg <- "No pairs found in the file"]
+                        ifFalse: [
+                          pendingPairs <- parsed toList
+                          statusMsg <- "Pairs loaded: " + (parsed count) toString
+                          resetGame do
+                        ]
+                    ]
+                    ifFalse: [
+                      statusMsg <- "File not found"
+                    ]
+                ]
+            ]
+
+            statusMsg isNotEmpty ifTrue: [
+              ImGui separator
+              ImGui text: statusMsg
+            ]
+          ] ifTrue: [
+            // keep currentIdx valid
+            queue isNotEmpty ifTrue: [
+              currentIdx >= queue count ifTrue: [currentIdx <- 0]
+            ]
+
+            queue isEmpty
+              ifTrue: [hasCurrentPair <- false]
+              ifFalse: [
+                currentPair <- queue at: currentIdx
+                hasCurrentPair <- true
+              ]
+
+            isCompleted
+              ifTrue: [
+                ImGui text: "Done"
+                ImGui separator
+                attempts = totalCorrect + totalErrors
+                successPercent = attempts > 0
+                  ifTrue: [((totalCorrect * 100) / attempts)]
+                  ifFalse: [0]
+
+                ImGui text: "Correct: " + (totalCorrect toString)
+                ImGui text: "Errors: " + (totalErrors toString)
+                ImGui text: "Success: " + (successPercent toString) + "%"
+
+                ImGui separator
+                ImGui button: "Restart", ifTrue: [
+                  pendingPairs <- pairs
+                  resetGame do
+                ]
+                ImGui sameLine
+                ImGui button: "Menu", ifTrue: [
+                  inGame <- false
+                ]
+              ]
+              ifFalse: [
+                hasCurrentPair ifTrue: [
+                  // regenerate options for current word
+                  optionsForWordDone != wordsDone ifTrue: [
+                    optionsForWordDone <- wordsDone
+                    disabledOptionIdx <- {}
+
+                    correct = currentPair translation
+                    mut incorrect = allTranslations filter: [it != correct]
+                    incorrect <- incorrect shuffled
+
+                    desiredOptions = 4
+                    incorrectCount = desiredOptions - 1
+
+                    incorrect count > incorrectCount ifTrue: [
+                      incorrect <- incorrect viewFrom: 0 to: incorrectCount
+                    ]
+
+                    options <- ({correct} + incorrect) shuffled
+                  ]
+
+                  globalIndex = initialTotal - (queue count) + currentIdx + 1
+                  ImGui text: "Word " + (globalIndex toString) + " of " + (initialTotal toString)
+                  ImGui separator
+                  ImGui text: currentPair original
+                  ImGui separator
+
+                  options forEachIndexed: [idx, option ->
+                    isDisabled = disabledOptionIdx contains: idx
+
+                    isDisabled ifTrue: [
+                      ImGui text: option + " (wrong)"
+                    ] ifFalse: [
+                      ImGui button: option, ifTrue: [
+                        (option == currentPair translation)
+                          ifTrue: [
+                            totalCorrect <- totalCorrect + 1
+                            goNext do
+                          ]
+                          ifFalse: [
+                            totalErrors <- totalErrors + 1
+                            hasErrorInCurrentWord <- true
+                            disabledOptionIdx <- disabledOptionIdx plus: idx
+                          ]
+                      ]
+                    ]
+                  ]
+
+                  ImGui separator
+                  ImGui button: "Menu", ifTrue: [
+                    inGame <- false
+                  ]
+                ]
+              ]
+          ]
+        ]
+
+Application launch: app
