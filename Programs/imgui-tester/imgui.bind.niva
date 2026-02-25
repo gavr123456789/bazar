@@ -8,13 +8,13 @@ Bind package: "imgui.type" imports: {"imgui.flag.ImGuiKey"} content: [
   ImString get -> String
 
   type ImInt value: Int
-  ImInt get -> String
+  ImInt get -> Int
 
   type ImFloat value: Float
-  ImFloat get -> String
+  ImFloat get -> Float
 
   type ImBoolean value: Bool
-  ImBoolean get -> String
+  ImBoolean get -> Bool
 
   type ImGuiKey
 
@@ -90,10 +90,10 @@ Bind package: "imgui" imports: {"imgui.ImGui"} content: [
         rangesBuilder.addRanges(io.fonts.glyphRangesCyrillic)
         rangesBuilder.addRanges(io.fonts.glyphRangesGreek)
 
-        io.fonts.addFontFromFileTTF(fontPath, 16f, ImFontConfig(), rangesBuilder.buildRanges())
+        io.fonts.addFontFromFileTTF(fontPath, $2, ImFontConfig(), rangesBuilder.buildRanges())
     }
     """
-    on addFont: String -> Unit
+    on addFont: String size: Float -> Unit
     // drawing
     on getBackgroundDrawList -> ImDrawList
     on getForegroundDrawList -> ImDrawList

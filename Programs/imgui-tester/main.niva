@@ -1,19 +1,21 @@
-// Selector (multiple choice) mode for word pairs: "question - answer"
-
 type WordPair original: String translation: String
 
 
 // app state
 mut inGame = false
 mut isCompleted = false
+shouldShuffle = ImBoolean value: false
 
 mut filePath = ImString value: ""
 mut statusMsg = ""
+mut pendingPath = ""
 
-mut pairs::List::WordPair = {}
-mut allTranslations::List::String = {}
-mut queue::mut List::WordPair = {}
-mut pendingPairs::List::WordPair = {}
+mut pairs = List(WordPair) val: {}
+mut allTranslations::List(String) = {}
+mut queue = List(WordPair) val: {}, toMut
+mut pendingPairs = List(WordPair) val: {}
+mut recentPaths = List(String) val: {}, toMut
+recentFile = File path: "recent_paths.txt"
 
 mut initialTotal = 0
 mut currentIdx = 0
@@ -31,10 +33,31 @@ mut currentPair = WordPair original: "" translation: ""
 mut hasCurrentPair = false
 
 // helpers
+recentFile exists
+  ifTrue:  [recentPaths <- recentFile readLines toMutableList]
+  ifFalse: [
+    recentFile writeText: ""
+    recentPaths <- {}
+  ]
+
+writeRecent = [
+  recentPaths isEmpty
+    ifTrue:  [recentFile writeText: ""] // create file
+    ifFalse: [recentFile writeText: (recentPaths joinWith: "\n") + "\n"]
+]
+
+cleanRecent = [
+  recentPaths <- recentPaths filter: [p -> File path: p, exists], toMutableList
+  writeRecent do
+]
+cleanRecent do
+
 resetGame = [
-  pairs <- pendingPairs
+  pairs <-  pendingPairs
   allTranslations <- (pairs map: [it translation]) toSet toList
-  queue <- pairs toMutableList
+  queue <- shouldShuffle get
+              ifTrue: [pairs shuffled toMutableList]
+              ifFalse: [pairs toMutableList]
 
   initialTotal <- pairs count
   currentIdx <- 0
@@ -52,6 +75,49 @@ resetGame = [
   inGame <- true
 ]
 
+loadPending = [
+  path = pendingPath trim
+  path isEmpty
+    ifTrue: [statusMsg <- "Please provide a file path"]
+    ifFalse: [
+      file = File path: path
+      file exists
+        ifTrue: [
+          parsed = List(WordPair) val: {}, toMut
+          file readLines forEach: [line ->
+            trimmed = line trim
+            trimmed isEmpty
+              ifFalse: [
+                delimiter = (trimmed contains: "-")
+                  ifTrue: ["-"]
+                  ifFalse: [" "]
+
+                parts = trimmed split: delimiter
+                parts count > 1 ifTrue: [
+                  original = parts first trim
+                  translation = (parts drop: 1) joinWith: delimiter trim
+                  original isNotEmpty && translation isNotEmpty
+                    ifTrue: [parsed add: (WordPair :original :translation)]
+                ]
+              ]
+          ]
+
+          parsed isEmpty
+            ifTrue: [statusMsg <- "No pairs found in the file"]
+            ifFalse: [
+              pendingPairs <- parsed toList
+              statusMsg <- "Pairs loaded: " + (parsed count) toString
+              recentPaths contains: path, ifFalse: [
+                recentPaths add: path
+                writeRecent do
+              ]
+              resetGame do
+            ]
+        ]
+        ifFalse: [statusMsg <- "File not found"]
+    ]
+]
+
 goNext = [
   hasCurrentPair ifTrue: [
     hasErrorInCurrentWord ifTrue: [
@@ -66,12 +132,8 @@ goNext = [
     optionsForWordDone <- -1
 
     queue isEmpty
-      ifTrue: [
-        isCompleted <- true
-      ]
-      ifFalse: [
-        currentIdx >= queue count ifTrue: [currentIdx <- 0]
-      ]
+      ifTrue:  [isCompleted <- true]
+      ifFalse: [currentIdx >= queue count ifTrue: [currentIdx <- 0]]
   ]
 ]
 
@@ -85,70 +147,35 @@ app = ImGui
         ]
         initImGui: [
           ImGui superInitImGuiFromConfig: it
-          ImGui addFont: "/System/Library/Fonts/Supplemental/Arial.ttf"
+          ImGui addFont: "/System/Library/Fonts/Supplemental/Arial.ttf" size: 22f
           ()
         ]
         process: [
-          ImGui text: "Selector mode (4 options)"
-          ImGui separator
-
           inGame ifFalse: [
+            ImGui text: "Selector mode (4 options)"
+            ImGui separator
+            ImGui checkbox: "shuffle questions" value: shouldShuffle
+            ImGui separator
             ImGui text: "Format: question - answer (or question answer)"
             ImGui inputText: "File path"
                   value: filePath
                   flag: ImGuiInputTextFlags.CallbackResize
 
             ImGui button: "Load and start", ifTrue: [
-              path = filePath get trim
-              path isEmpty
-                ifTrue: [statusMsg <- "Please provide a file path"]
-                ifFalse: [
-                  file = File path: path
-                  file exists
-                    ifTrue: [
-                      mut parsed::mut List::WordPair = {}
-                      lines = file readLines
-                      lines forEach: [line ->
-                        trimmed = line trim
-                        trimmed isEmpty
-                          ifTrue: []
-                          ifFalse: [
-                            (trimmed contains: "-")
-                              ifTrue: [
-                                parts = trimmed split: "-"
-                                parts count > 1 ifTrue: [
-                                  original = parts first trim
-                                  translation = (parts drop: 1) joinWith: "-" trim
-                                  original isNotEmpty && translation isNotEmpty ifTrue: [
-                                    parsed add: (WordPair original: original translation: translation)
-                                  ]
-                                ]
-                              ]
-                              ifFalse: [
-                                parts = trimmed split: " "
-                                parts count > 1 ifTrue: [
-                                  original = parts first trim
-                                  translation = (parts drop: 1) joinWith: " " trim
-                                  original isNotEmpty && translation isNotEmpty ifTrue: [
-                                    parsed add: (WordPair original: original translation: translation)
-                                  ]
-                                ]
-                              ]
-                          ]
-                      ]
+              pendingPath <- filePath get
+              loadPending do
+            ]
 
-                      parsed isEmpty
-                        ifTrue: [statusMsg <- "No pairs found in the file"]
-                        ifFalse: [
-                          pendingPairs <- parsed toList
-                          statusMsg <- "Pairs loaded: " + (parsed count) toString
-                          resetGame do
-                        ]
-                    ]
-                    ifFalse: [
-                      statusMsg <- "File not found"
-                    ]
+            recentPaths isNotEmpty ifTrue: [
+              ImGui separator
+              ImGui text: "Recent files"
+              recentPaths forEach: [path ->
+                shorterPath = path split: "/", last, toString
+                ImGui button: shorterPath, ifTrue: [
+                  pendingPath <- path
+                  loadPending do
                 ]
+              ]
             ]
 
             statusMsg isNotEmpty ifTrue: [
@@ -213,7 +240,7 @@ app = ImGui
                   ]
 
                   globalIndex = initialTotal - (queue count) + currentIdx + 1
-                  ImGui text: "Word " + (globalIndex toString) + " of " + (initialTotal toString)
+                  ImGui text: "Question " + (globalIndex toString) + " of " + (initialTotal toString)
                   ImGui separator
                   ImGui text: currentPair original
                   ImGui separator
@@ -221,28 +248,28 @@ app = ImGui
                   options forEachIndexed: [idx, option ->
                     isDisabled = disabledOptionIdx contains: idx
 
-                    isDisabled ifTrue: [
-                      ImGui text: option + " (wrong)"
-                    ] ifFalse: [
-                      ImGui button: option, ifTrue: [
-                        (option == currentPair translation)
-                          ifTrue: [
-                            totalCorrect <- totalCorrect + 1
-                            goNext do
-                          ]
-                          ifFalse: [
-                            totalErrors <- totalErrors + 1
-                            hasErrorInCurrentWord <- true
-                            disabledOptionIdx <- disabledOptionIdx plus: idx
-                          ]
+                    isDisabled
+                      ifTrue: [
+                        ImGui text: option + " (wrong)"]
+                      ifFalse: [
+                        ImGui button: option, ifTrue: [
+                          (option == currentPair translation)
+                            ifTrue: [
+                              totalCorrect <- totalCorrect + 1
+                              goNext do
+                            ]
+                            ifFalse: [
+                              totalErrors <- totalErrors + 1
+                              hasErrorInCurrentWord <- true
+                              disabledOptionIdx <- disabledOptionIdx plus: idx
+                            ]
+                        ]
                       ]
-                    ]
                   ]
 
                   ImGui separator
-                  ImGui button: "Menu", ifTrue: [
-                    inGame <- false
-                  ]
+                  ImGui button: "Menu",
+                        ifTrue: [inGame <- false]
                 ]
               ]
           ]
