@@ -1,0 +1,272 @@
+// Types
+
+type TypeVarStore amount: Int
+mut TypeVarStore makeVar -> TypeVar = [
+    value = amount
+    amount <- value inc
+    ^ TypeVar :value
+]
+tvs = TypeVarStore amount: 0, toMut
+
+union MonoType =
+    | TypeVar value: Int
+    | TypeApp name: String parameters: List(MonoType)
+union PolyType = Mono value: MonoType | Forall tvar: TypeVar inner: PolyType
+
+/// Returns if this type has parameters or not.
+MonoType isSimple = | this
+    | TypeVar => true
+    | TypeApp => parameters isEmpty
+
+// MonoType toString
+TypeVar toString = "t" + value toString
+TypeApp toString = [
+    ^name == "->" and: (parameters count == 2),
+        ifTrue: [(parameters at: 0, toStringParen) + " -> " + (parameters at: 1, toStringParen)]
+        ifFalse: [name + (parameters joinWith: "" transform: [" " + it toStringParen])]]
+
+TypeVar equalTo: TypeVar = value == equalTo value
+
+/// Stringifies the monotype, wrapping it in parentheses, if it has arguments.
+MonoType toStringParen = this isSimple ifTrue: [this toString] ifFalse: ["(" + this toString + ")"]
+
+// PolyType
+Mono toString = value toString
+Forall toString = "∀ " + tvar toString + ". " + inner toString
+
+/// Stringifies the polytype, wrapping it in parentheses if it has arguments.
+PolyType toStringParen -> String = | this
+    | Mono => value toStringParen
+    | Forall => "∀ " + tvar toString + ". " + inner toStringParen
+
+String ty = TypeApp name: this parameters: {}
+
+// Expressions
+
+union Expr =
+    | VarExpr name: String
+    | LambdaExpr arg: String inner: Expr
+    | ApplicationExpr lambda: Expr value: Expr
+    | LetExpr varname: String initializer: Expr child: Expr
+
+VarExpr toString = name
+LambdaExpr toString = "\\$arg. " + inner toString
+ApplicationExpr toString = "(" + lambda toString + ") " + [
+    v = .value
+    | v
+    | ApplicationExpr | LetExpr => "(" + value toString + ")"
+    |=> value toString
+] do
+
+LetExpr toString = "let $varname = " + initializer toString + " in " + child toString
+
+// Context
+type Context map: mut Map(String, PolyType)
+
+Context withName: String andType: PolyType = Context map: (map + #{withName andType}) toMutableMap
+mut Context addName: String andType: PolyType = map at: addName put: andType
+
+constructor Context new = Context map: #{}!
+
+// Substitutions
+
+type Substitution v: Map(TypeVar, MonoType)
+
+constructor Substitution new = Substitution v: #{}
+constructor Substitution tvar: TypeVar ty: MonoType = Substitution v: #{tvar ty}
+
+Substitution toString = "{" + (v map: [k, value -> k toString + " |-> " + value toString], joinWith: ", ") + "}"
+
+Substitution combineWith(other): Substitution = [
+    map = v toMutableMap
+    other v forEach: [k, value -> map at: k put: (.applyToMono: value)]
+    ^ Substitution v: map
+]
+
+Substitution applyToMono(monoType): MonoType -> MonoType = | monoType
+    | TypeVar => .v at: monoType, unpackOrValue: monoType
+    | TypeApp => TypeApp name: monoType name parameters: (monoType parameters map: [.applyToMono: it])
+
+Substitution applyToPoly(polyType): PolyType -> PolyType = | polyType
+    | Mono => Mono value: (.applyToMono: polyType value)
+    | Forall => Forall tvar: polyType tvar inner: (.applyToPoly: polyType inner)
+
+Substitution applyToContext(context): Context -> Context = [
+    map = #{}!
+    context map forEach: [k, value -> map at: k put: (.applyToPoly: value)]
+    ^ Context :map
+]
+
+
+// Type var instantiation
+
+PolyType instantiateWith(tvs): mut TypeVarStore mappings: Map(TypeVar, TypeVar) -> MonoType = | this
+    | Mono => [
+        local = value
+        ^   | local
+            | TypeVar => mappings at: local, unpackOrValue: local
+            | TypeApp => TypeApp name: (local name) parameters: (local parameters map: [(Mono value: it) instantiateWith: tvs :mappings])
+    ]
+    | Forall => [
+        a = inner instantiateWith: tvs mappings: mappings
+        tvalue = tvs makeVar
+        inner instantiateWith: tvs mappings: mappings + #{tvar tvalue}
+    ]
+
+PolyType instantiateWith(tvs): mut TypeVarStore = .instantiateWith: tvs mappings: #{}
+
+MonoType generalizeOn(c): Context -> PolyType = [
+    freeVars = Mono value: this, freeVars differenceTo: (c freeVars)
+    mut t::PolyType = Mono value: this
+    freeVars forEach: [t <- Forall tvar: it inner: t]
+    ^ t
+]
+
+PolyType freeVars -> mut Set(TypeVar) = | this
+    | Mono => [
+        local = value
+        | local
+            | TypeVar => #(local)!
+            | TypeApp => [
+                free = #()!
+                local parameters forEach: [free addAll: (Mono value: it, freeVars)]
+                free
+            ]
+    ]
+    | Forall => inner freeVars filter: [it equalTo: tvar, not], toMutableSet
+
+Context freeVars -> Set(TypeVar) = [
+    set = #()!
+    map values forEach: [set addAll: (it freeVars)]
+    ^ set
+]
+
+mut Set(TypeVar) differenceTo(other): Set(TypeVar) -> Set(TypeVar) = .filter: [(other contains: it) not], toSet
+
+MonoType unifyWith(other): MonoType -> Substitution!{Error} = [
+    | this
+    | TypeVar => [
+        | other
+        | TypeVar => .equalTo: other, ifTrue: [^ Substitution new]
+        |=> () ]
+    |=> ()
+
+    | this
+    | TypeVar => other contains: this,
+                    ifTrue: [Error throwWithMessage: "Infinite Type Detected"]
+                    ifFalse: [^ Substitution tvar: this ty: other]
+    |=> ()
+
+    | other
+    | TypeVar => [^ other unifyWith: this]
+    | TypeApp => [
+        | this
+        | TypeVar => Error throwWithMessage: "Unreachable"
+        | TypeApp => [
+            this name != other name,
+                ifTrue: [Error throwWithMessage: "Could not unify types (different type functions: " + name + " and " + other name + ")"]
+            this parameters count != other parameters count,
+                ifTrue: [Error throwWithMessage: "Could not unify types (different argument lengths)"]
+            mut subst = Substitution new
+            0 ..< parameters count forEach: [
+                subst <- subst combineWith: (subst applyToMono: (this parameters at: it),
+                                             unifyWith:   (subst applyToMono: (other parameters at: it))
+                                            )
+            ]
+            ^ subst
+        ]
+    ]
+
+    Error throwWithMessage: "Unreachable"
+]
+
+MonoType contains(other): TypeVar -> Bool = | this
+    | TypeVar => this equalTo: other
+    | TypeApp => [
+        mut contains = false
+        parameters forEach: [it contains: other, ifTrue: [contains <- true]]
+        ^ contains
+    ]
+
+type WResult subst: Substitution ty: MonoType
+
+Context runWOn(expr): Expr withStore(tvs): mut TypeVarStore -> WResult = | expr
+    | VarExpr => [
+        value = map at: expr name, unpackOrPANIC
+        ^ WResult subst: (Substitution new) ty: (value instantiateWith: tvs)
+    ]
+    | LambdaExpr => [
+        newTy = tvs makeVar
+        res1 = this withName: expr arg andType: (Mono value: newTy),
+                    runWOn: expr inner withStore: tvs
+        x = res1 ty
+        ty = res1 subst applyToMono: (TypeApp name: "->" parameters: {newTy x})
+        ^ WResult subst: (res1 subst) :ty
+    ]
+    | ApplicationExpr => [
+        res1 = this runWOn: expr lambda withStore: tvs
+        res2 = res1 subst applyToContext: this,
+                          runWOn: expr value withStore: tvs
+        newTy = tvs makeVar
+        subst3 = res2 subst applyToMono: res1 ty,
+                            unifyWith: (TypeApp name: "->" parameters: {(res2 ty) newTy}), orPANIC
+        ^WResult subst: (subst3 combineWith: (res2 subst combineWith: res1 subst)) ty: (subst3 applyToMono: newTy)
+    ]
+    | LetExpr => [
+        res1 = this runWOn: expr initializer withStore: tvs
+        res2 = res1 subst applyToContext: this,
+                          withName: expr varname andType: (res1 ty generalizeOn: this),
+                          runWOn: expr child withStore: tvs
+        ^ WResult subst: (res2 subst combineWith: res1 subst) ty: res2 ty
+    ]
+
+MonoType poly = Mono value: this
+
+boolTy = "Bool" ty
+intTy = "Int" ty
+
+notFnTy = TypeApp name: "->" parameters: { boolTy boolTy }
+
+cx = Context new toMut
+cx addName: "not" andType: (TypeApp name: "->" parameters: { boolTy boolTy }) poly
+cx addName: "odd" andType: (TypeApp name: "->" parameters: { intTy boolTy }) poly
+cx addName: "ordinal" andType: (TypeApp name: "->" parameters: { boolTy intTy }) poly
+cx addName: "true" andType: boolTy poly
+cx addName: "false" andType: boolTy poly
+cx addName: "one" andType: intTy poly
+
+// let o = \x. odd x in o ((\x. x) one)
+// e = LetExpr varname: "o"
+//     initializer: (LambdaExpr
+//         arg: "x"
+//         inner: (ApplicationExpr lambda: (VarExpr name: "odd") value: (VarExpr name: "x"))
+//     )
+//     child: (ApplicationExpr lambda: (VarExpr name: "o")
+//         value: (ApplicationExpr
+//             lambda: (LambdaExpr arg: "x" inner: (VarExpr name: "x"))
+//             value: (VarExpr name: "one")
+//         )
+//     )
+
+// let id = \x. x in (id odd) (id one)
+// e = LetExpr varname: "id"
+//     initializer: (LambdaExpr arg: "x" inner: (VarExpr name: "x"))
+//     child: (ApplicationExpr
+//         lambda: (ApplicationExpr lambda: (VarExpr name: "id") value: (VarExpr name: "odd"))
+//         value: (ApplicationExpr lambda: (VarExpr name: "id") value: (VarExpr name: "one"))
+//     )
+
+// let id = \x. x in id
+e = LetExpr
+      varname: "id"
+      initializer: (LambdaExpr
+                      arg: "x"
+                      inner: (VarExpr name: "x"))
+      child: (VarExpr name: "id")
+
+
+res = cx runWOn: e withStore: tvs
+
+cx echo
+e echo
+"Type: " + res ty toString, echo
