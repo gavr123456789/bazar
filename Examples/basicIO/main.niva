@@ -65,7 +65,6 @@ constructor IO_Client new -> IO_Client = [
 
 
 hi = "/hi" bind: Method.GET, to: [
-  "arsars" echo
   Response status: Status.OK, body: "Hello!"
 ]
 sas = "/sas" bind: Method.GET, to: [

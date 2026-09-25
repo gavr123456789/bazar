@@ -21,19 +21,16 @@ JsonValue atIndex::Int -> JsonValue = [
   |=> Error throwWithMessage: "thats not an array, thats $this", orPANIC
 ]
 
-JsonValue first -> JsonValue =
-  | this
-  | JArray => list first
+JsonValue unsafeToArray -> JArray =  | this
+  | JArray => this
   |=> Error throwWithMessage: "thats not an array, thats $this", orPANIC
 
-JsonValue last -> JsonValue =
-  | this
-  | JArray => list last
-  |=> Error throwWithMessage: "thats not an array, thats $this", orPANIC
+JsonValue first -> JsonValue = this unsafeToArray list first
+JsonValue last -> JsonValue = this unsafeToArray list last
 
 
 
-JsonValue ifNotNull::[ JsonValue -> ] -> Unit = | this
+JsonValue ifNotNull: [ JsonValue -> ] -> Unit = | this
   | JNull => []
   |=> [
     ifNotNull value: this
